@@ -115,11 +115,12 @@ block scripts
 
 block templates
 	#templates-container.hidden
-		.alert
+		.alert.alert-error
+			a.close(href="#",data-dismiss="alert") ×
 			strong.
 				Error!&nbsp;
 			span.msg-mark
-		.notification-message.ui-state-highlight.ui-corner-all
-			p
-				span.ui-icon.ui-icon-info
-				.msg-mark
+
+		.alert.alert-success
+			a.close(href="#",data-dismiss="alert") ×
+			span.msg-mark

@@ -20,6 +20,12 @@ body {
 .hidden {
 	display: none;
 }
+/* =Images.
+ -------------------------------------------------------------- */
+.ajax-loader {
+	display: none;
+	margin-left: 0.5em;
+}
 /* =Messages.
  -------------------------------------------------------------- */
 #message-dashboard {
@@ -37,6 +43,20 @@ body {
  -------------------------------------------------------------- */
 table th, table td {
 	vertical-align: middle !important;
+}
+/* =Forms.
+ -------------------------------------------------------------- */
+label {
+	cursor: pointer;
+}
+td label {
+	margin-bottom: 0;
+}
+.field-description {
+	color: gray;
+	font-size:  0.9em;
+	font-style: italic;
+	margin-left: 0.2em;
 }
 /* =Progress Indicators.
  -------------------------------------------------------------- */

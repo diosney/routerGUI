@@ -17,8 +17,8 @@ jQuery(function ($) {
 				// Clear message dashboard.
 				$('#message-dashboard').html('');
 
-				$('.alert .msg-mark', '#templates-container').html(c);
-				$('.alert', '#templates-container').clone().appendTo('#message-dashboard');
+				$('.alert-error .msg-mark', '#templates-container').html(c);
+				$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
 			},
 			success :function (response_from_server) {
 				/*
@@ -57,8 +57,8 @@ jQuery(function ($) {
 					/*
 					 * Show message to user.
 					 */
-					$('.alert .msg-mark', '#templates-container').html(c);
-					$('.alert', '#templates-container').clone().appendTo('#message-dashboard');
+					$('.alert-error .msg-mark', '#templates-container').html(c);
+					$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
 				}
 			},
 			type    :'GET',

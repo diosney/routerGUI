@@ -1,0 +1,69 @@
+extends ../../layouts/layout
+
+block header
+	include ../../layouts/header
+
+block navigation
+	include ../../layouts/navigation
+
+block content
+	.container
+		.row-fluid
+			.span12
+				#message-dashboard
+		.row-fluid
+			.span12
+				form.ajax-form.form-horizontal(action='/api/system/settings',method='POST')
+					table.table.table-striped.table-hover
+						tbody
+							tr
+								th
+									label(for='hostname') Hostname
+								td
+									label
+										input(type='text',id='hostname',name='hostname',value='#{hostname}',placeholder="Hostname")
+										br
+										span.field-description Put brief description here.
+							tr
+								th
+									label(for='domain') Domain
+								td
+									label
+										input(type='text',id='domain',name='domain',value='#{domain}',placeholder="Domain")
+										br
+										span.field-description Put brief description here.
+							tr
+								th
+									label(for='nameserver-primary') DNS Servers
+								td
+									label
+										input(type='text',id='nameserver-primary',name='nameservers[]',value='#{nameservers[0]}',placeholder="Nameserver 1")
+										br
+										span.field-description Put brief description here.
+									label
+										input(type='text',id='nameserver-secondary',name='nameservers[]',value='#{nameservers[1]}',placeholder="Nameserver 2")
+										br
+										span.field-description Put brief description here.
+							tr
+								th
+								td
+									button.btn.btn-primary(type='submit',name='submit') Apply Changes
+									img.ajax-loader(src='/images/ajax-loader-light.gif')
+
+block footer
+	include ../../layouts/footer
+
+block scripts
+	script(type='text/javascript', src='/javascripts/external/jquery-form/jquery.form.js')
+	script(type='text/javascript', src='/javascripts/ui/system/settings.js')
+
+block templates
+	#templates-container.hidden
+		.alert.alert-error
+			a.close(href="#",data-dismiss="alert") ×
+			strong.
+				Error!&nbsp;
+			span.msg-mark
+		.alert.alert-success
+			a.close(href="#",data-dismiss="alert") ×
+			span.msg-mark

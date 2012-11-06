@@ -20,7 +20,6 @@ exports.index = function (req, res) {
 	widgets.sys_info = {
 		router_GUI_version:package.version,
 		hostname          :os.hostname(),
-		resolv_conf       :fs.readFileSync('/etc/resolv.conf').toString().split('\n'),
 		domain            :'',
 		nameservers       :[],
 		datetime          :'',
@@ -34,14 +33,16 @@ exports.index = function (req, res) {
 
 	// Nameservers and domain name.
 	// Parse lines in resolv.conf file to obtain domain and nameservers.
-	for (line in widgets.sys_info.resolv_conf) {
+	var resolv_conf = fs.readFileSync('/etc/resolv.conf').toString().split('\n');
+
+	for (line in resolv_conf) {
 		// Search for system domain.
-		if (widgets.sys_info.resolv_conf[line].search(/search/g) != '-1') {
-			domain = widgets.sys_info.resolv_conf[line].split('search ')[1];
+		if (resolv_conf[line].search(/search/g) != '-1') {
+			widgets.sys_info.domain = resolv_conf[line].split('search ')[1];
 		}
 		// Search for nameservers
-		if (widgets.sys_info.resolv_conf[line].search(/nameserver/g) != '-1') {
-			widgets.sys_info.nameservers.push(widgets.sys_info.resolv_conf[line].split('nameserver ')[1]);
+		if (resolv_conf[line].search(/nameserver/g) != '-1') {
+			widgets.sys_info.nameservers.push(resolv_conf[line].split('nameserver ')[1]);
 		}
 	}
 

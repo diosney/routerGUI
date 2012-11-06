@@ -20,12 +20,14 @@ var express = require('express'),
 /*
  * Routes configuration. UI
  */
-var routes_ui_dashboard = require('./routes/ui/dashboard/index.js');
+var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
+	routes_ui_system_settings = require('./routes/ui/system/settings.js');
 
 /*
  * Routes configuration. API
  */
-var routes_api_dashboard = require('./routes/api/dashboard/index.js');
+var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
+	routes_api_system_settings = require('./routes/api/system/settings/index.js');
 
 var app = express();
 
@@ -48,6 +50,7 @@ app.configure('development', function () {
 });
 
 app.get('/', routes_ui_dashboard.index);
+app.get('/system/settings', routes_ui_system_settings.index);
 
 // TODO: Add design to root API view.
 app.get('/api', function (req, res) {
@@ -55,6 +58,7 @@ app.get('/api', function (req, res) {
 });
 
 app.get('/api/dashboard', routes_api_dashboard.list);
+app.post('/api/system/settings', routes_api_system_settings.apply);
 
 http.createServer(app).listen(app.get('port'), function () {
 	console.log('Express server listening on port ' + app.get('port'));
