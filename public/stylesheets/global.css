@@ -1,0 +1,54 @@
+/* =General.
+ -------------------------------------------------------------- */
+body {
+	/* background: url('../images/backgrounds/body.gif') repeat scroll 0 0 #E6E6E6; TODO */
+	padding-top: 40px;
+	position: relative;
+}
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
+}
+.clearfix {
+	clear: both;
+}
+.align-center {
+	text-align: center !important;
+}
+.hidden {
+	display: none;
+}
+/* =Messages.
+ -------------------------------------------------------------- */
+#message-dashboard {
+	margin-top: 1em;
+}
+/* =Footer.
+ -------------------------------------------------------------- */
+.footer {
+	background-color: #F5F5F5;
+	border-top: 1px solid #E5E5E5;
+	margin-top: 50px;
+	padding: 50px 0;
+}
+/* =Tables.
+ -------------------------------------------------------------- */
+table th, table td {
+	vertical-align: middle !important;
+}
+/* =Progress Indicators.
+ -------------------------------------------------------------- */
+.progress {
+	height: 12px;
+	margin-bottom: 3px;
+}
+.progress:last-child {
+	margin-bottom: 0;
+}
+/* =Pages. Dashboard.
+ -------------------------------------------------------------- */
+#res-usage td {
+	width: 40%;
+}

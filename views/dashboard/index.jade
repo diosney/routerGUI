@@ -1,0 +1,125 @@
+extends ../layouts/layout
+
+block header
+	include ../layouts/header
+
+block navigation
+	include ../layouts/navigation
+
+block content
+	.container
+		.row-fluid
+			.span12
+				#message-dashboard
+				#hidden-fields.ui-helper-hidden
+					input(type='hidden',name='cpus_qty',value='#{widgets.sys_info.cpus.length}')
+		.row-fluid
+				.span7
+					table.table.table-striped.table-bordered.table-hover
+						tbody
+							tr.info
+								td(colspan=2).align-center
+									strong.
+										System Information
+							tr
+								th.
+									System Name
+								td.
+									#{widgets.sys_info.hostname}
+							tr
+								th.
+									Domain
+								td.
+									#{widgets.sys_info.domain}
+							tr
+								th.
+									Version
+								td.
+									#{widgets.sys_info.router_GUI_version}
+							tr
+								th.
+									Platform
+								td.
+									#{widgets.sys_info.os_type} #{widgets.sys_info.os_arch} #{widgets.sys_info.os_release}
+							tr
+								th.
+									CPU
+								td
+									for cpu in widgets.sys_info.cpus
+										strong.
+											#{cpu.qty}x&nbsp;
+										span.
+											#{cpu.model}
+										br
+							tr
+								th.
+									Installed Memory
+								td.
+									#{widgets.sys_info.memory.installed} GiB
+							tr
+								th.
+									Uptime
+								td
+									span#uptime #{widgets.sys_info.uptime}
+							tr
+								th.
+									Date and Time
+								td
+									span#datetime #{widgets.sys_info.datetime}
+							tr
+								th.
+									DNS Servers
+								td
+									span#nameserver-primary #{widgets.sys_info.nameservers[0]}
+									br
+									span#nameserver-secondary #{widgets.sys_info.nameservers[1]}
+				.span5
+					table.table.table-striped.table-bordered.table-hover#res-usage
+						tbody
+							tr.info
+								td(colspan=2).align-center
+									strong.
+										Resources Usage
+							tr
+								th.
+									CPU
+								td
+									for cpu,i in widgets.res_usage.cpus
+										.progress.progress-striped(class="progress-#{cpu.status}")
+											.bar(id='cpu-#{i}',style='width:#{cpu.usage}%;')
+							tr
+								th.
+									Load Average
+								td
+									for load,i in widgets.res_usage.load_average
+										span(id='load_average-#{i}') #{load}
+										br
+							tr
+								th.
+									Memory
+								td
+									.progress.progress-striped(class="progress-#{widgets.res_usage.memory.status}")
+										#memory.bar(style='width:#{widgets.res_usage.memory.usage}%;')
+							tr
+								th.
+									SWAP
+								td
+									.progress.progress-striped.progress-danger
+										#swap.bar(style='width:#{widgets.res_usage.swap}%;')
+
+block footer
+	include ../layouts/footer
+
+block scripts
+	script(type='text/javascript', src='/javascripts/ui/dashboard.js')
+
+block templates
+	#templates-container.hidden
+		.alert
+			strong.
+				Error!&nbsp;
+			span.msg-mark
+		.notification-message.ui-state-highlight.ui-corner-all
+			p
+				span.ui-icon.ui-icon-info
+				.msg-mark

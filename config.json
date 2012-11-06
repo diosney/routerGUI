@@ -1,0 +1,10 @@
+{
+	"database":{
+		"host":"localhost",
+		"name":"routerGUI",
+		"port":""
+	},
+	"website":{
+		"port":3000
+	}
+}
