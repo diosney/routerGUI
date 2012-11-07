@@ -41,7 +41,7 @@ body {
 }
 /* =Tables.
  -------------------------------------------------------------- */
-table th, table td {
+.table th, table td {
 	vertical-align: middle !important;
 }
 /* =Forms.
@@ -71,4 +71,31 @@ td label {
  -------------------------------------------------------------- */
 #res-usage td {
 	width: 40%;
+}
+/* =Grids.
+ -------------------------------------------------------------- */
+.ui-jqgrid tr.jqgrow td {
+	white-space: normal !important;
+}
+.ui-jqgrid .ui-pg-input {
+	width: auto;
+}
+.ui-jqgrid .ui-pg-selbox {
+	width: auto;
+}
+.jqgroup {
+	text-transform: uppercase;
+}
+.jqgroup td {
+	font-weight: bold !important;
+	text-align: center !important;
+}
+/* =Grids. Tuning.
+ -------------------------------------------------------------- */
+.column_description {
+	padding: 0.5em !important;
+	padding-left: 1em !important;
+}
+#description {
+	width: 18.2em;
 }

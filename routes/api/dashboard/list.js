@@ -111,7 +111,6 @@ module.exports = function (req, res) {
 			response_from_server.type = 'notification';
 
 			// Return the gathered data.
-			res.contentType('application/json');
-			res.send(JSON.stringify(response_from_server));
+			res.json(response_from_server);
 		});
 };

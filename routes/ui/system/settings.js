@@ -39,7 +39,7 @@ exports.index = function (req, res) {
 	}
 
 	res.render('system/settings/index', {
-		title :'Settings',
+		title :'routerGUI · Settings',
 		header:'Settings',
 		lead  :'Tell something interesting about the settings screen.',
 

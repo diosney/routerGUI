@@ -8,7 +8,7 @@ var async = require('async'),
 	fs = require('fs');
 
 module.exports = function (req, res) {
-	// Initialize response. TODO: Make this a global function that prepares a response.
+	// Initialize response.
 	var response_from_server = {};
 
 	async.parallel({
@@ -83,7 +83,6 @@ module.exports = function (req, res) {
 			}
 
 			// Return the gathered data.
-			res.contentType('application/json');
-			res.send(JSON.stringify(response_from_server));
+			res.json(response_from_server);
 		});
 };

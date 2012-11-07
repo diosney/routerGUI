@@ -3,6 +3,9 @@
 // TODO: Remove 'jQuery' from the names of the used jQuery plugins. That not make sense at all :|
 // TODO: Rename all grid columns to grid_column_<name>
 // TODO: https://github.com/jeremyfa/node-exec-sync/issues/3#issuecomment-7570123
+
+
+// TODO: res.redirect('/foo/bar');
 /**
  * Module dependencies.
  */
@@ -12,8 +15,26 @@ var express = require('express'),
 
 // Load configuration file.
 	config = require('./config.json'),
-	package = require('./package.json');
+	package = require('./package.json'),
+	mongoose = require('mongoose');
 
+// Open DB connection to database.
+mongoose.connect(config.database.host, config.database.name);
+
+/*
+ * There was an error in the connection.
+ */
+mongoose.connection.on('error', function (error) {
+	console.log(error);
+});
+
+
+/*
+ * Ensures that code is executed only if there was no error.
+ */
+mongoose.connection.on('open', function (ref) {
+
+});
 /*
  * Routes configuration.
  */
@@ -21,13 +42,17 @@ var express = require('express'),
  * Routes configuration. UI
  */
 var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
-	routes_ui_system_settings = require('./routes/ui/system/settings.js');
+	routes_ui_system_settings = require('./routes/ui/system/settings.js'),
+	routes_ui_system_tuning = require('./routes/ui/system/tuning.js'),
+	routes_ui_system_install = require('./routes/ui/system/install.js');
 
 /*
  * Routes configuration. API
  */
 var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
-	routes_api_system_settings = require('./routes/api/system/settings/index.js');
+	routes_api_system_settings = require('./routes/api/system/settings/index.js'),
+	routes_api_system_tuning = require('./routes/api/system/tuning/index.js'),
+	routes_api_system_install = require('./routes/api/system/install/index.js');
 
 var app = express();
 
@@ -51,15 +76,34 @@ app.configure('development', function () {
 
 app.get('/', routes_ui_dashboard.index);
 app.get('/system/settings', routes_ui_system_settings.index);
+app.get('/system/tuning', routes_ui_system_tuning.index);
+app.get('/system/install', routes_ui_system_install.index);
 
 // TODO: Add design to root API view.
 app.get('/api', function (req, res) {
 	res.send(package.name + ' API is running');
 });
 
+// Dashboard.
 app.get('/api/dashboard', routes_api_dashboard.list);
+
+// System.
+// System -> Settings.
 app.post('/api/system/settings', routes_api_system_settings.apply);
+
+// System -> Tuning.
+app.get('/api/system/tuning', routes_api_system_tuning.list);
+app.post('/api/system/tuning', routes_api_system_tuning.add);
+app.delete('/api/system/tuning', routes_api_system_tuning.delete);
+app.put('/api/system/tuning', routes_api_system_tuning.edit);
+app.post('/api/system/tuning/apply', routes_api_system_tuning.apply);
+
+// System -> Install.
+app.post('/api/system/install', routes_api_system_install.apply);
 
 http.createServer(app).listen(app.get('port'), function () {
 	console.log('Express server listening on port ' + app.get('port'));
 });
+
+// Close DB connection.
+// TODO: mongoose.connection.close();

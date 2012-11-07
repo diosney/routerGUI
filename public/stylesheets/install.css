@@ -1,0 +1,32 @@
+/* =General.
+ -------------------------------------------------------------- */
+body {
+	text-align: center;
+}
+.container {
+	color: #333333;
+	font-family: sans-serif;
+	margin: 2em auto;
+	max-width: 700px;
+	padding: 1em 2em;
+	width: 720px !important;
+}
+#logo {
+	border-bottom: 0 none;
+	margin: 6px 0 14px;
+	text-align: center;
+}
+h3 {
+	border-bottom: 1px solid #DADADA;
+	clear: both;
+	color: #666666;
+	font: 24px Georgia, "Times New Roman", Times, serif;
+	margin: 0;
+	margin-bottom: 0.5em;
+	padding: 0 0 7px;
+}
+p {
+	font-size: 14px;
+	line-height: 1.5;
+	padding-bottom: 2px;
+}

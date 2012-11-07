@@ -1,10 +1,11 @@
 {
-	"database":{
-		"host":"localhost",
-		"name":"routerGUI",
-		"port":""
+	"database": {
+		"host": "localhost",
+		"name": "routerGUI",
+		"port": "",
+		"installed": true
 	},
-	"website":{
-		"port":3000
+	"website": {
+		"port": 3000
 	}
 }

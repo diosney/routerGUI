@@ -1,0 +1,60 @@
+doctype 5
+html
+	head
+		title= title
+		link(rel='shortcut icon', href='/images/icons/favicon.ico')
+
+		link(rel='stylesheet',media='screen', href='/javascripts/external/bootstrap/css/bootstrap.css')
+		link(rel='stylesheet', href='/stylesheets/global.css')
+		link(rel='stylesheet', type='text/css', href='/stylesheets/install.css')
+	body
+		.container
+			h3#logo
+				img(src="/images/logos/main.png",alt="routerGUI Logo")
+
+			.row-fluid
+				.span12
+					#message-dashboard
+			.row-fluid
+				.span12
+					form.ajax-form.form-horizontal(action='/api/system/install',method='POST')
+						#to-be-installed(class=installed ? 'hidden' : '')
+							h3 Welcome
+							p
+								| Welcome to the installation process!
+								br
+								| You may want to browse the ReadMe (put a link somewhere) documentation at your leisure.
+								br
+								| Explain that this for 'til only checks database access and install the defaults values into database.
+							button.btn.btn-primary.btn-large(type='submit',name='submit',value="install") Install System
+							img.ajax-loader(src='/images/ajax-loader-light.gif')
+						#installed(class=installed ? '' : 'hidden')
+							h3 Already Installed
+							p
+								| You appear to have already installed WordPress.
+								br
+								| To reinstall please clear your old database tables and set configuration variable installed = false.
+							br
+							a.btn.btn-primary.btn-large(href="/") Back to Dashboard
+
+		footer.footer
+			.container
+				p.
+					<a href='https://github.com/diosney/routerGUI'>routerGUI</a> #{+new Date().getFullYear()}
+
+		script(type='text/javascript', src='/javascripts/external/jquery/jquery.js')
+		script(type='text/javascript', src='/javascripts/external/bootstrap/js/bootstrap.js')
+		script(type='text/javascript', src='/javascripts/global.js')
+
+		script(type='text/javascript', src='/javascripts/external/form/jquery.form.js')
+		script(type='text/javascript', src='/javascripts/ui/system/install.js')
+
+		#templates-container.hidden
+			.alert.alert-error
+				a.close(href="#",data-dismiss="alert") ×
+				strong.
+					Error!&nbsp;
+				span.msg-mark
+			.alert.alert-success
+				a.close(href="#",data-dismiss="alert") ×
+				span.msg-mark
