@@ -1,11 +1,7 @@
 // TODO: A 404 Not Found page.
 // TODO: A 505 Not Found page.
-// TODO: Remove 'jQuery' from the names of the used jQuery plugins. That not make sense at all :|
-// TODO: Rename all grid columns to grid_column_<name>
 // TODO: https://github.com/jeremyfa/node-exec-sync/issues/3#issuecomment-7570123
 
-
-// TODO: res.redirect('/foo/bar');
 /**
  * Module dependencies.
  */
@@ -106,4 +102,4 @@ http.createServer(app).listen(app.get('port'), function () {
 });
 
 // Close DB connection.
-// TODO: mongoose.connection.close();
+// TODO: See how close database connection upong app exit: mongoose.connection.close();
