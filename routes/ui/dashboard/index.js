@@ -163,6 +163,7 @@ exports.index = function (req, res) {
 				title  :'routerGUI · Dashboard',
 				header :'Dashboard',
 				lead   :'Tell something interesting about the dashboard screen.',
+				menu: 'dashboard',
 
 				// Widgets.
 				widgets:widgets

@@ -4,16 +4,16 @@
 			a(href='#',class='brand') routerGUI
 			.nav-collapse.collapse
 				ul.nav
-					li.active
+					li(class=(menu == 'dashboard'?'active':''))
 						a(href='/').
 							Dashboard
-					li.dropdown
+					li.dropdown(class=(menu == 'system/settings' || menu == 'system/tuning' ?'active':''))
 						a(data-toggle="dropdown",href='#').dropdown-toggle System
 							b.caret
 						ul.dropdown-menu
-							li
+							li(class=(menu == 'system/settings'?'active':''))
 								a(href='/system/settings').
 									Settings
-							li
+							li(class=(menu == 'system/tuning'?'active':''))
 								a(href='/system/tuning').
 									Tuning

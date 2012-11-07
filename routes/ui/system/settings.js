@@ -52,6 +52,7 @@ exports.index = function (req, res) {
 		title :'routerGUI · Settings',
 		header:'Settings',
 		lead  :'Tell something interesting about the settings screen.',
+		menu: 'system/settings',
 
 		hostname   :hostname,
 		domain     :domain,

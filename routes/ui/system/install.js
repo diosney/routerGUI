@@ -11,6 +11,7 @@ exports.index = function (req, res) {
 		title :'routerGUI · System · Install',
 		header:'System Install',
 		lead  :'Tell something interesting about the Install screen.',
+		menu: 'system/install',
 
 		installed: config.database.installed
 	});
