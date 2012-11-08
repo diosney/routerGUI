@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.Types.ObjectId,
 
-	config = require('../../../config.json');
+	config = require('../../config.json');
 
 /*
  * Schema definition.

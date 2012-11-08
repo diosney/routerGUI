@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
 /*
  * Load required models.
  */
-	Tunable = require('../../../../models/system/tuning/tunable.js');
+	Tunable = require('../../../../models/system/tunable.js');
 
 module.exports = function (req, res) {
 	// Initialize response.
@@ -21,6 +21,7 @@ module.exports = function (req, res) {
 	Tunable.findOne({
 		_id:req.body.id
 	}, function (error, doc) {
+		// TODO: Execute the tunable live, don't wait for an Apply button.
 		if (!error) {
 			doc.description = req.body.description;
 			doc.value = req.body.value;

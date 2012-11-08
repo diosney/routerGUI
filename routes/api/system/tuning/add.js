@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
 /*
  * Load required models.
  */
-	Tunable = require('../../../../models/system/tuning/tunable.js');
+	Tunable = require('../../../../models/system/tunable.js');
 
 module.exports = function (req, res) {
 	// Initialize response.
