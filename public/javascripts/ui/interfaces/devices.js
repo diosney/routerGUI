@@ -424,7 +424,7 @@ jQuery(function ($) {
 				},
 				bSubmit    :'Delete',
 				modal      :false,
-				mtype      :'POST',
+				mtype      :'DELETE',
 				delData    :{
 					device_id:row_id,
 					object   :'address'

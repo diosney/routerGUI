@@ -35,7 +35,7 @@ module.exports = function (req, res) {
 									response_from_server.type = 'notification';
 								}
 								else {
-									response_from_server.message = err.message;
+									response_from_server.message = error.message;
 									response_from_server.type = 'error';
 								}
 
