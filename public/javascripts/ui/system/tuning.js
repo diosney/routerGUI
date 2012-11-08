@@ -4,47 +4,6 @@
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
-	 * Buttons. Apply Changes.
-	 */
-	$('#apply-changes').click(function () {
-		$.ajax({
-			cache   :false,
-			dataType:'json',
-			error   :function (a, b, c) {
-				/*
-				 * Show message to user.
-				 */
-				// Clear message dashboard.
-				$('#message-dashboard').html('');
-
-				$('.alert-error .msg-mark', '#templates-container').html(c);
-				$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
-			},
-			success :function (response_from_server) {
-				/*
-				 * Show message to user.
-				 */
-				// Clear message dashboard.
-				$('#message-dashboard').html('');
-
-				if (response_from_server.type == 'notification') {
-					$('.alert-success .msg-mark', '#templates-container').html(response_from_server.message);
-					$('.alert-success', '#templates-container').clone().appendTo('#message-dashboard');
-				}
-				else if (response_from_server.type == 'error') {
-					/*
-					 * Show message to user.
-					 */
-					$('.alert-error .msg-mark', '#templates-container').html(response_from_server.message);
-					$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
-				}
-			},
-			type    :'POST',
-			url     :'/api/system/tuning/apply'
-		});
-	});
-
-	/*
 	 * Grid. Tunables.
 	 */
 	var tunable_list_grid = $('#tunable-list-grid').jqGrid({
@@ -63,10 +22,10 @@ jQuery(function ($) {
 						'kernel':'Kernel'
 					}
 				},
-				hidden: true,
+				hidden     :true,
 				index      :'group',
 				name       :'group',
-				sortable: false,
+				sortable   :false,
 				width      :5
 			},
 			{
@@ -142,7 +101,7 @@ jQuery(function ($) {
 			add          :true,
 			addtext      :'<strong>Add</strong>',
 			del          :true,
-			deltext      :'<strong>Delete</strong>',
+			deltext      :'<strong>Delete from DB</strong>',
 			search       :false,
 			refresh      :true,
 			refreshtext  :'<strong>Refresh</strong>',
@@ -165,7 +124,7 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
-			beforeShowForm: function() {
+			beforeShowForm:function () {
 				$('#tr_group,#tr_path').hide();
 			},
 			bSubmit       :'Done',
@@ -174,12 +133,12 @@ jQuery(function ($) {
 			closeOnEscape :true,
 			dataheight    :180,
 
-			editCaption   :'Edit Tunable',
-			modal         :true,
-			mtype         :'PUT',
-			recreateForm  :true,
-			url           :'/api/system/tuning',
-			width         :320
+			editCaption :'Edit Tunable',
+			modal       :true,
+			mtype       :'PUT',
+			recreateForm:true,
+			url         :'/api/system/tuning',
+			width       :320
 		}, {
 			// ADD Settings.
 			addCaption   :'Add Tunable',

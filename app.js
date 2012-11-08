@@ -99,13 +99,11 @@ app.get('/api/system/tuning', routes_api_system_tuning.list);
 app.post('/api/system/tuning', routes_api_system_tuning.add);
 app.delete('/api/system/tuning', routes_api_system_tuning.delete);
 app.put('/api/system/tuning', routes_api_system_tuning.edit);
-app.post('/api/system/tuning/apply', routes_api_system_tuning.apply);
 
 // Interfaces -> Devices.
 app.get('/api/interfaces/devices', routes_api_interfaces_devices.list);
 app.post('/api/interfaces/devices', routes_api_interfaces_devices.add);
 app.delete('/api/interfaces/devices', routes_api_interfaces_devices.delete);
-app.put('/api/interfaces/devices', routes_api_interfaces_devices.edit);
 app.put('/api/interfaces/devices', routes_api_interfaces_devices.edit);
 
 // System -> Install.

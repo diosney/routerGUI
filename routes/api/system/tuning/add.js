@@ -5,6 +5,7 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
+	exec = require('child_process').exec,
 
 /*
  * Load required models.
@@ -20,36 +21,49 @@ module.exports = function (req, res) {
 	 */
 	Tunable.find({
 		group:req.body.group,
-		path: req.body.path
+		path :req.body.path
 	}, {}, {}, function (error, docs) {
 		if (!error) {
 			if (!docs.length) {
 				/*
-				 * Add a Tunable to database.
+				 * Execute the changes in the system.
 				 */
-				// Instantiate the model and fill it with the obtained data.
 				var tunable = new Tunable({
 					group      :req.body.group,
-					description:req.body.description,
 					path       :req.body.path,
-					value      :req.body.value
+					value      :req.body.value,
+					description:req.body.description
 				});
 
-				// Save the object to database.
-				tunable.save(function (error) {
-					if (!error) {
-						response_from_server.id = tunable.id;
-						response_from_server.message = 'Saved Successfully!';
-						response_from_server.type = 'notification';
+				exec(tunable.cl_apply(), function (error, stdout, stderr) {
+					if (error === null) {
+						/*
+						 * Save changes to database.
+						 */
+						// Save changes into database.
+						tunable.save(function (error) {
+							if (!error) {
+								response_from_server.id = tunable._id;
+								response_from_server.message = 'Added Successfully!';
+								response_from_server.type = 'notification';
+							}
+							else {
+								response_from_server.id = '';
+								response_from_server.message = error.message;
+								response_from_server.type = 'error';
+							}
+
+							// Return the gathered data.
+							res.json(response_from_server);
+						});
 					}
 					else {
-						response_from_server.id = '';
-						response_from_server.message = error.message;
+						response_from_server.message = stderr;
 						response_from_server.type = 'error';
-					}
 
-					// Return the gathered data.
-					res.json(response_from_server);
+						// Return the gathered data.
+						res.json(response_from_server);
+					}
 				});
 			}
 			else {

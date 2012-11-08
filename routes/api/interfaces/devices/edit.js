@@ -24,7 +24,7 @@ module.exports = function (req, res) {
 			 * Execute the changes in the system.
 			 */
 			/*
-			 * Edit a Tunable from the database.
+			 * Edit a Device from the database.
 			 */
 			var device = new Device({
 				status     :req.body.status,
