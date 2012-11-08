@@ -2,11 +2,6 @@
 // TODO: A 505 Not Found page.
 // TODO: https://github.com/jeremyfa/node-exec-sync/issues/3#issuecomment-7570123
 
-// NEXT:
-// TODO: 1st= Device listarla de la BD.
-// TODO: 2nd= Tunables hacerlos linve como mismo Device.
-// TODO: 3rd= Cuando install system poner en la BD inicialmente los devices y address que se encuentren en el sistema.
-
 /**
  * Module dependencies.
  */
@@ -45,7 +40,8 @@ var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
 	routes_ui_system_settings = require('./routes/ui/system/settings.js'),
 	routes_ui_system_tuning = require('./routes/ui/system/tuning.js'),
 	routes_ui_system_install = require('./routes/ui/system/install.js'),
-	routes_ui_interfaces_devices = require('./routes/ui/interfaces/devices.js');
+	routes_ui_interfaces_devices = require('./routes/ui/interfaces/devices.js'),
+	routes_ui_interfaces_vlans = require('./routes/ui/interfaces/vlans.js');
 
 /*
  * Routes configuration. API
@@ -54,7 +50,9 @@ var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
 	routes_api_system_settings = require('./routes/api/system/settings/index.js'),
 	routes_api_system_tuning = require('./routes/api/system/tuning/index.js'),
 	routes_api_system_install = require('./routes/api/system/install/index.js'),
-	routes_api_interfaces_devices = require('./routes/api/interfaces/devices/index.js');
+	routes_api_interfaces_devices = require('./routes/api/interfaces/devices/index.js'),
+	routes_api_interfaces_addresses = require('./routes/api/interfaces/address/index.js'),
+	routes_api_interfaces_vlans = require('./routes/api/interfaces/vlans/index.js');
 
 var app = express();
 
@@ -81,6 +79,7 @@ app.get('/system/settings', routes_ui_system_settings.index);
 app.get('/system/tuning', routes_ui_system_tuning.index);
 app.get('/system/install', routes_ui_system_install.index);
 app.get('/interfaces/devices', routes_ui_interfaces_devices.index);
+app.get('/interfaces/vlans', routes_ui_interfaces_vlans.index);
 
 // TODO: Add design to root API view.
 app.get('/api', function (req, res) {
@@ -105,6 +104,18 @@ app.get('/api/interfaces/devices', routes_api_interfaces_devices.list);
 app.post('/api/interfaces/devices', routes_api_interfaces_devices.add);
 app.delete('/api/interfaces/devices', routes_api_interfaces_devices.delete);
 app.put('/api/interfaces/devices', routes_api_interfaces_devices.edit);
+
+// Interfaces -> Addresses.
+app.get('/api/interfaces/addresses', routes_api_interfaces_addresses.list);
+app.post('/api/interfaces/addresses', routes_api_interfaces_addresses.add);
+app.delete('/api/interfaces/addresses', routes_api_interfaces_addresses.delete);
+app.put('/api/interfaces/addresses', routes_api_interfaces_addresses.edit);
+
+// Interfaces -> VLANs.
+app.get('/api/interfaces/vlans', routes_api_interfaces_vlans.list);
+app.post('/api/interfaces/vlans', routes_api_interfaces_vlans.add);
+app.delete('/api/interfaces/vlans', routes_api_interfaces_vlans.delete);
+app.put('/api/interfaces/vlans', routes_api_interfaces_vlans.edit);
 
 // System -> Install.
 app.post('/api/system/install', routes_api_system_install.apply);

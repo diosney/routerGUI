@@ -17,10 +17,13 @@
 							li(class=(menu == 'system/tuning'?'active':''))
 								a(href='/system/tuning').
 									Tuning
-					li.dropdown(class=(menu == 'interfaces/devices' || menu == 'interfaces/devices' ?'active':''))
+					li.dropdown(class=(menu == 'interfaces/devices' || menu == 'interfaces/vlans' ?'active':''))
 						a(data-toggle="dropdown",href='#').dropdown-toggle Interfaces
 							b.caret
 						ul.dropdown-menu
 							li(class=(menu == 'interfaces/devices'?'active':''))
 								a(href='/interfaces/devices').
 									Devices
+							li(class=(menu == 'interfaces/vlans'?'active':''))
+								a(href='/interfaces/vlans').
+									VLANs

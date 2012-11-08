@@ -1,5 +1,5 @@
 /*
- * POST Services/IP Sets API.
+ * POST Interfaces/VLANs API.
  */
 /*
  * Module dependencies.
@@ -11,41 +11,40 @@ var mongoose = require('mongoose'),
 /*
  * Load required models.
  */
-	Device = require('../../../../models/interfaces/device.js'),
-	Address = require('../../../../models/interfaces/address.js');
+	VLAN = require('../../../../models/interfaces/vlan.js');
 
 module.exports = function (req, res) {
 	// Initialize response.
 	var response_from_server = {};
 
 	switch (req.body.object) {
-		case 'device':
+		case 'vlan':
 			/*
 			 * Execute the changes in the system.
 			 */
 			/*
-			 * Edit a Device from the database.
+			 * Edit a VLAN from the database.
 			 */
-			var device = new Device({
-				status     :req.body.status,
-				identifier :req.body.id,
-				MAC        :req.body.MAC,
-				MTU        :req.body.MTU,
-				description:req.body.description
+			var vlan = new VLAN({
+				parent_device:req.body.parent_device,
+				status       :req.body.status,
+				tag          :req.body.tag,
+				address      :req.body.address,
+				net_mask     :req.body.net_mask,
+				description  :req.body.description
 			});
 
-			exec(device.cl_link_set(), function (error, stdout, stderr) {
+			exec(vlan.cl_set(), function (error, stdout, stderr) {
 				if (error === null) {
 					/*
 					 * Save changes to database.
 					 */
-					Device.findOne({
-						identifier:req.body.id
+					VLAN.findOne({
+						parent_device:req.body.parent_device,
+						status       :req.body.status,
 					}, function (error, doc) {
 						if (!error) {
 							doc.status = req.body.status;
-							doc.MAC = req.body.MAC;
-							doc.MTU = req.body.MTU;
 							doc.description = req.body.description;
 
 							// Save changes into database.

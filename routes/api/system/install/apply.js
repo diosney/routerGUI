@@ -13,7 +13,8 @@ var async = require('async'),
  */
 Tunable = require('../../../../models/system/tunable.js'),
 	Device = require('../../../../models/interfaces/device.js'),
-	Address = require('../../../../models/interfaces/address.js');
+	Address = require('../../../../models/interfaces/address.js'),
+	VLAN = require('../../../../models/interfaces/vlan.js');
 
 // Load default files.
 var default_file = require('../../../../default.json');
@@ -84,124 +85,236 @@ module.exports = function (req, res) {
 								 *
 								 */
 								exec(Device.cl_link_show(), function (error, stdout, stderr) {
-									if (error === null) {
-										var output = stdout.split('\n'),
-											devices = [],
-											d = 0;
-
-										for (var line = 0; line < output.length - 1; line++) { // The last item is empty.
-											if (line % 2 == 0) {
-												devices.push({
-													identifier:output[line].split(': ')[1],
-													MTU       :output[line].split('mtu ')[1].split(' ')[0],
-													status    :((output[line].split('state ')[1].split(' ')[0] == 'UNKNOWN') ? 'UP' : output[line].split('state ')[1].split(' ')[0])
-												});
-
-												d++;
-											}
-											else {
-												devices[d - 1].MAC = (output[line].trim().split(' ')[0] != 'link/ppp') ? output[line].trim().split(' ')[1] : '';
-											}
-										}
-
-										callback_waterfall(null, devices);
-									}
-									else {
-										callback_waterfall(error);
-									}
-								});
-							},
-							function (devices, callback_waterfall) {
-								/*
-								 * Update the state of devices in DB taking care with the current status.
-								 *
-								 */
-								async.forEach(devices, function (item, callback_forEach) {
-									/*
-									 * Update Devices.
-									 */
-									Device.findOne({
-										identifier:item.identifier
-									}, function (error, doc) {
-										if (!error) {
-											if (!doc) {
-												/*
-												 * The device isn't in database yet.
-												 */
-												// Instantiate the model and fill it with the obtained data.
-												var device = new Device(item);
-
-												// Save the object to database.
-												device.save(function (error) {
-													if (error) {
-														callback_forEach(error);
-													}
-													else {
-														callback_forEach(null);
-													}
-												});
-											}
-										}
-										else {
-											callback_forEach(error);
-										}
-									});
-
-									/*
-									 * Get Device Addresses.
-									 */
-									exec(Address.cl_address_show(item.identifier), function (error, stdout, stderr) {
 										if (error === null) {
-											var output = stdout.split('\n');
+											var output = stdout.split('\n'),
+												devices = [],
+												vlans = [];
 
-											for (var line = 2; line < output.length - 1; line++) { // The two first lines don't have addresses.
-												var family = output[line].trim().split(' scope ')[0].split(' ')[0];
+											var is_vlan = false;
+											for (var line = 0; line < output.length - 1; line += 2) { // The last item is empty.
+												is_vlan = (typeof(output[line].split(': ')[1].split('@')[1]) == 'undefined') ? false : true;
 
-												if (family == 'inet' || family == 'inet6') {
-													var address = new Address({
-														parent_device:item.identifier,
-														scope        :output[line].trim().split(' scope ')[1].split(' ')[0],
-														address      :output[line].trim().split(' scope ')[0].split(' ')[1].split('/')[0],
-														net_mask     :output[line].trim().split(' scope ')[0].split(' ')[1].split('/')[1],
-														family       :family,
-														description  :''
+												if (!is_vlan) {
+													// Isn't a VLAN.
+													devices.push({
+														identifier:output[line].split(': ')[1],
+														MTU       :output[line].split('mtu ')[1].split(' ')[0],
+														status    :(output[line].split('state ')[1].split(' ')[0] == 'UNKNOWN') ? 'UP' : output[line].split('state ')[1].split(' ')[0],
+														MAC       :(output[line + 1].trim().split(' ')[0] != 'link/ppp') ? output[line + 1].trim().split(' ')[1] : ''
 													});
+												}
+												else {
+													// Is VLAN.
+													var status = (output[line].split('state ')[1].split(' ')[0] == 'UNKNOWN') ? 'UP' : output[line].split('state ')[1].split(' ')[0];
+													if (status == 'LOWERLAYERDOWN') {
+														status = 'DOWN';
+													}
 
-													/*
-													 * Save address to database.
-													 */
-													address.save(function (error) {
-														if (!error) {
-															callback_forEach(null);
-														}
-														else {
-															callback_forEach(error);
-														}
+													vlans.push({
+														parent_device:output[line].split(': ')[1].split('@')[1],
+														status       :status,
+														tag          :output[line].split(': ')[1].split('@')[0].split('.')[1]
 													});
 												}
 											}
+
+											callback_waterfall(null, devices, vlans);
 										}
 										else {
-											callback_forEach(error);
+											callback_waterfall(error);
+										}
+									}
+								);
+							},
+							function (devices, vlans, callback_waterfall) {
+								async.parallel([
+									function (callback_parallel_inner) {
+										/*
+										 * Update the state of devices in DB taking care with the current status.
+										 *
+										 */
+										async.forEach(devices, function (item, callback_forEach) {
+											/*
+											 * Update Devices.
+											 */
+											Device.findOne({
+												identifier:item.identifier
+											}, function (error, doc) {
+												if (!error) {
+													if (!doc) {
+														/*
+														 * The device isn't in database yet.
+														 */
+														// Instantiate the model and fill it with the obtained data.
+														var device = new Device(item);
+
+														// Save the object to database.
+														device.save(function (error) {
+															if (error) {
+																callback_forEach(error);
+															}
+															else {
+																callback_forEach(null);
+															}
+														});
+													}
+												}
+												else {
+													callback_forEach(error);
+												}
+											});
+
+											/*
+											 * Get Device Addresses.
+											 */
+											exec(Address.cl_address_show(item.identifier), function (error, stdout, stderr) {
+												if (error === null) {
+													var output = stdout.split('\n');
+
+													for (var line = 2; line < output.length - 1; line++) { // The two first lines don't have addresses.
+														var family = output[line].trim().split(' scope ')[0].split(' ')[0];
+
+														if (family == 'inet' || family == 'inet6') {
+															var address = new Address({
+																parent_device:item.identifier,
+																scope        :output[line].trim().split(' scope ')[1].split(' ')[0],
+																address      :output[line].trim().split(' scope ')[0].split(' ')[1].split('/')[0],
+																net_mask     :output[line].trim().split(' scope ')[0].split(' ')[1].split('/')[1],
+																family       :family,
+																description  :''
+															});
+
+															/*
+															 * Save address to database.
+															 */
+															address.save(function (error) {
+																if (!error) {
+																	callback_forEach(null);
+																}
+																else {
+																	callback_forEach(error);
+																}
+															});
+														}
+													}
+												}
+												else {
+													callback_forEach(error);
+												}
+											});
+										}, function (error) {
+											if (error == null) {
+												callback_parallel_inner(null);
+											}
+											else {
+												callback_parallel_inner(error);
+											}
+										});
+									},
+									function (callback_parallel_inner) {
+										/*
+										 * Save the VLAN to database.
+										 */
+										async.forEach(vlans, function (item, callback_forEach) {
+											/*
+											 * Update Devices.
+											 */
+											VLAN.findOne({
+												tag          :item.tag,
+												parent_device:item.parent_device
+											}, function (error, doc) {
+												if (!error) {
+													if (!doc) {
+														/*
+														 * The device isn't in database yet.
+														 */
+														// Instantiate the model and fill it with the obtained data.
+														var vlan = new VLAN(item);
+
+														// Save the object to database.
+														vlan.save(function (error) {
+															if (error) {
+																callback_forEach(error);
+															}
+															else {
+																callback_forEach(null);
+															}
+														});
+													}
+												}
+												else {
+													callback_forEach(error);
+												}
+											});
+
+											/*
+											 * Get Device Addresses.
+											 */
+											exec(Address.cl_address_show(item.parent_device + '.' + item.tag), function (error, stdout, stderr) {
+												if (error === null) {
+													var output = stdout.split('\n');
+
+													for (var line = 2; line < output.length - 1; line++) { // The two first lines don't have addresses.
+														var family = output[line].trim().split(' scope ')[0].split(' ')[0];
+
+														if (family == 'inet' || family == 'inet6') {
+															var address = new Address({
+																parent_device:item.parent_device + '.' + item.tag,
+																scope        :output[line].trim().split(' scope ')[1].split(' ')[0],
+																address      :output[line].trim().split(' scope ')[0].split(' ')[1].split('/')[0],
+																net_mask     :output[line].trim().split(' scope ')[0].split(' ')[1].split('/')[1],
+																family       :family,
+																description  :''
+															});
+
+															/*
+															 * Save address to database.
+															 */
+															address.save(function (error) {
+																if (!error) {
+																	callback_forEach(null);
+																}
+																else {
+																	callback_forEach(error);
+																}
+															});
+														}
+													}
+												}
+												else {
+													callback_forEach(error);
+												}
+											});
+										}, function (error) {
+											if (error == null) {
+												callback_parallel_inner(null);
+											}
+											else {
+												callback_parallel_inner(error);
+											}
+										});
+									}
+								],
+									function (error, results) {
+										if (error) {
+											callback_waterfall(error);
+										}
+										else {
+											callback_waterfall(null);
 										}
 									});
-								}, function (error) {
-									if (error == null) {
-										callback_waterfall(null, devices);
-									}
-									else {
-										callback_waterfall(error);
-									}
-								});
 							}
-						], function (error, devices) {
-							if (error == null) {
-								callback_parallel(null);
+						],
+							function (error) {
+								if (error == null) {
+									callback_parallel(null);
+								}
+								else {
+									callback_parallel(error);
+								}
 							}
-							else {
-								callback_parallel(error);
-							}
-						});
+						)
+						;
 					}
 				],
 					function (error, results) {
@@ -260,4 +373,5 @@ module.exports = function (req, res) {
 
 			break;
 	}
-};
+}
+;

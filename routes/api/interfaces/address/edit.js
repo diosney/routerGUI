@@ -1,5 +1,5 @@
 /*
- * POST System/Tuning API.
+ * POST Services/IP Sets API.
  */
 /*
  * Module dependencies.
@@ -20,27 +20,19 @@ module.exports = function (req, res) {
 	switch (req.body.object) {
 		case 'address':
 			/*
-			 * Execute the changes in the system.
+			 * Save changes to database.
 			 */
-			var address = new Address({
-				parent_device:req.body.device_id,
-				scope        :req.body.scope,
-				address      :req.body.address,
-				net_mask     :req.body.net_mask,
-				family       :req.body.family,
-				description  :req.body.description
-			});
+			Address.findOne({
+				_id:req.body.id
+			}, function (error, doc) {
+				if (!error) {
+					doc.description = req.body.description;
 
-			exec(address.cl_address_add(), function (error, stdout, stderr) {
-				if (error === null) {
-					/*
-					 * TODO: Save changes to database.
-					 */
 					// Save changes into database.
-					address.save(function (error) {
+					doc.save(function (error) {
 						if (!error) {
-							response_from_server.id = address._id;
-							response_from_server.message = 'Added Successfully!';
+							response_from_server.id = req.body.id;
+							response_from_server.message = 'Changed Successfully!';
 							response_from_server.type = 'notification';
 						}
 						else {
@@ -54,7 +46,7 @@ module.exports = function (req, res) {
 					});
 				}
 				else {
-					response_from_server.message = stderr;
+					response_from_server.message = error.message;
 					response_from_server.type = 'error';
 
 					// Return the gathered data.

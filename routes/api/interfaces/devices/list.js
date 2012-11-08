@@ -34,21 +34,19 @@ module.exports = function (req, res) {
 					exec(Device.cl_link_show(), function (error, stdout, stderr) {
 						if (error === null) {
 							var output = stdout.split('\n'),
-								devices = [],
-								d = 0;
+								devices = [];
 
-							for (var line = 0; line < output.length - 1; line++) { // The last item is empty.
-								if (line % 2 == 0) {
+							for (var line = 0; line < output.length - 1; line += 2) { // The last item is empty.
+								is_vlan = (typeof(output[line].split(': ')[1].split('@')[1]) == 'undefined') ? false : true;
+
+								if (!is_vlan) {
+									// Isn't a VLAN.
 									devices.push({
 										identifier:output[line].split(': ')[1],
 										MTU       :output[line].split('mtu ')[1].split(' ')[0],
-										status    :((output[line].split('state ')[1].split(' ')[0] == 'UNKNOWN') ? 'UP' : output[line].split('state ')[1].split(' ')[0])
+										status    :(output[line].split('state ')[1].split(' ')[0] == 'UNKNOWN') ? 'UP' : output[line].split('state ')[1].split(' ')[0],
+										MAC       :(output[line + 1].trim().split(' ')[0] != 'link/ppp') ? output[line + 1].trim().split(' ')[1] : ''
 									});
-
-									d++;
-								}
-								else {
-									devices[d - 1].MAC = (output[line].trim().split(' ')[0] != 'link/ppp') ? output[line].trim().split(' ')[1] : '';
 								}
 							}
 
@@ -151,49 +149,6 @@ module.exports = function (req, res) {
 
 				// Return the gathered data.
 				res.json(response_from_server);
-			});
-
-			break;
-		case 'address':
-			/*
-			 * Returns a list of device addresses.
-			 */
-			// TODO: Add sorting functionality.
-			Address.find({
-				parent_device:req.query.device_id
-			}, {}, {
-				skip :req.query.page * req.query.rows - req.query.rows,
-				limit:req.query.rows
-			}, function (error, docs) {
-				if (!error) {
-					var count = docs.length;
-
-					response_from_server.records = count;
-					response_from_server.page = req.query.page;
-					response_from_server.total = Math.ceil(count / req.query.rows);
-					response_from_server.rows = [];
-
-					for (item in docs) {
-						response_from_server.rows.push({
-							id  :docs[item].id,
-							cell:[
-								docs[item].family,
-								docs[item].scope,
-								docs[item].address,
-								docs[item].net_mask,
-								docs[item].description
-							]
-						});
-					}
-
-					// Return the gathered data.
-					res.json(response_from_server);
-				}
-				else {
-					console.log('error')
-					// TODO: See how pass error message to grid list action and show it.
-					console.log('// TODO: See how pass error message to grid list action and show it.');
-				}
 			});
 
 			break;

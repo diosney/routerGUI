@@ -1,16 +1,27 @@
 /*
- * Scripts for Interfaces/Devices elements behaviour.
+ * Scripts for System/Tuning elements behaviour.
  */
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
-	 * Grid. Devices.
+	 * Grid. VLANs.
 	 */
-	var devices_list_grid = $('#devices-list-grid').jqGrid({
+	var vlan_list_grid = $('#vlan-list-grid').jqGrid({
 		altRows           :false,
 		autowidth         :true,
-		caption           :'Devices List',
+		caption           :'VLAN List',
 		colModel          :[
+			{
+				align   :'center',
+				classes :'column_parent_device', // TODO: poner listado de devices en un select.
+				editable:true,
+				edittype:'text',
+				hidden  :true,
+				index   :'parent_device',
+				name    :'parent_device',
+				sortable:false,
+				width   :15
+			},
 			{
 				align         :'center',
 				classes       :'column_status',
@@ -28,44 +39,20 @@ jQuery(function ($) {
 				search        :true,
 				sortable      :true,
 				stype         :'text',
-				width         :10
-			},
-			{
-				align   :'center',
-				classes :'column_identifier',
-				editable:false,
-				index   :'identifier',
-				name    :'identifier',
-				search  :true,
-				stype   :'text',
-				sortable:true,
-				width   :10
+				width         :15
 			},
 			{
 				align         :'center',
-				classes       :'column_MTU',
+				classes       :'column_tag',
 				editable      :true,
 				edittype      :'text',
 				firstsortorder:'asc',
-				index         :'MTU',
-				name          :'MTU',
+				index         :'tag',
+				name          :'tag',
 				search        :true,
 				sortable      :true,
 				stype         :'text',
-				width         :10
-			},
-			{
-				align         :'center',
-				classes       :'column_MAC',
-				editable      :true,
-				edittype      :'text',
-				firstsortorder:'asc',
-				index         :'MAC',
-				name          :'MAC',
-				search        :true,
-				sortable      :true,
-				stype         :'text',
-				width         :20
+				width         :5
 			},
 			{
 				align         :'left',
@@ -78,15 +65,19 @@ jQuery(function ($) {
 				search        :true,
 				sortable      :true,
 				stype         :'text',
-				width         :30
+				width         :40
 			}
 		],
-		colNames          :['Status', 'Identifier', 'MTU', 'MAC', 'Description'],
+		colNames          :['Parent Device', 'Status', 'Tag', 'Description'],
 		datatype          :'json',
 		deselectAfterSort :false,
-		emptyrecords      :'No <strong>Devices</strong> found.',
+		emptyrecords      :'No <strong>VLANs</strong> were added yet.',
 		forceFit          :true,
-		gridview          :true,
+		grouping          :true,
+		groupingView      :{
+			groupField     :['parent_device'],
+			groupColumnShow:[true]
+		},
 		height            :'auto',
 		hoverrows         :true,
 		ignoreCase        :true,
@@ -102,9 +93,9 @@ jQuery(function ($) {
 		},
 		loadui            :'block',
 		mtype             :'GET',
-		pager             :'#devices-list-pager',
+		pager             :'#vlan-list-pager',
 		postData          :{
-			object:'device'
+			object:'vlan'
 		},
 		prmNames          :{
 			sort :'orderby',
@@ -113,6 +104,7 @@ jQuery(function ($) {
 		rowList           :[10, 20, 30],
 		rowNum            :10,
 		rownumbers        :true,
+		sortname          :'parent_device',
 		subGrid           :true,
 		subGridRowExpanded:function (subgrid_id, row_id) {
 			/*
@@ -120,17 +112,18 @@ jQuery(function ($) {
 			 */
 			render_subgrid(subgrid_id, row_id);
 		},
-		sortname          :'identifier',
-		url               :'/api/interfaces/devices',
+		url               :'/api/interfaces/vlans',
 		viewrecords       :true
-	}).jqGrid('navGrid', '#devices-list-pager', {
+	}).jqGrid('navGrid', '#vlan-list-pager', {
 			/*
 			 * General navigation parameters.
 			 */
 			edit         :true,
 			edittext     :'<strong>Edit</strong>',
-			add          :false,
-			del          :false,
+			add          :true,
+			addtext      :'<strong>Add</strong>',
+			del          :true,
+			deltext      :'<strong>Delete</strong>',
 			search       :false,
 			refresh      :true,
 			refreshtext  :'<strong>Refresh</strong>',
@@ -154,22 +147,26 @@ jQuery(function ($) {
 				}
 			},
 			bSubmit       :'Done',
+			beforeShowForm:function () {
+				$('#tr_parent_device, #tr_tag').hide();
+			},
 			checkOnSubmit :false,
 			closeAfterEdit:true,
 			closeOnEscape :true,
 			dataheight    :180,
-			editCaption   :'Edit Device',
-			editData      :{
-				object:'device'
+
+			editCaption :'Edit VLAN',
+			modal       :true,
+			mtype       :'PUT',
+			editData    :{
+				object:'vlan'
 			},
-			modal         :true,
-			mtype         :'PUT',
-			recreateForm  :true,
-			url           :'/api/interfaces/devices',
-			width         :400
+			recreateForm:true,
+			url         :'/api/interfaces/vlans',
+			width       :320
 		}, {
 			// ADD Settings.
-			addCaption   :'Add Device',
+			addCaption   :'Add VLAN',
 			addedrow     :'last',
 			// Handler the response from server.
 			afterSubmit  :function (response, postdata) {
@@ -189,14 +186,38 @@ jQuery(function ($) {
 			dataheight   :180,
 			editData     :{
 				id    :'', // Replace the id added automaticaly by jqGrid.
-				object:'device'
+				object:'vlan'
 			},
 			modal        :false,
 			mtype        :'POST',
 			recreateForm :true,
-			url          :'/api/interfaces/devices',
-			width        :400
-		}, {}, {}, {}, {});
+			reloadAfterSubmit: true,
+			url          :'/api/interfaces/vlans',
+			width        :320
+		}, {
+			// DELETE Settings.
+			addCaption :'Delete VLAN',
+			// Handler the response from server.
+			afterSubmit:function (response, postdata) {
+				// Parse the XMLHttpRequest response.
+				var data = $.parseJSON(response.responseText);
+
+				// It is a notification.
+				if (data.type == 'notification') {
+					return [true, data.message]; 		// [success,message,new_id]
+				} else if (data.type == 'error') {
+					return [false, data.message]; 		// [success,message,new_id]
+				}
+			},
+			bSubmit    :'Delete',
+			delData    :{
+				object:'vlan'
+			},
+			modal      :false,
+			mtype      :'DELETE',
+			url        :'/api/interfaces/vlans'
+		}, {
+		}, {}, {});
 
 	/*
 	 * Function to render the Address subgrid.
