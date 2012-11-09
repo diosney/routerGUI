@@ -24,19 +24,13 @@
 				"description":"Is the maximum No. of ARP entries which can be kept in table.",
 				"path"       :"ipv4.neigh.default.gc_thresh3",
 				"value"      :36864
-			},
-			{
-				"group"      :"net",
-				"description":"Enable packet forwarding for IPv4",
-				"path"       :"ipv4.ip_forward",
-				"value"      :0
-			},
-			{
-				"group"      :"net",
-				"description":"Enable packet forwarding for IPv6",
-				"path"       :"ipv6.conf.all.forwarding",
-				"value"      :0
 			}
 		]
+	},
+	"routing":{
+		"settings":{
+			"ip_forwarding_v4": 0,
+			"ip_forwarding_v6": 0
+		}
 	}
 }

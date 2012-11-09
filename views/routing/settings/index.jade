@@ -1,0 +1,54 @@
+extends ../../layouts/layout
+
+block header
+	include ../../layouts/header
+
+block navigation
+	include ../../layouts/navigation
+
+block content
+	link(rel='stylesheet', type='text/css', href='/javascripts/external/iCheckbox/css/iCheckbox.css')
+
+	.container
+		.row-fluid
+			.span12
+				#message-dashboard
+		.row-fluid
+			.span12
+				form.ajax-form.form-horizontal(action='/api/routing/settings',method='POST')
+					table.table.table-striped.table-hover
+						tbody
+							tr
+								th
+									label(for='hostname') Enable Routing
+								td
+									label
+										input(type='checkbox', name='ip_forwarding_v4',value='1', checked=settings.ip_forwarding_v4==1)
+										span.field-description Enable packet forwarding for IPv4.
+									label
+										input(type='checkbox',name='ip_forwarding_v6',value='1', checked=settings.ip_forwarding_v6==1)
+										span.field-description Enable packet forwarding for IPv6.
+							tr
+								th
+								td
+									button.btn.btn-primary(type='submit',name='submit') Apply Changes
+									img.ajax-loader(src='/images/ajax-loader-light.gif')
+
+block footer
+	include ../../layouts/footer
+
+block scripts
+	script(type='text/javascript', src='/javascripts/external/form/jquery.form.js')
+	script(type='text/javascript', src='/javascripts/external/iCheckbox/jquery.iCheckbox.js')
+	script(type='text/javascript', src='/javascripts/ui/routing/settings.js')
+
+block templates
+	#templates-container.hidden
+		.alert.alert-error
+			a.close(href="#",data-dismiss="alert") ×
+			strong.
+				Error!&nbsp;
+			span.msg-mark
+		.alert.alert-success
+			a.close(href="#",data-dismiss="alert") ×
+			span.msg-mark

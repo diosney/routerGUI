@@ -1,0 +1,14 @@
+.checkbox-switcher-container {
+	display: inline-block;
+	height:15px;
+	width:28px;
+	position: relative;
+}
+.checkbox-switch {
+	cursor: pointer;
+	height:15px;
+	width:28px;
+	background-image:url('../images/switch.png'); /* your actual slider image */
+	background-repeat:none;
+	background-position:0px;
+}

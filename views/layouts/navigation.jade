@@ -27,3 +27,10 @@
 							li(class=(menu == 'interfaces/vlans'?'active':''))
 								a(href='/interfaces/vlans').
 									VLANs
+					li.dropdown(class=(menu == 'routing/settings'?'active':''))
+						a(data-toggle="dropdown",href='#').dropdown-toggle Routing
+							b.caret
+						ul.dropdown-menu
+							li(class=(menu == 'routing/settings'?'active':''))
+								a(href='/routing/settings').
+									Settings

@@ -14,7 +14,9 @@ var async = require('async'),
 Tunable = require('../../../../models/system/tunable.js'),
 	Device = require('../../../../models/interfaces/device.js'),
 	Address = require('../../../../models/interfaces/address.js'),
-	VLAN = require('../../../../models/interfaces/vlan.js');
+	VLAN = require('../../../../models/interfaces/vlan.js'),
+
+	Settings = require('../../../../models/system/settings.js');
 
 // Load default files.
 var default_file = require('../../../../default.json');
@@ -45,6 +47,7 @@ module.exports = function (req, res) {
 						 * System/Tuning.
 						 */
 						async.forEach(default_file.system.tuning, function (item, callback_forEach) {
+							// TODO: Execute these tunables into system!!!
 							/*
 							 * Add a Tunable to database.
 							 */
@@ -313,8 +316,65 @@ module.exports = function (req, res) {
 									callback_parallel(error);
 								}
 							}
-						)
-						;
+						);
+					},
+					function (callback_parallel) {
+						/*
+						 * Routing/Settings.
+						 */
+						/*
+						 * ip_forwarding_v4
+						 */
+						exec('sysctl -w net.ipv4.ip_forward=' + default_file.routing.settings.ip_forwarding_v4, function (error, stdout, stderr) {
+							if (error === null) {
+								/*
+								 * Save setting to database.
+								 */
+								var ip_forwarding_v4 = new Settings({
+									name :'ip_forwarding_v4',
+									value:default_file.routing.settings.ip_forwarding_v4
+								});
+
+								ip_forwarding_v4.save(function (error) {
+									if (!error) {
+										callback_parallel(null);
+									}
+									else {
+										callback_parallel(error);
+									}
+								});
+							}
+							else {
+								callback_parallel(error);
+							}
+						});
+
+						/*
+						 * ip_forwarding_v6
+						 */
+						exec('sysctl -w net.ipv6.conf.all.forwarding=' + default_file.routing.settings.ip_forwarding_v6, function (error, stdout, stderr) {
+							if (error === null) {
+								/*
+								 * Save setting to database.
+								 */
+								var ip_forwarding_v6 = new Settings({
+									name :'ip_forwarding_v6',
+									value:default_file.routing.settings.ip_forwarding_v6
+								});
+
+								ip_forwarding_v6.save(function (error) {
+									if (!error) {
+										callback_parallel(null);
+									}
+									else {
+										callback_parallel(error);
+									}
+								});
+							}
+							else {
+								callback_parallel(error);
+							}
+						});
 					}
 				],
 					function (error, results) {
@@ -346,7 +406,10 @@ module.exports = function (req, res) {
 
 						// Return the gathered data.
 						res.json(response_from_server);
-					});
+					}
+
+				)
+				;
 			}
 			else {
 				/*

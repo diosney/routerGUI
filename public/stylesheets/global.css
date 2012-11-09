@@ -41,7 +41,7 @@ body {
 }
 /* =Tables.
  -------------------------------------------------------------- */
-.table th, table td {
+.table td {
 	vertical-align: middle !important;
 }
 /* =Forms.
