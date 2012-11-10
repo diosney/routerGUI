@@ -18,21 +18,19 @@ block content
 			.span12
 				ul.nav.nav-tabs
 					li.active
-						a(href='#routing-rules',data-toggle='tab') Routing Rules
+						a(href='#routing-rules',data-toggle='tab') Policy Rules
 					li
-						a(href='#routing-tables-built-in',data-toggle='tab') Built-In Routing Tables
-					li
-						a(href='#routing-tables-user-defined',data-toggle='tab') User-Defined Routing Tables
+						a(href='#routing-tables',data-toggle='tab') Routing Tables
 				.tab-content
 					.tab-pane.active#routing-rules
 						#rules-list.grid
 							table#rules-list-grid
 							#rules-list-pager
 
-					.tab-pane#routing-tables-built-in.
-						Built-In Routing Tables
-					.tab-pane#routing-tables-user-defined.
-						User-Defined Routing Tables
+					.tab-pane#routing-tables
+						#tables-list.grid
+							table#tables-list-grid
+							#tables-list-pager
 
 block footer
 	include ../../layouts/footer

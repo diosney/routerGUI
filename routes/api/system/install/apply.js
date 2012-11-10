@@ -16,6 +16,7 @@ Tunable = require('../../../../models/system/tunable.js'),
 	Address = require('../../../../models/interfaces/address.js'),
 	VLAN = require('../../../../models/interfaces/vlan.js'),
 	Routing_Rule = require('../../../../models/routing/rule.js'),
+	Routing_Table = require('../../../../models/routing/table.js'),
 
 	Settings = require('../../../../models/system/settings.js');
 
@@ -455,7 +456,18 @@ module.exports = function (req, res) {
 										callback_waterfall(error);
 									}
 									else {
-										callback_waterfall(null);
+										/*
+										 * Flush routing cache to make the changes effective.
+										 */
+										exec('ip route flush cache', function (error, stdout, stderr) {
+												if (error === null) {
+													callback_waterfall(null);
+												}
+												else {
+													callback_waterfall(error);
+												}
+											}
+										);
 									}
 								});
 							}
@@ -465,6 +477,62 @@ module.exports = function (req, res) {
 							}
 							else {
 								callback_parallel(null);
+							}
+						});
+					}, function (callback_parallel) {
+						/*
+						 * Routing/Static.
+						 */
+						/*
+						 * Routing Tables.
+						 */
+						/*
+						 * Insert default routes to system and database.
+						 */
+						var iterator = 0;
+						async.forEach(default_file.routing.tables, function (item, callback_forEach) {
+							/*
+							 * Add a Rule to system.
+							 */
+							// Instantiate the model and fill it with the default data.
+							var routing_table = new Routing_Table(item);
+
+							exec('echo ' + routing_table.cl_add_table() + ' ' + ((iterator) ? '>>' : '>') + ' /etc/iproute2/rt_tables', function (error, stdout, stderr) {
+									if (error === null) {
+										// Save the object to database.
+										routing_table.save(function (error) {
+											if (error) {
+												callback_forEach(error);
+											}
+											else {
+												callback_forEach(null);
+											}
+										});
+									}
+									else {
+										callback_forEach(error);
+									}
+								}
+							);
+
+							iterator++;
+						}, function (error) {
+							if (error) {
+								callback_parallel(error);
+							}
+							else {
+								/*
+								 * Flush routing cache to make the changes effective.
+								 */
+								exec('ip route flush cache', function (error, stdout, stderr) {
+										if (error === null) {
+											callback_parallel(null);
+										}
+										else {
+											callback_parallel(error);
+										}
+									}
+								);
 							}
 						});
 					}

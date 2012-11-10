@@ -3,6 +3,8 @@
 // TODO: https://github.com/jeremyfa/node-exec-sync/issues/3#issuecomment-7570123
 // TODO: Set kernel.domainname.
 
+// TODO: Don't forget flushing the routing cache with ip route flush cache to make changes effective. Verify wether is needed for ip rule too.
+
 /**
  * Module dependencies.
  */
