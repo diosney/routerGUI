@@ -1,0 +1,54 @@
+extends ../../layouts/layout
+
+block header
+	include ../../layouts/header
+
+block navigation
+	include ../../layouts/navigation
+
+block content
+	link(rel='stylesheet', type='text/css', href='/javascripts/external/ui/css/jquery-ui.css')
+	link(rel='stylesheet', type='text/css', href='/javascripts/external/jqGrid/css/ui.jqgrid.css')
+
+	.container
+		.row-fluid
+			.span12
+				#message-dashboard
+		.row-fluid
+			.span12
+				ul.nav.nav-tabs
+					li.active
+						a(href='#routing-rules',data-toggle='tab') Routing Rules
+					li
+						a(href='#routing-tables-built-in',data-toggle='tab') Built-In Routing Tables
+					li
+						a(href='#routing-tables-user-defined',data-toggle='tab') User-Defined Routing Tables
+				.tab-content
+					.tab-pane.active#routing-rules
+						#rules-list.grid
+							table#rules-list-grid
+							#rules-list-pager
+
+					.tab-pane#routing-tables-built-in.
+						Built-In Routing Tables
+					.tab-pane#routing-tables-user-defined.
+						User-Defined Routing Tables
+
+block footer
+	include ../../layouts/footer
+
+block scripts
+	script(type='text/javascript', src='/javascripts/external/jqGrid/js/i18n/grid.locale-en.js')
+	script(type='text/javascript', src='/javascripts/external/jqGrid/js/jquery.jqGrid.js')
+	script(type='text/javascript', src='/javascripts/ui/routing/static.js')
+
+block templates
+	#templates-container.hidden
+		.alert.alert-error
+			a.close(href="#",data-dismiss="alert") ×
+			strong.
+				Error!&nbsp;
+			span.msg-mark
+		.alert.alert-success
+			a.close(href="#",data-dismiss="alert") ×
+			span.msg-mark

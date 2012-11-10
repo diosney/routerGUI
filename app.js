@@ -43,7 +43,8 @@ var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
 	routes_ui_system_install = require('./routes/ui/system/install.js'),
 	routes_ui_interfaces_devices = require('./routes/ui/interfaces/devices.js'),
 	routes_ui_interfaces_vlans = require('./routes/ui/interfaces/vlans.js'),
-	routes_ui_routing_settings = require('./routes/ui/routing/settings.js');
+	routes_ui_routing_settings = require('./routes/ui/routing/settings.js'),
+	routes_ui_routing_static = require('./routes/ui/routing/static.js');
 
 /*
  * Routes configuration. API
@@ -55,7 +56,8 @@ var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
 	routes_api_interfaces_devices = require('./routes/api/interfaces/devices/index.js'),
 	routes_api_interfaces_addresses = require('./routes/api/interfaces/address/index.js'),
 	routes_api_interfaces_vlans = require('./routes/api/interfaces/vlans/index.js'),
-	routes_api_routing_settings = require('./routes/api/routing/settings/index.js');
+	routes_api_routing_settings = require('./routes/api/routing/settings/index.js'),
+	routes_api_routing_static = require('./routes/api/routing/static/index.js');
 
 var app = express();
 
@@ -84,6 +86,7 @@ app.get('/system/install', routes_ui_system_install.index);
 app.get('/interfaces/devices', routes_ui_interfaces_devices.index);
 app.get('/interfaces/vlans', routes_ui_interfaces_vlans.index);
 app.get('/routing/settings', routes_ui_routing_settings.index);
+app.get('/routing/static', routes_ui_routing_static.index);
 
 // TODO: Add design to root API view.
 app.get('/api', function (req, res) {
@@ -124,8 +127,14 @@ app.post('/api/interfaces/vlans', routes_api_interfaces_vlans.add);
 app.delete('/api/interfaces/vlans', routes_api_interfaces_vlans.delete);
 app.put('/api/interfaces/vlans', routes_api_interfaces_vlans.edit);
 
-// Routing -> Settings.
+// Routing -> General Settings.
 app.post('/api/routing/settings', routes_api_routing_settings.apply);
+
+// Routing -> Static Routing.
+app.get('/api/routing/static', routes_api_routing_static.list);
+app.post('/api/routing/static', routes_api_routing_static.add);
+app.delete('/api/routing/static', routes_api_routing_static.delete);
+app.put('/api/routing/static', routes_api_routing_static.edit);
 
 http.createServer(app).listen(app.get('port'), function () {
 	console.log('Express server listening on port ' + app.get('port'));

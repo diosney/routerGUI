@@ -64,8 +64,8 @@ exports.index = function (req, res) {
 		// optional callback
 		function (error, results) {
 			res.render('routing/settings/index', {
-				title :'routerGUI · Routing · Settings',
-				header:'Settings',
+				title :'routerGUI · Routing · Global Settings',
+				header:'Global Settings',
 				lead  :'Tell something interesting about the Routing Settings screen.',
 				menu  :'routing/settings',
 

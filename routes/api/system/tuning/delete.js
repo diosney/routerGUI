@@ -18,6 +18,7 @@ module.exports = function (req, res) {
 	/*
 	 * Delete a Tunable from the database.
 	 */
+	// TODO: Make tunables live.
 	Tunable.remove({
 		_id:req.body.id
 	}, function (error) {

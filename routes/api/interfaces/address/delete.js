@@ -15,6 +15,7 @@ var mongoose = require('mongoose'),
 module.exports = function (req, res) {
 	// Initialize response.
 	var response_from_server = {};
+
 	switch (req.body.object) {
 		case 'address':
 			/*

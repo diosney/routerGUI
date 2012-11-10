@@ -1,5 +1,5 @@
 {
-	"system":{
+	"system" :{
 		"tuning":[
 			{
 				"group"      :"net",
@@ -29,8 +29,43 @@
 	},
 	"routing":{
 		"settings":{
-			"ip_forwarding_v4": 0,
-			"ip_forwarding_v6": 0
-		}
+			"ip_forwarding_v4":0,
+			"ip_forwarding_v6":0
+		},
+		"rules"   :[
+			{
+				"type"         :"unicast",
+				"from"         :"",
+				"from_net_mask":"",
+				"to"           :"",
+				"to_net_mask"  :"",
+				"iif"          :"",
+				"priority"     :0,
+				"table"        :"local",
+				"description"  :"Special routing table containing high priority control routers for local and broadcast addresses."
+			},
+			{
+				"type"         :"unicast",
+				"from"         :"",
+				"from_net_mask":"",
+				"to"           :"",
+				"to_net_mask"  :"",
+				"iif"          :"",
+				"priority"     :32766,
+				"table"        :"main",
+				"description"  :"The normal routing table containing all non-policy routes."
+			},
+			{
+				"type"         :"unicast",
+				"from"         :"",
+				"from_net_mask":"",
+				"to"           :"",
+				"to_net_mask"  :"",
+				"iif"          :"",
+				"priority"     :32767,
+				"table"        :"default",
+				"description"  :"Reserved for post-processing if no previous default rules selected the packet."
+			}
+		]
 	}
 }

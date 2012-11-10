@@ -15,6 +15,7 @@ Tunable = require('../../../../models/system/tunable.js'),
 	Device = require('../../../../models/interfaces/device.js'),
 	Address = require('../../../../models/interfaces/address.js'),
 	VLAN = require('../../../../models/interfaces/vlan.js'),
+	Routing_Rule = require('../../../../models/routing/rule.js'),
 
 	Settings = require('../../../../models/system/settings.js');
 
@@ -25,7 +26,7 @@ module.exports = function (req, res) {
 	// Load configuration file.
 	var config = require('../../../../config.json');
 
-	// Initialize response. TODO: Make this a global function that prepares a response.
+	// Initialize response.
 	var response_from_server = {};
 
 	switch (req.body.submit) {
@@ -47,20 +48,26 @@ module.exports = function (req, res) {
 						 * System/Tuning.
 						 */
 						async.forEach(default_file.system.tuning, function (item, callback_forEach) {
-							// TODO: Execute these tunables into system!!!
 							/*
 							 * Add a Tunable to database.
 							 */
 							// Instantiate the model and fill it with the default data.
 							var tunable = new Tunable(item);
 
-							// Save the object to database.
-							tunable.save(function (error) {
-								if (error) {
-									callback_forEach(error);
+							exec(tunable.cl_apply(), function (error, stdout, stderr) {
+								if (error === null) {
+									// Save the object to database.
+									tunable.save(function (error) {
+										if (error) {
+											callback_forEach(error);
+										}
+										else {
+											callback_forEach(null);
+										}
+									});
 								}
 								else {
-									callback_forEach(null);
+									callback_forEach(error);
 								}
 							});
 						}, function (error) {
@@ -375,6 +382,91 @@ module.exports = function (req, res) {
 								callback_parallel(error);
 							}
 						});
+					}, function (callback_parallel) {
+						/*
+						 * Routing/Static.
+						 */
+						/*
+						 * Routing Rules.
+						 */
+						async.waterfall([
+							function (callback_waterfall) {
+								/*
+								 * Flush the rules cache to ensure the system is clean.
+								 */
+								exec('ip rule flush', function (error, stdout, stderr) {
+										if (error === null) {
+											callback_waterfall(null);
+										}
+										else {
+											callback_waterfall(error);
+										}
+									}
+								);
+							},
+							function (callback_waterfall) {
+								/*
+								 * Insert default rules to system and database.
+								 */
+								async.forEach(default_file.routing.rules, function (item, callback_forEach) {
+									/*
+									 * Add a Rule to system.
+									 */
+									// Instantiate the model and fill it with the default data.
+									var routing_rule = new Routing_Rule(item);
+
+									if (routing_rule.table != 'local') {
+										exec(routing_rule.cl_add(), function (error, stdout, stderr) {
+												if (error === null) {
+													// Save the object to database.
+													routing_rule.save(function (error) {
+														if (error) {
+															callback_forEach(error);
+														}
+														else {
+															callback_forEach(null);
+														}
+													});
+
+													callback_waterfall(null);
+												}
+												else {
+													callback_waterfall(error);
+												}
+											}
+										);
+									}
+									else {
+										/*
+										 * Don't execute it but insert into database because it is always present and will trow an error.
+										 */
+										// Save the object to database.
+										routing_rule.save(function (error) {
+											if (error) {
+												callback_forEach(error);
+											}
+											else {
+												callback_forEach(null);
+											}
+										});
+									}
+								}, function (error) {
+									if (error) {
+										callback_waterfall(error);
+									}
+									else {
+										callback_waterfall(null);
+									}
+								});
+							}
+						], function (error, result) {
+							if (error) {
+								callback_parallel(error);
+							}
+							else {
+								callback_parallel(null);
+							}
+						});
 					}
 				],
 					function (error, results) {
@@ -436,5 +528,4 @@ module.exports = function (req, res) {
 
 			break;
 	}
-}
-;
+};
