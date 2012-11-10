@@ -3,7 +3,7 @@
 		"host": "localhost",
 		"name": "routerGUI",
 		"port": "",
-		"installed": true
+		"installed": false
 	},
 	"website": {
 		"port": 3000

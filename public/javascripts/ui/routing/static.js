@@ -461,18 +461,17 @@ jQuery(function ($) {
 			colModel         :[
 				{
 					align         :'center',
-					classes       :'column_family',
+					classes       :'column_type',
 					editable      :true,
 					edittype      :'select',
 					editoptions   :{
 						value:{
-							'inet' :'Inet',
-							'inet6':'Inet6'
+							'unicast':'Unicast'
 						}
 					},
 					firstsortorder:'asc',
-					index         :'family',
-					name          :'family',
+					index         :'type',
+					name          :'type',
 					search        :true,
 					sortable      :true,
 					stype         :'text',
@@ -480,20 +479,12 @@ jQuery(function ($) {
 				},
 				{
 					align         :'center',
-					classes       :'column_scope',
+					classes       :'column_to',
 					editable      :true,
-					edittype      :'select',
-					editoptions   :{
-						value:{
-							'global':'Global',
-							'site'  :'Site',
-							'link'  :'Link',
-							'host'  :'Host'
-						}
-					},
+					edittype      :'text',
 					firstsortorder:'asc',
-					index         :'scope',
-					name          :'scope',
+					index         :'to',
+					name          :'to',
 					search        :true,
 					sortable      :true,
 					stype         :'text',
@@ -501,29 +492,55 @@ jQuery(function ($) {
 				},
 				{
 					align         :'center',
-					classes       :'column_address',
+					classes       :'column_to_net_mask',
 					editable      :true,
 					edittype      :'text',
 					firstsortorder:'asc',
-					index         :'address',
-					name          :'address',
-					search        :true,
-					sortable      :true,
-					stype         :'text',
-					width         :20
-				},
-				{
-					align         :'center',
-					classes       :'column_net_mask',
-					editable      :true,
-					edittype      :'text',
-					firstsortorder:'asc',
-					index         :'net_mask',
-					name          :'net_mask',
+					index         :'to_net_mask',
+					name          :'to_net_mask',
 					search        :true,
 					sortable      :true,
 					stype         :'text',
 					width         :10
+				},
+				{
+					align         :'center',
+					classes       :'column_table',
+					editable      :true,
+					edittype      :'text',
+					firstsortorder:'asc',
+					index         :'table',
+					name          :'table',
+					search        :true,
+					sortable      :true,
+					stype         :'text',
+					width         :20
+				},
+				{
+					align         :'center',
+					classes       :'column_via',
+					editable      :true,
+					edittype      :'text',
+					firstsortorder:'asc',
+					index         :'via',
+					name          :'via',
+					search        :true,
+					sortable      :true,
+					stype         :'text',
+					width         :20
+				},
+				{
+					align         :'center',
+					classes       :'column_source',
+					editable      :true,
+					edittype      :'text',
+					firstsortorder:'asc',
+					index         :'source',
+					name          :'source',
+					search        :true,
+					sortable      :true,
+					stype         :'text',
+					width         :20
 				},
 				{
 					align         :'left',
@@ -539,10 +556,10 @@ jQuery(function ($) {
 					width         :30
 				}
 			],
-			colNames         :['Family', 'Scope', 'Address', 'Netmask', 'Description'],
+			colNames         :['Type', 'To', 'To Netmask', 'Table', 'Via', 'Source', 'Description'],
 			datatype         :'json',
 			deselectAfterSort:false,
-			emptyrecords     :'There is no Address yet.',
+			emptyrecords     :'There is no Route yet.',
 			forceFit         :true,
 			gridview         :false,
 			height           :'auto',
@@ -554,7 +571,7 @@ jQuery(function ($) {
 			pager            :'#' + pager_id,
 			postData         :{
 				device_id:row_id,
-				object   :'address'
+				object   :'route'
 			},
 			prmNames         :{
 				sort :'orderby',
@@ -564,7 +581,7 @@ jQuery(function ($) {
 			rowNum           :10,
 			rownumbers       :true,
 			sortname         :'tag',
-			url              :'/api/interfaces/addresses',
+			url              :'/api/routing/static',
 			viewrecords      :true
 		}).jqGrid('navGrid', '#' + pager_id, {
 				/*
@@ -606,21 +623,21 @@ jQuery(function ($) {
 				closeAfterEdit:true,
 				closeOnEscape :true,
 				// dataheight: 220,
-				editCaption   :'Edit Address',
+				editCaption   :'Edit Route',
 				editData      :{
-					device_id:row_id,
-					object   :'address'                     // The id is added automaticaly by jqGrid.
+					table_id:row_id,
+					object   :'route'                     // The id is added automaticaly by jqGrid.
 				},
 				modal         :true,
 				mtype         :'PUT',
 				recreateForm  :true,
-				url           :'/api/interfaces/addresses',
+				url           :'/api/routing/static',
 				width         :'auto'
 			}, {
 				/*
 				 * ADD Settings.
 				 */
-				addCaption   :'Add Address',
+				addCaption   :'Add Route',
 				addedrow     :'last',
 				// Handler the response from server.
 				afterSubmit  :function (response, postdata) {
@@ -639,20 +656,20 @@ jQuery(function ($) {
 				closeOnEscape:true,
 				// dataheight: 220,
 				editData     :{
-					object   :'address',
+					object   :'route',
 					id       :'', // Replace the id added automaticaly by jqGrid.
 					device_id:row_id
 				},
 				modal        :false,
 				mtype        :'POST',
 				recreateForm :true,
-				url          :'/api/interfaces/addresses',
+				url          :'/api/routing/static',
 				width        :'auto'
 			}, {
 				/*
 				 * DELETE Settings.
 				 */
-				addCaption :'Delete Address',
+				addCaption :'Delete Route',
 				// Handler the response from server.
 				afterSubmit:function (response, postdata) {
 					// Parse the XMLHttpRequest response.
@@ -670,9 +687,9 @@ jQuery(function ($) {
 				mtype      :'DELETE',
 				delData    :{
 					device_id:row_id,
-					object   :'address'
+					object   :'route'
 				},
-				url        :'/api/interfaces/addresses'
+				url        :'/api/routing/static'
 			}, {
 			}, {}, {});
 	}
