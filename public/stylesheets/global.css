@@ -78,6 +78,9 @@ td label {
 #res-usage .disk-usage-cell .progress {
 	width: 70%;
 }
+#res-usage .load-cell {
+	padding-left: 3em;
+}
 /* =Grids.
  -------------------------------------------------------------- */
 .ui-jqgrid tr.jqgrow td {
