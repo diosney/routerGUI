@@ -84,5 +84,5 @@ jQuery(function ($) {
 			type    :'GET',
 			url     :'api/dashboard'
 		});
-	}, $('[name="refresh_interval"]').val() || 3000);
+	}, $('[name="widgets_refresh_interval"]').val() || 3000);
 });

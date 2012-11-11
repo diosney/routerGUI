@@ -26,7 +26,7 @@ exports.index = function (req, res) {
 	 * Initializing widgets container.
 	 */
 	var widgets = {
-		refresh_interval:3000 // TODO: Get refresh_interval from System Settings.
+		widgets_refresh_interval:3000 // TODO: Get refresh_interval from System Settings.
 	};
 
 	/*

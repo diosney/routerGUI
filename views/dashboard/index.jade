@@ -11,7 +11,7 @@ block content
 		.row-fluid
 			.span12
 				#message-dashboard
-					- if (msg && msg.message) {
+					- if (typeof(msg) != 'undefined' && msg.message) {
 						.alert.alert-error
 							a.close(href="#",data-dismiss="alert") ×
 							strong.
@@ -22,7 +22,7 @@ block content
 
 				#hidden-fields.ui-helper-hidden
 					input(type='hidden',name='cpus_qty',value='#{widgets.sys_info.cpus.length}')
-					input(type='hidden',name='refresh_interval',value='#{widgets.refresh_interval}')
+					input(type='hidden',name='widgets_refresh_interval',value='#{widgets.widgets_refresh_interval}')
 		.row-fluid
 				.span7
 					table.table.table-striped.table-bordered.table-hover

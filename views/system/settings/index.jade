@@ -11,6 +11,14 @@ block content
 		.row-fluid
 			.span12
 				#message-dashboard
+					- if (typeof(msg) != 'undefined' && msg.message) {
+						.alert.alert-error
+							a.close(href="#",data-dismiss="alert") ×
+							strong.
+								Error!&nbsp;
+							span.msg-mark.
+								#{msg.message}
+					- }
 		.row-fluid
 			.span12
 				form.ajax-form.form-horizontal(action='/api/system/settings',method='POST')
@@ -47,7 +55,7 @@ block content
 							tr
 								th
 								td
-									button.btn.btn-primary(type='submit',name='submit') Apply Changes
+									button.btn.btn-danger(type='submit',name='submit') Apply Changes
 									img.ajax-loader(src='/images/ajax-loader-light.gif')
 
 block footer
