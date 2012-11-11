@@ -1,6 +1,9 @@
 {
 	"system" :{
-		"tuning":[
+		"settings":{
+			"refresh_interval":3000
+		},
+		"tuning"  :[
 			{
 				"group"      :"net",
 				"description":"Concurrent connections that filter will allow to pass through.",

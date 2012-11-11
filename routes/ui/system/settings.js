@@ -4,6 +4,7 @@
 /*
  * Module dependencies.
  */
+// TODO: Add settings to configure WIdgets Refresh Interval. Remember code that in dashboard.js.
 var os = require('os'),
 	fs = require('fs'),
 // Load configuration file.

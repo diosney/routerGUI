@@ -61,8 +61,11 @@ td label {
 /* =Progress Indicators.
  -------------------------------------------------------------- */
 .progress {
+	display: inline-block;
 	height: 12px;
-	margin-bottom: 3px;
+	margin-bottom: 0;
+	margin-right: 0.4em;
+	width: 75%;
 }
 .progress:last-child {
 	margin-bottom: 0;
@@ -70,7 +73,10 @@ td label {
 /* =Pages. Dashboard.
  -------------------------------------------------------------- */
 #res-usage td {
-	width: 40%;
+	width: 55%;
+}
+#res-usage .disk-usage-cell .progress {
+	width: 70%;
 }
 /* =Grids.
  -------------------------------------------------------------- */
@@ -108,4 +114,9 @@ td label {
 .status-positive {
 	color: green;
 	font-weight: bold !important;
+}
+/* =Icons.
+ -------------------------------------------------------------- */
+.icon-help {
+	margin-left: 0.5em;
 }

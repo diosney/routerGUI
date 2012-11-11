@@ -1,5 +1,5 @@
 /*
- * GET Dashboard page.
+ * Dashboard page.
  */
 /*
  * Module dependencies.
@@ -8,8 +8,9 @@ var os = require('os'),
 	fs = require('fs'),
 	exec = require('child_process').exec,
 	async = require('async'),
+
+// Load application files.
 	package = require('../../../package.json'),
-// Load configuration file.
 	config = require('../../../config.json');
 
 exports.index = function (req, res) {
@@ -21,7 +22,12 @@ exports.index = function (req, res) {
 		res.redirect('/system/install');
 	}
 
-	var widgets = {};
+	/*
+	 * Initializing widgets container.
+	 */
+	var widgets = {
+		refresh_interval:3000 // TODO: Get refresh_interval from System Settings.
+	};
 
 	/*
 	 * Widget: System Information.
@@ -36,13 +42,13 @@ exports.index = function (req, res) {
 		os_type           :os.type(),
 		os_arch           :os.arch(),
 		os_release        :os.release(),
-		memory            :{
-			installed:(os.totalmem() / 1024 / 1024 / 1024).toFixed(1)
-		}
+		installed_memory  :(os.totalmem() / 1024 / 1024 / 1024).toFixed(1)
 	};
 
-	// Nameservers and domain name.
-	// Parse lines in resolv.conf file to obtain domain and nameservers.
+	/*
+	 * Nameservers and domain name.
+	 */
+// Parse lines in resolv.conf file to obtain domain and nameservers.
 	var resolv_conf = fs.readFileSync('/etc/resolv.conf').toString().split('\n');
 
 	for (line in resolv_conf) {
@@ -56,8 +62,9 @@ exports.index = function (req, res) {
 		}
 	}
 
-	// Uptime.
-	// Build uptime string.
+	/*
+	 * Uptime.
+	 */
 	var current_uptime = os.uptime(),
 		days = Math.floor(current_uptime / 86400),
 		hours = Math.floor((current_uptime % 86400) / 3600),
@@ -65,9 +72,12 @@ exports.index = function (req, res) {
 		seconds = Math.floor(((current_uptime % 86400) % 3600) % 60);
 	widgets.sys_info.uptime = ((days) ? days + ' days, ' : '') + ((hours) ? hours + ' hours, ' : '') + ((minutes) ? minutes + ' minutes, ' : '') + seconds + ' seconds';
 
-	// CPU Models and Qty.
+	/*
+	 * CPU Models and Qty.
+	 */
 	widgets.sys_info.cpus = [];
-	// Build object with usable CPU data.
+
+// Build object with usable CPU data.
 	for (core in os.cpus()) {
 		if (widgets.sys_info.cpus.length) {
 			for (cpu in widgets.sys_info.cpus) {
@@ -95,9 +105,12 @@ exports.index = function (req, res) {
 	 */
 	widgets.res_usage = {};
 
-	// CPU Load.
+	/*
+	 * CPU Load.
+	 */
 	widgets.res_usage.cpus = [];
-	// Build object with usable CPU data.
+
+// Build object with usable CPU data.
 	for (core in os.cpus()) {
 		var total_load = os.cpus()[core].times.user + os.cpus()[core].times.nice + os.cpus()[core].times.sys + os.cpus()[core].times.idle + os.cpus()[core].times.irq;
 		var cpu_usage = Math.floor(((total_load - os.cpus()[core].times.idle) / total_load) * 100);
@@ -121,13 +134,17 @@ exports.index = function (req, res) {
 		});
 	}
 
-	// Load average.
+	/*
+	 * Load average.
+	 */
 	widgets.res_usage.load_average = [];
 	for (var i = 0; i < 3; i++) {
 		widgets.res_usage.load_average.push((os.loadavg()[i]).toFixed(2));
 	}
 
-	// Memory Load.
+	/*
+	 * Memory Load.
+	 */
 	widgets.res_usage.memory = {};
 	var usage = Math.floor(((os.totalmem() - os.freemem()) / os.totalmem()) * 100);
 	if (usage < 20) {
@@ -144,26 +161,99 @@ exports.index = function (req, res) {
 	}
 	widgets.res_usage.memory.usage = usage;
 
-	// SWAP.
+	/*
+	 * SWAP.
+	 */
 	var proc_swap = fs.readFileSync('/proc/swaps').toString().split('\n')[1].split('\t');
 	widgets.res_usage.swap = Math.floor((proc_swap[2] / proc_swap[1]) * 100);
 
-	async.series({
+	async.parallel({
 			datetime:function (callback) {
 				exec('date', function (error, stdout, stderr) {
-					datetime = stdout.replace('\n', '');
-					callback(null, datetime);
+					if (error === null) {
+						callback(null, stdout.replace('\n', ''));
+					}
+					else {
+						callback(stderr);
+					}
+				});
+			},
+			disk    :function (callback) {
+				/*
+				 * Disk Usage.
+				 */
+				widgets.res_usage.disks = [];
+
+				exec("df -h|awk '{print  $1\"\t\"$5\"\t\"$6}'", function (error, stdout, stderr) {
+					if (error === null) {
+						var disks = stdout.split('\n');
+						// Build object with usable Disks data.
+						for (line in disks) {
+							if (disks[line].split('\t')[0].search('/dev/') != '-1') {
+								/*
+								 * Is a valid disk device.
+								 */
+								var disk_usage = disks[line].split('\t')[1].split('%')[0],
+									device = disks[line].split('\t')[0],
+									path = disks[line].split('\t')[2];
+
+								if (disk_usage < 20) {
+									disk_status = 'info';
+								}
+								else if (disk_usage >= 20 && disk_usage < 60) {
+									disk_status = 'success';
+								}
+								else if (disk_usage >= 60 && disk_usage < 80) {
+									disk_status = 'warning';
+								}
+								else {
+									disk_status = 'danger';
+								}
+
+								widgets.res_usage.disks.push({
+									usage :disk_usage,
+									device:device,
+									status:disk_status,
+									path  :path
+								});
+							}
+						}
+
+						callback(null, disks);
+					}
+					else {
+						callback(stderr);
+					}
 				});
 			}
 		},
 		function (error, results) {
-			widgets.sys_info.datetime = results.datetime;
+			/*
+			 * Build error messages container.
+			 */
+			if (error === null) {
+				/*
+				 * Gets final results data from the async processing.
+				 */
+				widgets.sys_info.datetime = results.datetime;
+			}
+			else {
+				/*
+				 * Show error message if any.
+				 */
+				var msg = {
+					message:error,
+					type   :'error'
+				};
+			}
 
 			res.render('dashboard/index', {
+				// General Vars.
 				title  :'routerGUI · Dashboard',
 				header :'Dashboard',
 				lead   :'Tell something interesting about the dashboard screen.',
-				menu: 'dashboard',
+				menu   :'dashboard',
+				msg    :msg,
 
 				// Widgets.
 				widgets:widgets

@@ -11,8 +11,18 @@ block content
 		.row-fluid
 			.span12
 				#message-dashboard
+					- if (msg && msg.message) {
+						.alert.alert-error
+							a.close(href="#",data-dismiss="alert") ×
+							strong.
+								Error!&nbsp;
+							span.msg-mark.
+								#{msg.message}
+					- }
+
 				#hidden-fields.ui-helper-hidden
 					input(type='hidden',name='cpus_qty',value='#{widgets.sys_info.cpus.length}')
+					input(type='hidden',name='refresh_interval',value='#{widgets.refresh_interval}')
 		.row-fluid
 				.span7
 					table.table.table-striped.table-bordered.table-hover
@@ -55,7 +65,7 @@ block content
 								th.
 									Installed Memory
 								td.
-									#{widgets.sys_info.memory.installed} GiB
+									#{widgets.sys_info.installed_memory} GiB
 							tr
 								th.
 									Uptime
@@ -87,12 +97,22 @@ block content
 									for cpu,i in widgets.res_usage.cpus
 										.progress.progress-striped(class="progress-#{cpu.status}")
 											.bar(id='cpu-#{i}',style='width:#{cpu.usage}%;')
+										span(id='cpu-number-#{i}') #{cpu.usage}%
+										br
 							tr
 								th.
 									Load Average
-								td
+								td.align-center
 									for load,i in widgets.res_usage.load_average
 										span(id='load_average-#{i}') #{load}
+										span.field-description
+											- if (i == 0) {
+												| - 1min average.
+											- } else if (i == 1) {
+												| - 5min average.
+											- } else if (i == 2) {
+												| - 15min average.
+											- }
 										br
 							tr
 								th.
@@ -100,12 +120,26 @@ block content
 								td
 									.progress.progress-striped(class="progress-#{widgets.res_usage.memory.status}")
 										#memory.bar(style='width:#{widgets.res_usage.memory.usage}%;')
+									span#memory-number #{widgets.res_usage.memory.usage}%
 							tr
 								th.
 									SWAP
 								td
 									.progress.progress-striped.progress-danger
 										#swap.bar(style='width:#{widgets.res_usage.swap}%;')
+									span#swap-number #{widgets.res_usage.swap}%
+							tr
+								th.
+									Disk
+								td.disk-usage-cell
+									for disk,i in widgets.res_usage.disks
+										.progress.progress-striped(class="progress-#{disk.status}")
+											.bar(id='disk-#{i}',style='width:#{disk.usage}%;')
+										span(id='disk-number-#{i}') #{disk.usage}%
+										a(rel="tooltip",data-html="true",data-placement="right",title="Mounted on: <strong>#{disk.path}</strong><br/>Filesystem: <strong>#{disk.device}</strong>")
+											img(class="icon-help",src="/images/icons/help.png")
+										br
+
 
 block footer
 	include ../layouts/footer

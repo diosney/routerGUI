@@ -4,11 +4,19 @@
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
+	 * Tooltips.
+	 */
+	$('[rel="tooltip"]').tooltip();
+
+	/*
 	 * Auto-update on intervals the data shown.
 	 */
 	setInterval(function () {
 		$.ajax({
 			cache   :false,
+			data    :{
+				object:'widget'
+			},
 			dataType:'json',
 			error   :function (a, b, c) {
 				/*
@@ -29,7 +37,7 @@ jQuery(function ($) {
 
 				if (response_from_server.type === 'notification') {
 					/*
-					 * Update Widget: System Info..
+					 * Update Widget: System Info.
 					 */
 					$('#uptime').text(response_from_server.data.widgets.sys_info.uptime);
 					$('#datetime').text(response_from_server.data.widgets.sys_info.datetime);
@@ -40,17 +48,29 @@ jQuery(function ($) {
 					// Memory load.
 					$('#memory').css('width', response_from_server.data.widgets.res_usage.memory.usage + '%');
 					$('#memory').closest('.progress').removeClass('progress-info progress-success progress-warning progress-danger').addClass('progress-' + response_from_server.data.widgets.res_usage.memory.status);
+					$('#memory-number').text(response_from_server.data.widgets.res_usage.memory.usage + '%');
 
+					// SWAP.
 					$('#swap').css('width', response_from_server.data.widgets.res_usage.swap + '%');
+					$('#swap-number').text(response_from_server.data.widgets.res_usage.swap + '%');
 
 					// CPU load.
 					for (var i = 0; i < response_from_server.data.widgets.res_usage.cpus.length; i++) {
 						$('#cpu-' + i).css('width', response_from_server.data.widgets.res_usage.cpus[i].usage + '%');
+						$('#cpu-' + i).closest('.progress').removeClass('progress-info progress-success progress-warning progress-danger').addClass('progress-' + response_from_server.data.widgets.res_usage.cpus[i].status);
+						$('#cpu-number-' + i).text(response_from_server.data.widgets.res_usage.cpus[i].usage + '%');
 					}
 
 					// Load average.
 					for (var i = 0; i < 3; i++) {
 						$('#load_average-' + i).text(response_from_server.data.widgets.res_usage.load_average[i]);
+					}
+
+					// Disks usage.
+					for (var i = 0; i < response_from_server.data.widgets.res_usage.cpus.length; i++) {
+						$('#disk-' + i).css('width', response_from_server.data.widgets.res_usage.disks[i].usage + '%');
+						$('#disk-' + i).closest('.progress').removeClass('progress-info progress-success progress-warning progress-danger').addClass('progress-' + response_from_server.data.widgets.res_usage.disks[i].status);
+						$('#disk-number-' + i).text(response_from_server.data.widgets.res_usage.disks[i].usage + '%');
 					}
 				}
 				else if (response_from_server.type == 'error') {
@@ -64,5 +84,5 @@ jQuery(function ($) {
 			type    :'GET',
 			url     :'api/dashboard'
 		});
-	}, 3000); // TODO: Let the user configure the aut-update interval.
+	}, $('[name="refresh_interval"]').val() || 3000);
 });

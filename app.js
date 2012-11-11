@@ -1,8 +1,8 @@
 // TODO: A 404 Not Found page.
 // TODO: A 505 Not Found page.
-// TODO: https://github.com/jeremyfa/node-exec-sync/issues/3#issuecomment-7570123
-// TODO: Set kernel.domainname.
+// TODO: See how close database connection upon app exit: mongoose.connection.close();
 
+// TODO: Set kernel.domainname.
 // TODO: Don't forget flushing the routing cache with ip route flush cache to make changes effective. Verify wether is needed for ip rule too.
 
 /**
@@ -11,11 +11,11 @@
 var express = require('express'),
 	http = require('http'),
 	path = require('path'),
+	mongoose = require('mongoose'),
 
-// Load configuration file.
+// Load application files file.
 	config = require('./config.json'),
-	package = require('./package.json'),
-	mongoose = require('mongoose');
+	package = require('./package.json');
 
 // Open DB connection to database.
 mongoose.connect(config.database.host, config.database.name);
@@ -25,41 +25,15 @@ mongoose.connect(config.database.host, config.database.name);
  */
 mongoose.connection.on('error', function (error) {
 	console.log(error);
+	// TODO: See what to do with this error. wether redirect user to standalone Error page or only show a message.
 });
 
 /*
- * Ensures that code is executed only if there was no error.
+ * Successfully connected to database.
  */
 mongoose.connection.on('open', function (ref) {
-
+	// TODO: Log connection to database.
 });
-/*
- * Routes configuration.
- */
-/*
- * Routes configuration. UI
- */
-var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
-	routes_ui_system_settings = require('./routes/ui/system/settings.js'),
-	routes_ui_system_tuning = require('./routes/ui/system/tuning.js'),
-	routes_ui_system_install = require('./routes/ui/system/install.js'),
-	routes_ui_interfaces_devices = require('./routes/ui/interfaces/devices.js'),
-	routes_ui_interfaces_vlans = require('./routes/ui/interfaces/vlans.js'),
-	routes_ui_routing_settings = require('./routes/ui/routing/settings.js'),
-	routes_ui_routing_static = require('./routes/ui/routing/static.js');
-
-/*
- * Routes configuration. API
- */
-var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
-	routes_api_system_settings = require('./routes/api/system/settings/index.js'),
-	routes_api_system_tuning = require('./routes/api/system/tuning/index.js'),
-	routes_api_system_install = require('./routes/api/system/install/index.js'),
-	routes_api_interfaces_devices = require('./routes/api/interfaces/devices/index.js'),
-	routes_api_interfaces_addresses = require('./routes/api/interfaces/address/index.js'),
-	routes_api_interfaces_vlans = require('./routes/api/interfaces/vlans/index.js'),
-	routes_api_routing_settings = require('./routes/api/routing/settings/index.js'),
-	routes_api_routing_static = require('./routes/api/routing/static/index.js');
 
 var app = express();
 
@@ -81,6 +55,24 @@ app.configure('development', function () {
 	app.use(express.errorHandler());
 });
 
+/*
+ * Routes configuration.
+ */
+/*
+ * UI Routes.
+ */
+var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
+	routes_ui_system_settings = require('./routes/ui/system/settings.js'),
+	routes_ui_system_tuning = require('./routes/ui/system/tuning.js'),
+	routes_ui_system_install = require('./routes/ui/system/install.js'),
+	routes_ui_interfaces_devices = require('./routes/ui/interfaces/devices.js'),
+	routes_ui_interfaces_vlans = require('./routes/ui/interfaces/vlans.js'),
+	routes_ui_routing_settings = require('./routes/ui/routing/settings.js'),
+	routes_ui_routing_static = require('./routes/ui/routing/static.js');
+
+/*
+ * UI URLs.
+ */
 app.get('/', routes_ui_dashboard.index);
 app.get('/system/settings', routes_ui_system_settings.index);
 app.get('/system/tuning', routes_ui_system_tuning.index);
@@ -90,6 +82,22 @@ app.get('/interfaces/vlans', routes_ui_interfaces_vlans.index);
 app.get('/routing/settings', routes_ui_routing_settings.index);
 app.get('/routing/static', routes_ui_routing_static.index);
 
+/*
+ * API Routes.
+ */
+var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
+	routes_api_system_settings = require('./routes/api/system/settings/index.js'),
+	routes_api_system_tuning = require('./routes/api/system/tuning/index.js'),
+	routes_api_system_install = require('./routes/api/system/install/index.js'),
+	routes_api_interfaces_devices = require('./routes/api/interfaces/devices/index.js'),
+	routes_api_interfaces_addresses = require('./routes/api/interfaces/address/index.js'),
+	routes_api_interfaces_vlans = require('./routes/api/interfaces/vlans/index.js'),
+	routes_api_routing_settings = require('./routes/api/routing/settings/index.js'),
+	routes_api_routing_static = require('./routes/api/routing/static/index.js');
+
+/*
+ * API URLs.
+ */
 // TODO: Add design to root API view.
 app.get('/api', function (req, res) {
 	res.send(package.name + ' API is running');
@@ -98,7 +106,9 @@ app.get('/api', function (req, res) {
 // Dashboard.
 app.get('/api/dashboard', routes_api_dashboard.list);
 
-// System.
+/*
+ * System.
+ */
 // System -> Settings.
 app.post('/api/system/settings', routes_api_system_settings.apply);
 
@@ -111,6 +121,9 @@ app.put('/api/system/tuning', routes_api_system_tuning.edit);
 // System -> Install.
 app.post('/api/system/install', routes_api_system_install.apply);
 
+/*
+ * Interfaces.
+ */
 // Interfaces -> Devices.
 app.get('/api/interfaces/devices', routes_api_interfaces_devices.list);
 app.post('/api/interfaces/devices', routes_api_interfaces_devices.add);
@@ -129,6 +142,9 @@ app.post('/api/interfaces/vlans', routes_api_interfaces_vlans.add);
 app.delete('/api/interfaces/vlans', routes_api_interfaces_vlans.delete);
 app.put('/api/interfaces/vlans', routes_api_interfaces_vlans.edit);
 
+/*
+ * Routing.
+ */
 // Routing -> General Settings.
 app.post('/api/routing/settings', routes_api_routing_settings.apply);
 
@@ -141,6 +157,3 @@ app.put('/api/routing/static', routes_api_routing_static.edit);
 http.createServer(app).listen(app.get('port'), function () {
 	console.log('Express server listening on port ' + app.get('port'));
 });
-
-// Close DB connection.
-// TODO: See how close database connection upong app exit: mongoose.connection.close();
