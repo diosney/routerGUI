@@ -284,9 +284,7 @@ exports.index = function (req, res) {
 				menu    :'dashboard',
 				msg     :msg,
 
-				/*
-				 * Settings.
-				 */
+				// Settings.
 				settings:settings,
 
 				// Widgets.

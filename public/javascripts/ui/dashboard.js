@@ -152,7 +152,6 @@ jQuery(function ($) {
 			$('#dashboard-settings').modal('hide');
 
 			if (response_from_server.type == 'notification') {
-
 				/*
 				 * Update data.
 				 */

@@ -1,12 +1,14 @@
 extends ../../layouts/layout
 
-block header
-	include ../../layouts/header
-
 block navigation
 	include ../../layouts/navigation
 
 block content
+	header
+		.container
+			h3 Settings
+			span(class="lead") Tell something interesting about the settings screen.
+
 	.container
 		.row-fluid
 			.span12
@@ -34,7 +36,7 @@ block content
 											label(for='hostname') Hostname
 										td
 											label
-												input(type='text',id='hostname',name='hostname',value='#{hostname}',placeholder="Hostname")
+												input(type='text',id='hostname',name='hostname',value='#{settings.hostname}',placeholder="Hostname")
 												br
 												span.field-description Put brief description here.
 									tr
@@ -42,7 +44,7 @@ block content
 											label(for='domain') Domain
 										td
 											label
-												input(type='text',id='domain',name='domain',value='#{domain}',placeholder="Domain")
+												input(type='text',id='domain',name='domain',value='#{settings.domain}',placeholder="Domain")
 												br
 												span.field-description Put brief description here.
 									tr
@@ -50,17 +52,17 @@ block content
 											label(for='nameserver-primary') DNS Servers
 										td
 											label
-												input(type='text',id='nameserver-primary',name='nameservers[]',value='#{nameservers[0]}',placeholder="Nameserver 1")
+												input(type='text',id='nameserver-primary',name='nameserver_primary',value='#{settings.nameserver_primary}',placeholder="Primary Nameserver")
 												br
 												span.field-description Put brief description here.
 											label
-												input(type='text',id='nameserver-secondary',name='nameservers[]',value='#{nameservers[1]}',placeholder="Nameserver 2")
+												input(type='text',id='nameserver-secondary',name='nameserver_secondary',value='#{settings.nameserver_secondary}',placeholder="Secondary Nameserver")
 												br
 												span.field-description Put brief description here.
 									tr
 										th
 										td
-											button.btn.btn-danger(type='submit',name='submit') Apply Changes
+											button.btn.btn-danger(type='submit',name='submit') Save Settings
 											img.ajax-loader(src='/images/ajax-loader-light.gif')
 
 block footer

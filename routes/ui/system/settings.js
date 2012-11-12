@@ -1,11 +1,16 @@
 /*
- * GET System/Settings page.
+ * System/Settings page.
  */
 /*
  * Module dependencies.
  */
-var os = require('os'),
+var async = require('async'),
 	fs = require('fs'),
+
+/*
+ * Load required models.
+ */
+	Settings = require('../../../models/system/settings.js'),
 // Load configuration file.
 	config = require('../../../config.json');
 
@@ -21,41 +26,113 @@ exports.index = function (req, res) {
 	/*
 	 * Gets system fields to be shown.
 	 */
-	// Hostname.
-	var hostname = os.hostname(),
-		resolv_conf = fs.readFileSync('/etc/resolv.conf').toString().split('\n'),
-		domain = '',
-		nameservers = [];
+	var settings = {}
 
-	// Domain and nameservers
-	// Parse lines in resolv.conf file to obtain domain and nameservers.
-	for (line in resolv_conf) {
-		// Search for system domain.
-		if (resolv_conf[line].search(/search/g) != '-1') {
-			domain = resolv_conf[line].split('search ')[1];
-		}
+	async.parallel({
+			hostname            :function (callback_parallel) {
+				Settings.findOne({
+					name:'hostname'
+				}, function (error, doc) {
+					if (!error) {
+						if (doc) {
+							settings.hostname = doc.value;
+						}
+						else {
+							settings.hostname = '';
+						}
 
-		// Search for nameservers
-		if (resolv_conf[line].search(/nameserver/g) != '-1') {
-			nameservers.push(resolv_conf[line].split('nameserver ')[1]);
-		}
-	}
+						callback_parallel(null, settings.hostname);
+					}
+					else {
+						callback_parallel(error);
+					}
+				});
+			},
+			domain              :function (callback_parallel) {
+				Settings.findOne({
+					name:'domain'
+				}, function (error, doc) {
+					if (!error) {
+						if (doc) {
+							settings.domain = doc.value;
+						}
+						else {
+							settings.domain = '';
+						}
 
-	// If there is no nameservers configured build and empty array for compatibility.
-	for (var i in [0, 1]) {
-		if (!nameservers[i]) {
-			nameservers.push('');
-		}
-	}
+						callback_parallel(null, settings.domain);
+					}
+					else {
+						callback_parallel(error);
+					}
+				});
+			},
+			nameserver_primary  :function (callback_parallel) {
+				Settings.findOne({
+					name:'nameserver_primary'
+				}, function (error, doc) {
+					if (!error) {
+						if (doc) {
+							settings.nameserver_primary = doc.value;
+						}
+						else {
+							settings.nameserver_primary = '';
+						}
 
-	res.render('system/settings/index', {
-		title :'routerGUI · Settings',
-		header:'Settings',
-		lead  :'Tell something interesting about the settings screen.',
-		menu  :'system/settings',
+						callback_parallel(null, settings.nameserver_primary);
+					}
+					else {
+						callback_parallel(error);
+					}
+				});
+			},
+			nameserver_secondary:function (callback_parallel) {
+				Settings.findOne({
+					name:'nameserver_secondary'
+				}, function (error, doc) {
+					if (!error) {
+						if (doc) {
+							settings.nameserver_secondary = doc.value;
+						}
+						else {
+							settings.nameserver_secondary = '';
+						}
 
-		hostname   :hostname,
-		domain     :domain,
-		nameservers:nameservers
-	});
+						callback_parallel(null, settings.nameserver_secondary);
+					}
+					else {
+						callback_parallel(error);
+					}
+				});
+			}
+		},
+		function (error, results) {
+			/*
+			 * Build error messages container.
+			 */
+			if (error === null) {
+				/*
+				 * Gets final results data from the async processing.
+				 */
+			}
+			else {
+				/*
+				 * Show error message if any.
+				 */
+				var msg = {
+					message:error,
+					type   :'error'
+				};
+			}
+
+			res.render('system/settings/index', {
+				// General Vars.
+				title   :'routerGUI · Settings',
+				menu    :'system/settings',
+				msg     :msg,
+
+				// Settings.
+				settings:settings
+			});
+		});
 };

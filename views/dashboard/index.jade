@@ -1,18 +1,15 @@
 extends ../layouts/layout
 
-block header
-	include ../layouts/header
-
 block navigation
 	include ../layouts/navigation
 
 block content
 	header
-	.container
-		h3 Dashboard
-			a.btn.pull-right(href="#dashboard-settings",role="button",data-toggle="modal")
-				img(src="/images/icons/cog.png")
-		span(class="lead") Tell something interesting about the dashboard screen.
+		.container
+			h3 Dashboard
+				a.btn.pull-right(href="#dashboard-settings",role="button",data-toggle="modal")
+					img(src="/images/icons/cog.png")
+			span(class="lead") Tell something interesting about the dashboard screen.
 
 	.container
 		.row-fluid

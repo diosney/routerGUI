@@ -6,6 +6,7 @@
  */
 // TODO: instalar system settings de widget interval refresh.
 var async = require('async'),
+	os = require('os'),
 	exec = require('child_process').exec,
 	fs = require('fs');
 
@@ -56,6 +57,96 @@ module.exports = function (req, res) {
 						});
 
 						widgets_refresh_interval.save(function (error) {
+							if (error) {
+								callback_parallel(error);
+							}
+							else {
+								callback_parallel(null);
+							}
+						});
+					},
+					function (callback_parallel) {
+						/*
+						 * System Settings.
+						 */
+						// Hostname.
+						// Instantiate the model and fill it with the default data.
+						var hostname = new Settings({
+							name:'hostname',
+							value:os.hostname()
+						});
+
+						hostname.save(function (error) {
+							if (error) {
+								callback_parallel(error);
+							}
+							else {
+								callback_parallel(null);
+							}
+						});
+
+						var	resolv_conf = fs.readFileSync('/etc/resolv.conf').toString().split('\n'),
+							domain = '',
+							nameservers = [];
+
+						// Domain and nameservers
+						// Parse lines in resolv.conf file to obtain domain and nameservers.
+						for (line in resolv_conf) {
+							// Search for system domain.
+							if (resolv_conf[line].search(/search/g) != '-1') {
+								domain = resolv_conf[line].split('search ')[1];
+							}
+
+							// Search for nameservers
+							if (resolv_conf[line].search(/nameserver/g) != '-1') {
+								nameservers.push(resolv_conf[line].split('nameserver ')[1]);
+							}
+						}
+
+						// If there is no nameservers configured build and empty array for compatibility.
+						for (var i in [0, 1]) {
+							if (!nameservers[i]) {
+								nameservers.push('');
+							}
+						}
+
+						/*
+						 * Save settings into database.
+						 */
+						var domain_buf = new Settings({
+							name:'domain',
+							value:domain
+						});
+
+						domain_buf.save(function (error) {
+							if (error) {
+								callback_parallel(error);
+							}
+							else {
+								callback_parallel(null);
+							}
+						});
+
+						var nameserver_primary = new Settings({
+							name:'nameserver_primary',
+							value:nameservers[0]
+						});
+
+						nameserver_primary.save(function (error) {
+							if (error) {
+								callback_parallel(error);
+							}
+							else {
+								callback_parallel(null);
+							}
+						});
+
+						var nameserver_secondary = new Settings({
+							name:'nameserver_secondary',
+							value:nameservers[0]
+						});
+
+						nameserver_secondary.save(function (error) {
 							if (error) {
 								callback_parallel(error);
 							}

@@ -14,6 +14,9 @@ jQuery(function ($) {
 			$('.ajax-loader', form$).show();
 			$('button[type="submit"]', form$).button('disable');
 		},
+		data        :{
+			object:'settings'
+		},
 		dataType    :'json',
 		error       :function (a, b, c) {
 			/*
