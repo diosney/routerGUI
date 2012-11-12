@@ -1,5 +1,5 @@
 /*
- * POST System/Tuning API.
+ * System/Tuning API.
  */
 exports.list    = require('../tuning/list.js');
 exports.add     = require('../tuning/add.js');

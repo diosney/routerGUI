@@ -78,6 +78,13 @@ module.exports = function (req, res) {
 							resolv_conf_content += 'search ' + req.body.domain + '\n';
 						}
 
+						// Update domain in /proc/sys/kernel/domainname.
+						fs.writeFile('/proc/sys/kernel/domainname', req.body.hostname, function (error) {
+							if (error) {
+								callback_parallel(error);
+							}
+						});
+
 						// Update nameservers in /etc/resolv.conf.
 						if (req.body.nameserver_primary != '') {
 							resolv_conf_content += 'nameserver ' + req.body.nameserver_primary + '\n';

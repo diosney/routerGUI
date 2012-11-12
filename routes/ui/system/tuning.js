@@ -1,5 +1,5 @@
 /*
- * GET System/Tuning page.
+ * System/Tuning page.
  */
 // Load configuration file.
 config = require('../../../config.json');
@@ -14,9 +14,7 @@ exports.index = function (req, res) {
 	}
 
 	res.render('system/tuning/index', {
-		title :'routerGUI · System · Tuning',
-		header:'System Tuning',
-		lead  :'Tell something interesting about the Tuning screen.',
-		menu: 'system/tuning'
+		title:'routerGUI · System · Tuning',
+		menu :'system/tuning'
 	});
 };

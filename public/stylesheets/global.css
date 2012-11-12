@@ -26,6 +26,9 @@ body {
 .position-relative {
 	position: relative;
 }
+.color-red {
+	color: red;
+}
 /* =Images.
  -------------------------------------------------------------- */
 .ajax-loader {
@@ -104,6 +107,9 @@ td label {
 .jqgroup td {
 	font-weight: bold !important;
 	text-align: center !important;
+}
+.ui-jqgrid-labels .color-red {
+	display: none;
 }
 /* =Grids. Tuning.
  -------------------------------------------------------------- */

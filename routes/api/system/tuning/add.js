@@ -1,5 +1,5 @@
 /*
- * POST System/Tuning API.
+ * System/Tuning API.
  */
 /*
  * Module dependencies.
@@ -16,72 +16,84 @@ module.exports = function (req, res) {
 	// Initialize response.
 	var response_from_server = {};
 
-	/*
-	 * Check in case the tunable is already in database.
-	 */
-	Tunable.find({
-		group:req.body.group,
-		path :req.body.path
-	}, {}, {}, function (error, docs) {
-		if (!error) {
-			if (!docs.length) {
-				/*
-				 * Execute the changes in the system.
-				 */
-				var tunable = new Tunable({
-					group      :req.body.group,
-					path       :req.body.path,
-					value      :req.body.value,
-					description:req.body.description
-				});
+	switch (req.body.object) {
+		case 'tunable':
+			/*
+			 * Check in case the tunable is already in database.
+			 */
+			Tunable.find({
+				group:req.body.group,
+				path :req.body.path
+			}, {}, {}, function (error, docs) {
+				if (!error) {
+					if (!docs.length) {
+						var tunable = new Tunable({
+							group      :req.body.group,
+							path       :req.body.path,
+							value      :req.body.value,
+							description:req.body.description
+						});
 
-				exec(tunable.cl_apply(), function (error, stdout, stderr) {
-					if (error === null) {
 						/*
-						 * Save changes to database.
+						 * Execute the changes in the system.
 						 */
-						// Save changes into database.
-						tunable.save(function (error) {
-							if (!error) {
-								response_from_server.id = tunable._id;
-								response_from_server.message = 'Added Successfully!';
-								response_from_server.type = 'notification';
+						exec(tunable.cl_apply(), function (error, stdout, stderr) {
+							if (error === null) {
+								/*
+								 * Save changes to database.
+								 */
+								tunable.save(function (error) {
+									if (!error) {
+										response_from_server.id = tunable._id;
+										response_from_server.message = 'Added Successfully!';
+										response_from_server.type = 'notification';
+									}
+									else {
+										response_from_server.id = '';
+										response_from_server.message = error.message;
+										response_from_server.type = 'error';
+									}
+
+									// Return the gathered data.
+									res.json(response_from_server);
+								});
 							}
 							else {
-								response_from_server.id = '';
-								response_from_server.message = error.message;
+								response_from_server.message = stderr;
 								response_from_server.type = 'error';
-							}
 
-							// Return the gathered data.
-							res.json(response_from_server);
+								// Return the gathered data.
+								res.json(response_from_server);
+							}
 						});
 					}
 					else {
-						response_from_server.message = stderr;
+						// There is a already an item in database.
+						response_from_server.id = '';
+						response_from_server.message = 'Item already in database.';
 						response_from_server.type = 'error';
 
 						// Return the gathered data.
 						res.json(response_from_server);
 					}
-				});
-			}
-			else {
-				// There is a already an item in database.
-				response_from_server.id = '';
-				response_from_server.message = 'Item already in database.';
-				response_from_server.type = 'error';
+				}
+				else {
+					response_from_server.message = error;
+					response_from_server.type = 'error';
 
-				// Return the gathered data.
-				res.json(response_from_server);
-			}
-		}
-		else {
-			response_from_server.message = error;
+					// Return the gathered data.
+					res.json(response_from_server);
+				}
+			});
+
+			break;
+		default:
+			response_from_server.message = 'Invalid API Request.';
 			response_from_server.type = 'error';
 
 			// Return the gathered data.
 			res.json(response_from_server);
-		}
-	});
+
+			break;
+	}
 };

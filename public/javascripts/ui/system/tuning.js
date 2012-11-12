@@ -37,36 +37,39 @@ jQuery(function ($) {
 				index         :'description',
 				name          :'description',
 				search        :true,
-				sortable      :true,
-				stype         :'text',
+				sortable      :false,
 				width         :40
 			},
 			{
-				align   :'center',
-				classes :'column_path',
-				editable:true,
-				edittype:'text',
-				index   :'path',
-				name    :'path',
-				stype   :'select',
-				sortable:true,
-				width   :20
+				align    :'center',
+				classes  :'column_path',
+				editable :true,
+				editrules:{
+					required:true
+				},
+				edittype :'text',
+				index    :'path',
+				name     :'path',
+				sortable :false,
+				width    :20
 			},
 			{
 				align         :'center',
 				classes       :'column_value',
 				editable      :true,
+				editrules     :{
+					required:true
+				},
 				edittype      :'text',
 				firstsortorder:'asc',
 				index         :'value',
 				name          :'value',
 				search        :true,
-				sortable      :true,
-				stype         :'text',
+				sortable      :false,
 				width         :5
 			}
 		],
-		colNames         :['Group', 'Description', 'Path', 'Value'],
+		colNames         :['Group', 'Description', 'Path <span class="color-red">*</span>', 'Value <span class="color-red">*</span>'],
 		datatype         :'json',
 		deselectAfterSort:false,
 		emptyrecords     :'No <strong>Tunables</strong> were added yet.',
@@ -74,7 +77,7 @@ jQuery(function ($) {
 		grouping         :true,
 		groupingView     :{
 			groupField     :['group'],
-			groupColumnShow:[true]
+			groupColumnShow:[false]
 		},
 		height           :'auto',
 		hoverrows        :true,
@@ -82,6 +85,9 @@ jQuery(function ($) {
 		loadui           :'block',
 		mtype            :'GET',
 		pager            :'#tunable-list-pager',
+		postData         :{
+			object:'tunable'
+		},
 		prmNames         :{
 			sort :'orderby',
 			order:'orderdir'
@@ -125,26 +131,26 @@ jQuery(function ($) {
 				}
 			},
 			beforeShowForm:function () {
-				$('#tr_group,#tr_path').hide();
+				$('#tr_path').hide();
 			},
 			bSubmit       :'Done',
 			checkOnSubmit :false,
 			closeAfterEdit:true,
 			closeOnEscape :true,
-			dataheight    :180,
-
-			editCaption :'Edit Tunable',
-			modal       :true,
-			mtype       :'PUT',
-			recreateForm:true,
-			url         :'/api/system/tuning',
-			width       :320
+			editCaption   :'Edit Tunable',
+			editData      :{
+				object:'tunable'
+			},
+			modal         :true,
+			mtype         :'PUT',
+			recreateForm  :true,
+			url           :'/api/system/tuning'
 		}, {
 			// ADD Settings.
-			addCaption   :'Add Tunable',
-			addedrow     :'last',
+			addCaption    :'Add Tunable',
+			addedrow      :'last',
 			// Handler the response from server.
-			afterSubmit  :function (response, postdata) {
+			afterSubmit   :function (response, postdata) {
 				// Parse the XMLHttpRequest response.
 				var data = $.parseJSON(response.responseText);
 
@@ -155,18 +161,20 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
-			bSubmit      :'Add',
-			closeAfterAdd:true,
-			closeOnEscape:true,
-			dataheight   :180,
-			editData     :{
-				id:''                                 // Replace the id added automaticaly by jqGrid.
+			beforeShowForm:function () {
+				$('#tr_group').show();
 			},
-			modal        :false,
-			mtype        :'POST',
-			recreateForm :true,
-			url          :'/api/system/tuning',
-			width        :320
+			bSubmit       :'Add',
+			closeAfterAdd :true,
+			closeOnEscape :true,
+			editData      :{
+				id    :'', // Replace the id added automaticaly by jqGrid.
+				object:'tunable'
+			},
+			modal         :false,
+			mtype         :'POST',
+			recreateForm  :true,
+			url           :'/api/system/tuning'
 		}, {
 			// DELETE Settings.
 			addCaption :'Delete Tunable',
@@ -183,6 +191,9 @@ jQuery(function ($) {
 				}
 			},
 			bSubmit    :'Delete',
+			delData    :{
+				object:'tunable'
+			},
 			modal      :false,
 			mtype      :'DELETE',
 			url        :'/api/system/tuning'

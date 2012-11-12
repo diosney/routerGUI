@@ -1,8 +1,5 @@
 extends ../../layouts/layout
 
-block header
-	include ../../layouts/header
-
 block navigation
 	include ../../layouts/navigation
 
@@ -10,10 +7,23 @@ block content
 	link(rel='stylesheet', type='text/css', href='/javascripts/external/ui/css/jquery-ui.css')
 	link(rel='stylesheet', type='text/css', href='/javascripts/external/jqGrid/css/ui.jqgrid.css')
 
+	header
+		.container
+			h3 System Tuning
+			span(class="lead") Tell something interesting about the Tuning screen.
+
 	.container
 		.row-fluid
 			.span12
 				#message-dashboard
+					- if (typeof(msg) != 'undefined' && msg.message) {
+						.alert.alert-error
+							a.close(href="#",data-dismiss="alert") ×
+							strong.
+								Error!&nbsp;
+							span.msg-mark.
+								#{msg.message}
+					- }
 		.row-fluid
 			.span12
 				#tunable-list.grid
