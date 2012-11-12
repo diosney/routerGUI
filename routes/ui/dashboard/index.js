@@ -277,7 +277,7 @@ exports.index = function (req, res) {
 					type   :'error'
 				};
 			}
-			console.log(settings)
+
 			res.render('dashboard/index', {
 				// General Vars.
 				title   :'routerGUI · Dashboard',

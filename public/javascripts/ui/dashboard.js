@@ -29,12 +29,6 @@ jQuery(function ($) {
 				$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
 			},
 			success :function (response_from_server) {
-				/*
-				 * Show message to user.
-				 */
-				// Clear message dashboard.
-				$('#message-dashboard').html('');
-
 				if (response_from_server.type === 'notification') {
 					/*
 					 * Update Widget: System Info.
@@ -84,6 +78,9 @@ jQuery(function ($) {
 					/*
 					 * Show message to user.
 					 */
+					// Clear message dashboard.
+					$('#message-dashboard').html('');
+
 					$('.alert-error .msg-mark', '#templates-container').html(c);
 					$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
 				}
@@ -128,6 +125,11 @@ jQuery(function ($) {
 			// Clear message dashboard.
 			$('#message-dashboard').html('');
 
+			/*
+			 * Close the modal dialog.
+			 */
+			$('#dashboard-settings').modal('hide');
+
 			$('.alert-error .msg-mark', '#templates-container').html(c);
 			$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
 		},
@@ -144,7 +146,13 @@ jQuery(function ($) {
 			// Clear message dashboard.
 			$('#message-dashboard').html('');
 
+			/*
+			 * Close the modal dialog.
+			 */
+			$('#dashboard-settings').modal('hide');
+
 			if (response_from_server.type == 'notification') {
+
 				/*
 				 * Update data.
 				 */
