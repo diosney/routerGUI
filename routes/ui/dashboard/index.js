@@ -65,33 +65,17 @@ exports.index = function (req, res) {
 	 */
 	// Initialitation and simple fields.
 	widgets.sys_info = {
-		router_GUI_version:package.version,
-		hostname          :os.hostname(),
-		domain            :'',
-		nameservers       :[],
-		datetime          :'',
-		os_type           :os.type(),
-		os_arch           :os.arch(),
-		os_release        :os.release(),
-		installed_memory  :(os.totalmem() / 1024 / 1024 / 1024).toFixed(1)
+		router_GUI_version  :package.version,
+		hostname            :os.hostname(),
+		domain              :'',
+		nameserver_primary  :'',
+		nameserver_secondary:'',
+		datetime            :'',
+		os_type             :os.type(),
+		os_arch             :os.arch(),
+		os_release          :os.release(),
+		installed_memory    :(os.totalmem() / 1024 / 1024 / 1024).toFixed(1)
 	};
-
-	/*
-	 * Nameservers and domain name.
-	 */
-// Parse lines in resolv.conf file to obtain domain and nameservers.
-	var resolv_conf = fs.readFileSync('/etc/resolv.conf').toString().split('\n');
-
-	for (line in resolv_conf) {
-		// Search for system domain.
-		if (resolv_conf[line].search(/search/g) != '-1') {
-			widgets.sys_info.domain = resolv_conf[line].split('search ')[1];
-		}
-		// Search for nameservers
-		if (resolv_conf[line].search(/nameserver/g) != '-1') {
-			widgets.sys_info.nameservers.push(resolv_conf[line].split('nameserver ')[1]);
-		}
-	}
 
 	/*
 	 * Uptime.
@@ -199,7 +183,49 @@ exports.index = function (req, res) {
 	widgets.res_usage.swap = Math.floor((proc_swap[2] / proc_swap[1]) * 100);
 
 	async.parallel({
-			datetime:function (callback) {
+			domain              :function (callback_parallel) {
+				Settings.findOne({
+					name:'domain'
+				}, function (error, doc) {
+					if (!error) {
+						widgets.sys_info.domain = doc.value;
+
+						callback_parallel(null);
+					}
+					else {
+						callback_parallel(error);
+					}
+				});
+			},
+			nameserver_primary  :function (callback_parallel) {
+				Settings.findOne({
+					name:'nameserver_primary'
+				}, function (error, doc) {
+					if (!error) {
+						widgets.sys_info.nameserver_primary = doc.value;
+
+						callback_parallel(null);
+					}
+					else {
+						callback_parallel(error);
+					}
+				});
+			},
+			nameserver_secondary:function (callback_parallel) {
+				Settings.findOne({
+					name:'nameserver_secondary'
+				}, function (error, doc) {
+					if (!error) {
+						widgets.sys_info.nameserver_secondary = doc.value;
+
+						callback_parallel(null);
+					}
+					else {
+						callback_parallel(error);
+					}
+				});
+			},
+			datetime            :function (callback) {
 				exec('date', function (error, stdout, stderr) {
 					if (error === null) {
 						callback(null, stdout.replace('\n', ''));
@@ -209,7 +235,7 @@ exports.index = function (req, res) {
 					}
 				});
 			},
-			disk    :function (callback) {
+			disk                :function (callback) {
 				/*
 				 * Disk Usage.
 				 */

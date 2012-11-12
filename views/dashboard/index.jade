@@ -107,9 +107,11 @@ block content
 							th.
 								DNS Servers
 							td
-								span#nameserver-primary #{widgets.sys_info.nameservers[0]}
-								br
-								span#nameserver-secondary #{widgets.sys_info.nameservers[1]}
+								span#nameserver-primary #{widgets.sys_info.nameserver_primary}
+								- if(widgets.sys_info.nameserver_primary != '') {
+									br
+								- }
+								span#nameserver-secondary #{widgets.sys_info.nameserver_secondary}
 			.span5
 				table.table.table-striped.table-bordered.table-hover#res-usage
 					tbody
