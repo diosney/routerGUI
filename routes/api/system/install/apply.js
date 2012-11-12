@@ -4,7 +4,6 @@
 /*
  * Module dependencies.
  */
-// TODO: instalar system settings de widget interval refresh.
 var async = require('async'),
 	os = require('os'),
 	exec = require('child_process').exec,

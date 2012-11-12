@@ -1,8 +1,6 @@
 // TODO: A 404 Not Found page.
 // TODO: A 505 Not Found page.
 // TODO: See how close database connection upon app exit: mongoose.connection.close();
-
-// TODO: Set kernel.domainname.
 // TODO: Don't forget flushing the routing cache with ip route flush cache to make changes effective. Verify wether is needed for ip rule too.
 
 /**

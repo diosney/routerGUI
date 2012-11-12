@@ -1,7 +1,5 @@
 /*
  * GET System/Tuning page.
- *
- * TODO: If first_run, when accessing / then redirect to system/install.
  */
 // Load configuration file.
 var config = require('../../../config.json');

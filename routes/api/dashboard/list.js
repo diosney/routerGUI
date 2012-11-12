@@ -1,7 +1,6 @@
 /*
  * Dashboard API.
  */
-// TODO: that nameservers, domain and system hostname gets it from database.
 /*
  * Module dependencies.
  */
