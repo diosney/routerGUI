@@ -30,7 +30,6 @@ module.exports = function (req, res) {
 					Settings.findOne({
 						name:'ip_forwarding_v4'
 					}, function (error, doc) {
-
 						if (!error) {
 							doc.value = (req.body.ip_forwarding_v4) ? '1' : '0';
 

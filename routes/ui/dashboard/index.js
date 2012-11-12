@@ -9,6 +9,11 @@ var os = require('os'),
 	exec = require('child_process').exec,
 	async = require('async'),
 
+/*
+ * Load required models.
+ */
+	Settings = require('../../../models/system/settings.js'),
+
 // Load application files.
 	package = require('../../../package.json'),
 	config = require('../../../config.json');
@@ -23,10 +28,36 @@ exports.index = function (req, res) {
 	}
 
 	/*
+	 * Get Settings.
+	 */
+	var settings = {}
+
+	Settings.findOne({
+		name:'widgets_refresh_interval'
+	}, function (error, doc) {
+		if (!error) {
+			if (doc) {
+				settings.widgets_refresh_interval = doc.value;
+			}
+			else {
+				settings.widgets_refresh_interval = 3;
+			}
+		}
+		else {
+			/*
+			 * Show error message if any.
+			 */
+			var msg = {
+				message:error,
+				type   :'error'
+			};
+		}
+	});
+
+	/*
 	 * Initializing widgets container.
 	 */
 	var widgets = {
-		widgets_refresh_interval:3000 // TODO: Get refresh_interval from System Settings.
 	};
 
 	/*
@@ -246,17 +277,20 @@ exports.index = function (req, res) {
 					type   :'error'
 				};
 			}
-
+			console.log(settings)
 			res.render('dashboard/index', {
 				// General Vars.
-				title  :'routerGUI · Dashboard',
-				header :'Dashboard',
-				lead   :'Tell something interesting about the dashboard screen.',
-				menu   :'dashboard',
-				msg    :msg,
+				title   :'routerGUI · Dashboard',
+				menu    :'dashboard',
+				msg     :msg,
+
+				/*
+				 * Settings.
+				 */
+				settings:settings,
 
 				// Widgets.
-				widgets:widgets
+				widgets :widgets
 			});
 		});
 };

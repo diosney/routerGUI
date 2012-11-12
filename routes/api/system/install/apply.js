@@ -4,6 +4,7 @@
 /*
  * Module dependencies.
  */
+// TODO: instalar system settings de widget interval refresh.
 var async = require('async'),
 	exec = require('child_process').exec,
 	fs = require('fs');
@@ -44,6 +45,25 @@ module.exports = function (req, res) {
 				 * Install system into database.
 				 */
 				async.parallel([
+					function (callback_parallel) {
+						/*
+						 * Dashboard Settings.
+						 */
+						// Instantiate the model and fill it with the default data.
+						var widgets_refresh_interval = new Settings({
+							name:'widgets_refresh_interval',
+							value:default_file.system.settings.widgets_refresh_interval
+						});
+
+						widgets_refresh_interval.save(function (error) {
+							if (error) {
+								callback_parallel(error);
+							}
+							else {
+								callback_parallel(null);
+							}
+						});
+					},
 					function (callback_parallel) {
 						/*
 						 * System/Tuning.

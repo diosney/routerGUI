@@ -7,6 +7,13 @@ block navigation
 	include ../layouts/navigation
 
 block content
+	header
+	.container
+		h3 Dashboard
+			a.btn.pull-right(href="#dashboard-settings",role="button",data-toggle="modal")
+				img(src="/images/icons/cog.png")
+		span(class="lead") Tell something interesting about the dashboard screen.
+
 	.container
 		.row-fluid
 			.span12
@@ -22,129 +29,153 @@ block content
 
 				#hidden-fields.ui-helper-hidden
 					input(type='hidden',name='cpus_qty',value='#{widgets.sys_info.cpus.length}')
-					input(type='hidden',name='widgets_refresh_interval',value='#{widgets.widgets_refresh_interval}')
+
+				form.ajax-form.form-horizontal(action='/api/dashboard')
+					#dashboard-settings.modal.hide.fade(role="dialog",aria-labelledby="DashboardSettings",aria-hidden="true")
+
+						.modal-header
+							button(type="button",class="close",data-dismiss="modal",aria-hidden="true") ×
+							h3(id="myModalLabel") Dashboard Settings
+
+						.modal-body
+							table.table.table-striped.table-hover
+								tbody
+									tr
+										th
+											label(for='widgets_refresh_interval') Widgets Refresh Interval
+										td
+											label
+												input(type='text',id='widgets_refresh_interval',name='widgets_refresh_interval',value='#{settings.widgets_refresh_interval}',placeholder="Widgets Refresh Interval")
+												br
+												span.field-description In seconds.
+
+						.modal-footer
+							button(class="btn",data-dismiss="modal",aria-hidden="true") Close
+							button(class="btn btn-primary",data-dismiss="modal") Save changes
+
 		.row-fluid
-				.span7
-					table.table.table-striped.table-bordered.table-hover
-						tbody
-							tr.info
-								td(colspan=2).align-center
+			.span7
+				table.table.table-striped.table-bordered.table-hover
+					tbody
+						tr.info
+							td(colspan=2).align-center
+								strong.
+									System Information
+						tr
+							th.
+								System Name
+							td.
+								#{widgets.sys_info.hostname}
+						tr
+							th.
+								Domain
+							td.
+								#{widgets.sys_info.domain}
+						tr
+							th.
+								Version
+							td.
+								#{widgets.sys_info.router_GUI_version}
+						tr
+							th.
+								Platform
+							td.
+								#{widgets.sys_info.os_type} #{widgets.sys_info.os_arch} #{widgets.sys_info.os_release}
+						tr
+							th.
+								CPU
+							td
+								for cpu in widgets.sys_info.cpus
 									strong.
-										System Information
-							tr
-								th.
-									System Name
-								td.
-									#{widgets.sys_info.hostname}
-							tr
-								th.
-									Domain
-								td.
-									#{widgets.sys_info.domain}
-							tr
-								th.
-									Version
-								td.
-									#{widgets.sys_info.router_GUI_version}
-							tr
-								th.
-									Platform
-								td.
-									#{widgets.sys_info.os_type} #{widgets.sys_info.os_arch} #{widgets.sys_info.os_release}
-							tr
-								th.
-									CPU
-								td
-									for cpu in widgets.sys_info.cpus
-										strong.
-											#{cpu.qty}x&nbsp;
-										span.
-											#{cpu.model}
-										br
-							tr
-								th.
-									Installed Memory
-								td.
-									#{widgets.sys_info.installed_memory} GiB
-							tr
-								th.
-									Uptime
-								td
-									span#uptime #{widgets.sys_info.uptime}
-							tr
-								th.
-									Date and Time
-								td
-									span#datetime #{widgets.sys_info.datetime}
-							tr
-								th.
-									DNS Servers
-								td
-									span#nameserver-primary #{widgets.sys_info.nameservers[0]}
+										#{cpu.qty}x&nbsp;
+									span.
+										#{cpu.model}
 									br
-									span#nameserver-secondary #{widgets.sys_info.nameservers[1]}
-				.span5
-					table.table.table-striped.table-bordered.table-hover#res-usage
-						tbody
-							tr.info
-								td(colspan=2).align-center
-									strong.
-										Resources Usage
-							tr
-								th.
-									CPU
-								td
-									for cpu,i in widgets.res_usage.cpus
-										.progress.progress-striped(class="progress-#{cpu.status}")
-											.bar(id='cpu-#{i}',style='width:#{cpu.usage}%;')
-										span(id='cpu-number-#{i}') #{cpu.usage}%
-										br
-							tr
-								th.
-									Load Average
-								td.load-cell
-									for load,i in widgets.res_usage.load_average
-										span(id='load_average-#{i}') #{load}
-										span.field-description
-											- if (i == 0) {
-												| - 1min average.
-											- } else if (i == 1) {
-												| - 5min average.
-											- } else if (i == 2) {
-												| - 15min average.
-											- }
-										br
-							tr
-								th.
-									Memory
-								td
-									.progress.progress-striped(class="progress-#{widgets.res_usage.memory.status}")
-										#memory.bar(style='width:#{widgets.res_usage.memory.usage}%;')
-									span#memory-number #{widgets.res_usage.memory.usage}%
-							tr
-								th.
-									SWAP
-								td
-									.progress.progress-striped.progress-danger
-										#swap.bar(style='width:#{widgets.res_usage.swap}%;')
-									span#swap-number #{widgets.res_usage.swap}%
-							tr
-								th.
-									Disk
-								td.disk-usage-cell
-									for disk,i in widgets.res_usage.disks
-										.progress.progress-striped(class="progress-#{disk.status}")
-											.bar(id='disk-#{i}',style='width:#{disk.usage}%;')
-										span(id='disk-number-#{i}') #{disk.usage}%
-										a(rel="tooltip",data-html="true",data-placement="right",title="Mounted on: <strong>#{disk.path}</strong><br/>Filesystem: <strong>#{disk.device}</strong>")
-											img(class="icon-help",src="/images/icons/help.png")
-										br
+						tr
+							th.
+								Installed Memory
+							td.
+								#{widgets.sys_info.installed_memory} GiB
+						tr
+							th.
+								Uptime
+							td
+								span#uptime #{widgets.sys_info.uptime}
+						tr
+							th.
+								Date and Time
+							td
+								span#datetime #{widgets.sys_info.datetime}
+						tr
+							th.
+								DNS Servers
+							td
+								span#nameserver-primary #{widgets.sys_info.nameservers[0]}
+								br
+								span#nameserver-secondary #{widgets.sys_info.nameservers[1]}
+			.span5
+				table.table.table-striped.table-bordered.table-hover#res-usage
+					tbody
+						tr.info
+							td(colspan=2).align-center
+								strong.
+									Resources Usage
+						tr
+							th.
+								CPU
+							td
+								for cpu,i in widgets.res_usage.cpus
+									.progress.progress-striped(class="progress-#{cpu.status}")
+										.bar(id='cpu-#{i}',style='width:#{cpu.usage}%;')
+									span(id='cpu-number-#{i}') #{cpu.usage}%
+									br
+						tr
+							th.
+								Load Average
+							td.load-cell
+								for load,i in widgets.res_usage.load_average
+									span(id='load_average-#{i}') #{load}
+									span.field-description
+										- if (i == 0) {
+											| - 1min average.
+										- } else if (i == 1) {
+											| - 5min average.
+										- } else if (i == 2) {
+											| - 15min average.
+										- }
+									br
+						tr
+							th.
+								Memory
+							td
+								.progress.progress-striped(class="progress-#{widgets.res_usage.memory.status}")
+									#memory.bar(style='width:#{widgets.res_usage.memory.usage}%;')
+								span#memory-number #{widgets.res_usage.memory.usage}%
+						tr
+							th.
+								SWAP
+							td
+								.progress.progress-striped.progress-danger
+									#swap.bar(style='width:#{widgets.res_usage.swap}%;')
+								span#swap-number #{widgets.res_usage.swap}%
+						tr
+							th.
+								Disk
+							td.disk-usage-cell
+								for disk,i in widgets.res_usage.disks
+									.progress.progress-striped(class="progress-#{disk.status}")
+										.bar(id='disk-#{i}',style='width:#{disk.usage}%;')
+									span(id='disk-number-#{i}') #{disk.usage}%
+									a(rel="tooltip",data-html="true",data-placement="right",title="Mounted on: <strong>#{disk.path}</strong><br/>Filesystem: <strong>#{disk.device}</strong>")
+										img(class="icon-help",src="/images/icons/help.png")
+									br
 
 
 block footer
 	include ../layouts/footer
 
 block scripts
+	script(type='text/javascript', src='/javascripts/external/form/jquery.form.js')
 	script(type='text/javascript', src='/javascripts/ui/dashboard.js')
 
 block templates

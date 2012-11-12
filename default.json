@@ -1,7 +1,7 @@
 {
 	"system" :{
 		"settings":{
-			"widgets_refresh_interval":3000
+			"widgets_refresh_interval":3
 		},
 		"tuning"  :[
 			{

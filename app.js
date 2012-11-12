@@ -105,6 +105,7 @@ app.get('/api', function (req, res) {
 
 // Dashboard.
 app.get('/api/dashboard', routes_api_dashboard.list);
+app.post('/api/dashboard', routes_api_dashboard.apply);
 
 /*
  * System.

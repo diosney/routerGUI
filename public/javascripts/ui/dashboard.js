@@ -9,9 +9,9 @@ jQuery(function ($) {
 	$('[rel="tooltip"]').tooltip();
 
 	/*
-	 * Auto-update on intervals the data shown.
+	 * Function that gather the data from server.
 	 */
-	setInterval(function () {
+	function gather_data() {
 		$.ajax({
 			cache   :false,
 			data    :{
@@ -72,6 +72,13 @@ jQuery(function ($) {
 						$('#disk-' + i).closest('.progress').removeClass('progress-info progress-success progress-warning progress-danger').addClass('progress-' + response_from_server.data.widgets.res_usage.disks[i].status);
 						$('#disk-number-' + i).text(response_from_server.data.widgets.res_usage.disks[i].usage + '%');
 					}
+
+					/*
+					 * Calls recursively this function to update the interval.
+					 */
+					setTimeout(function () {
+						gather_data();
+					}, 1000 * $('[name="widgets_refresh_interval"]').val());
 				}
 				else if (response_from_server.type == 'error') {
 					/*
@@ -84,5 +91,79 @@ jQuery(function ($) {
 			type    :'GET',
 			url     :'api/dashboard'
 		});
-	}, $('[name="widgets_refresh_interval"]').val() || 3000);
+	}
+
+	/*
+	 * Auto-update on intervals the data shown.
+	 */
+	setTimeout(function () {
+		gather_data();
+	}, 1000 * $('[name="widgets_refresh_interval"]').val());
+
+	/*
+	 * Ajax Form. Apply Changes.
+	 */
+	$('.ajax-form').ajaxForm({
+		beforeSubmit:function (form_data_arr, form$) {
+			/*
+			 * Used to disable the button and show the loader.
+			 */
+			$('.ajax-loader', form$).show();
+			$('button[type="submit"]', form$).button('disable');
+		},
+		data        :{
+			object:'widget'
+		},
+		dataType    :'json',
+		error       :function (a, b, c) {
+			/*
+			 * Remove ajax loader and disable button.
+			 */
+			$('.ajax-loader').hide();
+			$('button[type="submit"]').button('enable');
+
+			/*
+			 * Show message to user.
+			 */
+			// Clear message dashboard.
+			$('#message-dashboard').html('');
+
+			$('.alert-error .msg-mark', '#templates-container').html(c);
+			$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
+		},
+		success     :function (response_from_server, statusText, xhr, form$) {
+			/*
+			 * Remove ajax loader and show button.
+			 */
+			$('.ajax-loader', form$).hide();
+			$('button[type="submit"]', form$).button('enable');
+
+			/*
+			 * Show message to user.
+			 */
+			// Clear message dashboard.
+			$('#message-dashboard').html('');
+
+			if (response_from_server.type == 'notification') {
+				/*
+				 * Update data.
+				 */
+				$('[name="widgets_refresh_interval"]').val(response_from_server.data.widgets_refresh_interval);
+
+				/*
+				 * Show server message to user.
+				 */
+				$('.alert-success .msg-mark', '#templates-container').html(response_from_server.message);
+				$('.alert-success', '#templates-container').clone().appendTo('#message-dashboard');
+			}
+			else if (response_from_server.type == 'error') {
+				/*
+				 * Show server message to user.
+				 */
+				$('.alert-error .msg-mark', '#templates-container').html(response_from_server.message);
+				$('.alert-error', '#templates-container').clone().appendTo('#message-dashboard');
+			}
+		},
+		type        :'POST'
+	});
 });

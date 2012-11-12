@@ -20,6 +20,12 @@ body {
 .hidden {
 	display: none;
 }
+.position-absolute {
+	position: absolute;
+}
+.position-relative {
+	position: relative;
+}
 /* =Images.
  -------------------------------------------------------------- */
 .ajax-loader {
@@ -122,4 +128,9 @@ td label {
  -------------------------------------------------------------- */
 .icon-help {
 	margin-left: 0.5em;
+}
+/* =Headings.
+ -------------------------------------------------------------- */
+h3 a {
+	margin-top: 0.5em;
 }
