@@ -1,5 +1,5 @@
 /*
- * Model for Devices.
+ * Model for Addresses.
  */
 /*
  * Module dependencies.

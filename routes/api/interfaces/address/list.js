@@ -1,5 +1,5 @@
 /*
- * POST Interfaces/Devices API.
+ * Interfaces/Addresses API.
  */
 /*
  * Module dependencies.

@@ -126,6 +126,10 @@ td label {
 	color: #d41726;
 	font-weight: bold !important;
 }
+.status-danger {
+	color: #9800d4;
+	font-weight: bold !important;
+}
 .status-positive {
 	color: green;
 	font-weight: bold !important;

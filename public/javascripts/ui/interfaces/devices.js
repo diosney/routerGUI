@@ -1,6 +1,3 @@
-/*
- * Scripts for Interfaces/Devices elements behaviour.
- */
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
@@ -26,7 +23,7 @@ jQuery(function ($) {
 				index         :'status',
 				name          :'status',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :10
 			},
@@ -38,7 +35,7 @@ jQuery(function ($) {
 				name    :'identifier',
 				search  :true,
 				stype   :'text',
-				sortable:true,
+				sortable      :false,
 				width   :10
 			},
 			{
@@ -50,7 +47,7 @@ jQuery(function ($) {
 				index         :'MTU',
 				name          :'MTU',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :10
 			},
@@ -63,7 +60,7 @@ jQuery(function ($) {
 				index         :'MAC',
 				name          :'MAC',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :20
 			},
@@ -76,7 +73,7 @@ jQuery(function ($) {
 				index         :'description',
 				name          :'description',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :30
 			}
@@ -94,6 +91,9 @@ jQuery(function ($) {
 			$('.column_status').each(function (index, element) {
 				if ($(this).text() == 'UP') {
 					$(this).addClass('status-positive');
+				}
+				else if ($(this).text() == 'NOT PRESENT') {
+					$(this).addClass('status-danger');
 				}
 				else {
 					$(this).addClass('status-negative');
@@ -231,9 +231,9 @@ jQuery(function ($) {
 					index         :'family',
 					name          :'family',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :10
+					width         :6
 				},
 				{
 					align         :'center',
@@ -252,9 +252,9 @@ jQuery(function ($) {
 					index         :'scope',
 					name          :'scope',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :20
+					width         :6
 				},
 				{
 					align         :'center',
@@ -265,9 +265,9 @@ jQuery(function ($) {
 					index         :'address',
 					name          :'address',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :20
+					width         :10
 				},
 				{
 					align         :'center',
@@ -278,9 +278,9 @@ jQuery(function ($) {
 					index         :'net_mask',
 					name          :'net_mask',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :10
+					width         :6
 				},
 				{
 					align         :'left',
@@ -291,7 +291,7 @@ jQuery(function ($) {
 					index         :'description',
 					name          :'description',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
 					width         :30
 				}
@@ -299,7 +299,7 @@ jQuery(function ($) {
 			colNames         :['Family', 'Scope', 'Address', 'Netmask', 'Description'],
 			datatype         :'json',
 			deselectAfterSort:false,
-			emptyrecords     :'There is no Address yet.',
+			emptyrecords     :'There is no <strong>Address</strong> yet.',
 			forceFit         :true,
 			gridview         :false,
 			height           :'auto',

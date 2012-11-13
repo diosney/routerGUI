@@ -1,5 +1,5 @@
 /*
- * POST Services/IP Sets API.
+ * Interfaces/Devices API.
  */
 /*
  * Module dependencies.
@@ -43,9 +43,12 @@ module.exports = function (req, res) {
 						identifier:req.body.id
 					}, function (error, doc) {
 						if (!error) {
+							if (device.identifier != 'lo' || device.identifier.search('vboxnet') == -1) {
+								doc.MAC = req.body.MAC;
+								doc.MTU = req.body.MTU;
+							}
+
 							doc.status = req.body.status;
-							doc.MAC = req.body.MAC;
-							doc.MTU = req.body.MTU;
 							doc.description = req.body.description;
 
 							// Save changes into database.

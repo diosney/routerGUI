@@ -1,5 +1,5 @@
 /*
- * POST Interfaces/Devices API.
+ * Interfaces/Devices API.
  */
 /*
  * Module dependencies.
@@ -21,7 +21,7 @@ module.exports = function (req, res) {
 	switch (req.query.object) {
 		case 'device':
 			async.waterfall([
-				function (callback) {
+				function (callback_waterfall) {
 					/*
 					 *  Get the data for the currently list of installed devices.
 					 *
@@ -34,7 +34,8 @@ module.exports = function (req, res) {
 					exec(Device.cl_link_show(), function (error, stdout, stderr) {
 						if (error === null) {
 							var output = stdout.split('\n'),
-								devices = [];
+								devices = [],
+								devices_ids = [];
 
 							for (var line = 0; line < output.length - 1; line += 2) { // The last item is empty.
 								is_vlan = (typeof(output[line].split(': ')[1].split('@')[1]) == 'undefined') ? false : true;
@@ -47,20 +48,26 @@ module.exports = function (req, res) {
 										status    :(output[line].split('state ')[1].split(' ')[0] == 'UNKNOWN') ? 'UP' : output[line].split('state ')[1].split(' ')[0],
 										MAC       :(output[line + 1].trim().split(' ')[0] != 'link/ppp') ? output[line + 1].trim().split(' ')[1] : ''
 									});
+
+									/*
+									 * Needed in the next step, this is to save processing time.
+									 * Is needed in order to search for a device not present in the system.
+									 */
+									devices_ids.push(output[line].split(': ')[1]);
 								}
 							}
 
-							callback(null, devices);
+							callback_waterfall(null, devices, devices_ids);
 						}
 						else {
-							callback(error);
+							callback_waterfall(stderr);
 						}
 					});
 				},
-				function (devices, callback) {
+				function (devices, devices_ids, callback_waterfall) {
 					/*
 					 * Update the state of devices in DB taking care with the current status.
-					 *
+					 * If present update data or add them to database.
 					 */
 					async.forEach(devices, function (item, callback_forEach) {
 						Device.findOne({
@@ -112,10 +119,60 @@ module.exports = function (req, res) {
 						});
 					}, function (error) {
 						if (error == null) {
-							callback(null, devices);
+							callback_waterfall(null, devices, devices_ids);
 						}
 						else {
-							callback(error);
+							callback_waterfall(error);
+						}
+					});
+				},
+				function (devices, devices_ids, callback_waterfall) {
+					/*
+					 * If not present update status "NOT PRESENT".
+					 */
+					Device.find({}, function (error, docs) {
+						if (!error) {
+							async.forEach(docs, function (item, callback_forEach) {
+								if (devices_ids.indexOf(item.identifier) == -1) {
+									/*
+									 * It is not present.
+									 */
+									Device.findOne({
+										identifier:item.identifier
+									}, function (error, doc) {
+										if (error == null) {
+											doc.status = 'NOT PRESENT';
+
+											// Save the object to database.
+											doc.save(function (error) {
+												if (error) {
+													callback_forEach(error);
+												}
+												else {
+													callback_forEach(null);
+												}
+											});
+										}
+										else {
+											callback_forEach(error);
+										}
+									});
+								}
+								else {
+									// Ensures good return.
+									callback_forEach(null);
+								}
+							}, function (error) {
+								if (error == null) {
+									callback_waterfall(null, devices);
+								}
+								else {
+									callback_waterfall(error);
+								}
+							});
+						}
+						else {
+							callback_waterfall(error);
 						}
 					});
 				}
@@ -126,29 +183,53 @@ module.exports = function (req, res) {
 					response_from_server.total = 1;
 					response_from_server.rows = [];
 
-					for (item in devices) {
-						if (devices[item].identifier.search('@') == -1) {
-							// Is a physical device (not a VLAN).
-							response_from_server.rows.push({
-								id  :devices[item].identifier,
-								cell:[
-									devices[item].status,
-									devices[item].identifier,
-									devices[item].MTU,
-									devices[item].MAC,
-									devices[item].description
-								]
-							});
+					/*
+					 * List Devices from database, which is now updated.
+					 */
+					Device.find({
+					}, {}, {
+						skip :req.query.page * req.query.rows - req.query.rows,
+						limit:req.query.rows,
+						sort :'identifier'
+					}, function (error, docs) {
+						if (!error) {
+							var count = docs.length;
+
+							response_from_server.records = count;
+							response_from_server.page = req.query.page;
+							response_from_server.total = Math.ceil(count / req.query.rows);
+							response_from_server.rows = [];
+
+							for (item in docs) {
+								response_from_server.rows.push({
+									id  :docs[item].identifier,
+									cell:[
+										docs[item].status,
+										docs[item].identifier,
+										docs[item].MTU,
+										docs[item].MAC,
+										docs[item].description
+									]
+								});
+							}
+
+							// Return the gathered data.
+							res.json(response_from_server);
 						}
-					}
+						else {
+							console.log('error')
+							// TODO: See how pass error message to grid list action and show it.
+							console.log('// TODO: See how pass error message to grid list action and show it.');
+						}
+					});
 				}
 				else {
 					response_from_server.message = error;
 					response_from_server.type = 'error';
-				}
 
-				// Return the gathered data.
-				res.json(response_from_server);
+					// Return the gathered data.
+					res.json(response_from_server);
+				}
 			});
 
 			break;

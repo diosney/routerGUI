@@ -15,7 +15,7 @@ var VLAN = new Schema({
 	parent_device:String,
 	status       :{
 		type:String,
-		enum:['UP', 'DOWN']
+		enum:['UP', 'DOWN','LOWERLAYERDOWN']
 	},
 	tag          :{
 		type   :Number,
