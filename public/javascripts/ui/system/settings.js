@@ -1,10 +1,7 @@
-/*
- * Scripts for Services/IPSets elements behaviour.
- */
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
-	 * Ajax Form. Apply Changes.
+	 * Ajax Form.
 	 */
 	$('.ajax-form').ajaxForm({
 		beforeSubmit:function (form_data_arr, form$) {

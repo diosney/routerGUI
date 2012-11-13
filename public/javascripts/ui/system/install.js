@@ -1,10 +1,7 @@
-/*
- * Scripts for Services/IPSets elements behaviour.
- */
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
-	 * Ajax Form. Apply Changes.
+	 * Ajax Form.
 	 */
 	$('.ajax-form').ajaxForm({
 		beforeSubmit:function (form_data_arr, form$) {
@@ -51,9 +48,10 @@ jQuery(function ($) {
 				$('.alert-success .msg-mark', '#templates-container').html(response_from_server.message);
 				$('.alert-success', '#templates-container').clone().appendTo('#message-dashboard');
 
-				if (response_from_server.data.installed == true) {
-					$('#to-be-installed button').remove();
-				}
+				/*
+				 * Hides the install button to prevent issues.
+				 */
+				$('button[value="install"]').hide();
 			}
 			else if (response_from_server.type == 'error') {
 				/*

@@ -1,5 +1,5 @@
 /*
- * GET System/Tuning page.
+ * System/Install page.
  */
 // Load configuration file.
 var config = require('../../../config.json');

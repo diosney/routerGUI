@@ -9,9 +9,6 @@ html
 		link(rel='stylesheet', type='text/css', href='/stylesheets/install.css')
 	body
 		.container
-			h3#logo
-				img(src="/images/logos/main.png",alt="routerGUI Logo")
-
 			.row-fluid
 				.span12
 					#message-dashboard
@@ -19,23 +16,31 @@ html
 				.span12
 					form.ajax-form.form-horizontal(action='/api/system/install',method='POST')
 						#to-be-installed(class=installed ? 'hidden' : '')
-							h3 Welcome
-							p
-								| Welcome to the installation process!
+							.well
+								h3 Welcome to the installation screen!
+							.well
+								| Thanks for give a try to <strong>routerGUI</strong>.
 								br
-								| You may want to browse the ReadMe (put a link somewhere) documentation at your leisure.
 								br
-								| Explain that this for 'til only checks database access and install the defaults values into database.
-							button.btn.btn-primary.btn-large(type='submit',name='submit',value="install") Install System
-							img.ajax-loader(src='/images/ajax-loader-light.gif')
+								p The installation process is very quickly so in <strong>few seconds</strong> you will be configuring the system.
+
+								p  When you click the <strong>Install</strong> button the system will be installed with sensible default values that you can change at any time though the system screens.
+
+								.alert.alert-danger Once you install the system it is recommended to <strong>NOT CONFIGURE IT</strong> by any means but through the system to remove the chances of database-system unsynced states.
+								button.btn.btn-primary.btn-large(type='submit',name='submit',value="install") Install System
+								img.ajax-loader(src='/images/ajax-loader-light.gif')
 						#installed(class=installed ? '' : 'hidden')
-							h3 Already Installed
-							p
-								| You appear to have already installed WordPress.
+							.well
+								h3 Already Installed!
+
+							.alert.alert-success
+								| You appear to have already installed routerGUI.
 								br
-								| To reinstall please clear your old database tables and set configuration variable installed = false.
+								| To reinstall please clear your old database tables and set configuration variable <strong>installed</strong> to false.
 							br
-							a.btn.btn-primary.btn-large(href="/") Back to Dashboard
+							a.btn.btn-primary(href="/")
+								i.icon-home.icon-white
+								| &nbsp;Go to Dashboard
 
 		footer.footer
 			.container

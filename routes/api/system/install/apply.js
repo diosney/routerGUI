@@ -1,5 +1,5 @@
 /*
- * POST System/Install API.
+ * System/Install API.
  */
 /*
  * Module dependencies.
@@ -7,21 +7,22 @@
 var async = require('async'),
 	os = require('os'),
 	exec = require('child_process').exec,
-	fs = require('fs');
+	fs = require('fs'),
 
 /*
  * Load required models.
  */
-Tunable = require('../../../../models/system/tunable.js'),
+	Tunable = require('../../../../models/system/tunable.js'),
+	Settings = require('../../../../models/system/settings.js'),
+
 	Device = require('../../../../models/interfaces/device.js'),
 	Address = require('../../../../models/interfaces/address.js'),
 	VLAN = require('../../../../models/interfaces/vlan.js'),
+
 	Routing_Rule = require('../../../../models/routing/rule.js'),
-	Routing_Table = require('../../../../models/routing/table.js'),
+	Routing_Table = require('../../../../models/routing/table.js');
 
-	Settings = require('../../../../models/system/settings.js');
-
-// Load default files.
+// Load default configuration file.
 var default_file = require('../../../../default.json');
 
 module.exports = function (req, res) {
@@ -33,16 +34,15 @@ module.exports = function (req, res) {
 
 	switch (req.body.submit) {
 		case 'install':
-			// Check if system is already installed.
+			/*
+			 * Check if system is already installed.
+			 */
 			if (!config.database.installed) {
 				/*
 				 *  System is not installed yet.
-				 */
-				/*
-				 * Ensures that code is executed only if there was no error.
-				 */
-				/*
-				 * Install system into database.
+				 *
+				 *  Ensures that code is executed in a parallel fashion with each module performing only one task.
+				 * This approach ensures fast execution time and complete separation between different functions.
 				 */
 				async.parallel([
 					function (callback_parallel) {
@@ -51,7 +51,7 @@ module.exports = function (req, res) {
 						 */
 						// Instantiate the model and fill it with the default data.
 						var widgets_refresh_interval = new Settings({
-							name:'widgets_refresh_interval',
+							name :'widgets_refresh_interval',
 							value:default_file.system.settings.widgets_refresh_interval
 						});
 
@@ -68,13 +68,16 @@ module.exports = function (req, res) {
 						/*
 						 * System Settings.
 						 */
-						// Hostname.
+						/*
+						 * Hostname.
+						 */
 						// Instantiate the model and fill it with the default data.
 						var hostname = new Settings({
-							name:'hostname',
+							name :'hostname',
 							value:os.hostname()
 						});
 
+						// Save value into database.
 						hostname.save(function (error) {
 							if (error) {
 								callback_parallel(error);
@@ -84,11 +87,13 @@ module.exports = function (req, res) {
 							}
 						});
 
-						var	resolv_conf = fs.readFileSync('/etc/resolv.conf').toString().split('\n'),
+						/*
+						 * Domain and nameservers.
+						 */
+						var resolv_conf = fs.readFileSync('/etc/resolv.conf').toString().split('\n'),
 							domain = '',
 							nameservers = [];
 
-						// Domain and nameservers
 						// Parse lines in resolv.conf file to obtain domain and nameservers.
 						for (line in resolv_conf) {
 							// Search for system domain.
@@ -113,7 +118,7 @@ module.exports = function (req, res) {
 						 * Save settings into database.
 						 */
 						var domain_buf = new Settings({
-							name:'domain',
+							name :'domain',
 							value:domain
 						});
 
@@ -127,7 +132,7 @@ module.exports = function (req, res) {
 						});
 
 						var nameserver_primary = new Settings({
-							name:'nameserver_primary',
+							name :'nameserver_primary',
 							value:nameservers[0]
 						});
 
@@ -141,7 +146,7 @@ module.exports = function (req, res) {
 						});
 
 						var nameserver_secondary = new Settings({
-							name:'nameserver_secondary',
+							name :'nameserver_secondary',
 							value:nameservers[0]
 						});
 
@@ -165,6 +170,7 @@ module.exports = function (req, res) {
 							// Instantiate the model and fill it with the default data.
 							var tunable = new Tunable(item);
 
+							// Add tunables into system.
 							exec(tunable.cl_apply(), function (error, stdout, stderr) {
 								if (error === null) {
 									// Save the object to database.
@@ -660,7 +666,7 @@ module.exports = function (req, res) {
 								}
 							});
 
-							response_from_server.message = 'Installed Successfully! Go to the <a href="/">Dashboard</a> to beginning the use of the system.';
+							response_from_server.message = 'That\'s it! Disappointed? Go to the <a href="/">Dashboard</a> to beginning the use of the system.';
 							response_from_server.type = 'notification';
 							response_from_server.data = {
 								installed:true
@@ -677,9 +683,7 @@ module.exports = function (req, res) {
 						// Return the gathered data.
 						res.json(response_from_server);
 					}
-
-				)
-				;
+				);
 			}
 			else {
 				/*

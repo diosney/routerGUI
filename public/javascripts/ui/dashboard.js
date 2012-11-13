@@ -1,6 +1,3 @@
-/*
- * Scripts for Dashboard elements behaviour.
- */
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
@@ -98,7 +95,7 @@ jQuery(function ($) {
 	}, 1000 * $('[name="widgets_refresh_interval"]').val());
 
 	/*
-	 * Ajax Form. Apply Changes.
+	 * Ajax Form.
 	 */
 	$('.ajax-form').ajaxForm({
 		beforeSubmit:function (form_data_arr, form$) {
