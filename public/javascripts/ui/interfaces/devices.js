@@ -214,7 +214,7 @@ jQuery(function ($) {
 		var address_subgrid = $('#' + subgrid_table_id).jqGrid({
 			altRows          :false,
 			autowidth        :true,
-			caption          :'Address list for device ' + row_id,
+			caption          :'',
 			colModel         :[
 				{
 					align         :'center',
@@ -260,6 +260,9 @@ jQuery(function ($) {
 					align         :'center',
 					classes       :'column_address',
 					editable      :true,
+					editrules     :{
+						required:true
+					},
 					edittype      :'text',
 					firstsortorder:'asc',
 					index         :'address',
@@ -273,6 +276,9 @@ jQuery(function ($) {
 					align         :'center',
 					classes       :'column_net_mask',
 					editable      :true,
+					editrules     :{
+						required:true
+					},
 					edittype      :'text',
 					firstsortorder:'asc',
 					index         :'net_mask',
@@ -296,7 +302,7 @@ jQuery(function ($) {
 					width         :30
 				}
 			],
-			colNames         :['Family', 'Scope', 'Address', 'Netmask', 'Description'],
+			colNames         :['Family', 'Scope', 'Address <span class="color-red">*</span>', 'Netmask <span class="color-red">*</span>', 'Description'],
 			datatype         :'json',
 			deselectAfterSort:false,
 			emptyrecords     :'There is no <strong>Address</strong> yet.',
@@ -311,7 +317,8 @@ jQuery(function ($) {
 			pager            :'#' + pager_id,
 			postData         :{
 				device_id:row_id,
-				object   :'address'
+				object   :'address',
+				device_status:$('.column_status','#' + row_id).text()
 			},
 			prmNames         :{
 				sort :'orderby',
@@ -320,7 +327,7 @@ jQuery(function ($) {
 			rowList          :[10, 50, 100],
 			rowNum           :10,
 			rownumbers       :true,
-			sortname         :'tag',
+			sortname         :'family',
 			url              :'/api/interfaces/addresses',
 			viewrecords      :true
 		}).jqGrid('navGrid', '#' + pager_id, {

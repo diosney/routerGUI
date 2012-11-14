@@ -1,5 +1,5 @@
 /*
- * POST Services/IP Sets API.
+ * Interfaces/Addresses API.
  */
 /*
  * Module dependencies.

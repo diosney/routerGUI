@@ -134,6 +134,9 @@ td label {
 	color: green;
 	font-weight: bold !important;
 }
+.column_identifier {
+	font-weight: bold !important;
+}
 /* =Icons.
  -------------------------------------------------------------- */
 .icon-help {

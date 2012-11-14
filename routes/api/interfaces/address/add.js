@@ -1,5 +1,5 @@
 /*
- * POST System/Tuning API.
+ * Interfaces/Addresses API.
  */
 /*
  * Module dependencies.
@@ -24,7 +24,7 @@ module.exports = function (req, res) {
 			 */
 			var parent_device_id = req.body.device_id;
 			if (parent_device_id.split('-separator-').length > 1) {
-				parent_device_id = parent_device_id.replace('-separator-','.');
+				parent_device_id = parent_device_id.replace('-separator-', '.');
 			}
 
 			var address = new Address({
@@ -38,9 +38,6 @@ module.exports = function (req, res) {
 
 			exec(address.cl_address_add(), function (error, stdout, stderr) {
 				if (error === null) {
-					/*
-					 * TODO: Save changes to database.
-					 */
 					// Save changes into database.
 					address.save(function (error) {
 						if (!error) {
