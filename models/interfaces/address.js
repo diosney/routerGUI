@@ -36,13 +36,17 @@ Address.statics.cl_address_show = function cl_address_show(device) {
 	return 'ip address show ' + device;
 };
 
+Address.statics.cl_address_flush = function cl_address_flush(device) {
+	return 'ip address flush ' + device;
+};
+
 /*
  * Methods definitions.
  *
  * Used to build the object dependant command line strings.
  */
 Address.methods.cl_address_add = function cl_address_add() {
-	return 'ip address add dev ' + this.parent_device + ' local ' + this.address + '/' + this.net_mask + ' broadcast +';
+	return 'ip address add dev ' + this.parent_device + ' local ' + this.address + '/' + this.net_mask + ((this.family == 'inet')?' broadcast +':'');
 };
 
 Address.methods.cl_address_delete = function cl_address_delete() {

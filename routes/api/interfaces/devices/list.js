@@ -11,8 +11,7 @@ var mongoose = require('mongoose'),
 /*
  * Load required models.
  */
-	Device = require('../../../../models/interfaces/device.js'),
-	Address = require('../../../../models/interfaces/address.js');
+	Device = require('../../../../models/interfaces/device.js');
 
 module.exports = function (req, res) {
 	// Initialize response.
