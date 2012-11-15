@@ -104,7 +104,7 @@ jQuery(function ($) {
 			add          :true,
 			addtext      :'<strong>Add</strong>',
 			del          :true,
-			deltext      :'<strong>Delete from DB</strong>',
+			deltext      :'<strong>Delete</strong>',
 			search       :false,
 			refresh      :true,
 			refreshtext  :'<strong>Refresh</strong>',
