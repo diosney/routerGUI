@@ -233,7 +233,9 @@ module.exports = function (req, res) {
 												else {
 													// Is VLAN.
 													var status = (output[line].split('state ')[1].split(' ')[0] == 'UNKNOWN') ? 'UP' : output[line].split('state ')[1].split(' ')[0];
-													status = 'LOWERLAYERDOWN';
+													if (status == 'LOWERLAYERDOWN') {
+														status = 'PARENT DOWN';
+													}
 
 													vlans.push({
 														parent_device:output[line].split(': ')[1].split('@')[1],

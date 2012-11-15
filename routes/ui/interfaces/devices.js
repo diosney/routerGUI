@@ -1,5 +1,5 @@
 /*
- * GET Interfaces/Devices page.
+ * Interfaces/Devices page.
  */
 exports.index = function (req, res) {
 	/*

@@ -137,6 +137,11 @@ td label {
 .column_identifier {
 	font-weight: bold !important;
 }
+/* =Pages. Interfaces. VLANs.
+ -------------------------------------------------------------- */
+.column_tag {
+	font-weight: bold !important;
+}
 /* =Icons.
  -------------------------------------------------------------- */
 .icon-help {

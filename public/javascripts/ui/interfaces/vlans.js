@@ -1,6 +1,3 @@
-/*
- * Scripts for System/Tuning elements behaviour.
- */
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
@@ -12,15 +9,21 @@ jQuery(function ($) {
 		caption           :'VLAN List',
 		colModel          :[
 			{
-				align   :'center',
-				classes :'column_parent_device', // TODO: poner listado de devices en un select.
-				editable:true,
-				edittype:'text',
-				hidden  :true,
-				index   :'parent_device',
-				name    :'parent_device',
-				sortable:false,
-				width   :15
+				align      :'center',
+				classes    :'column_parent_device', // TODO: poner listado de devices en un select.
+				editable   :true,
+				editrules  :{
+					required:true
+				},
+				edittype   :'select',
+				editoptions:{
+					dataUrl:'/api/interfaces/devices?object=device&return_type=select'
+				},
+				hidden     :true,
+				index      :'parent_device',
+				name       :'parent_device',
+				sortable   :false,
+				width      :15
 			},
 			{
 				align         :'center',
@@ -39,12 +42,15 @@ jQuery(function ($) {
 				search        :true,
 				sortable      :true,
 				stype         :'text',
-				width         :15
+				width         :5
 			},
 			{
 				align         :'center',
 				classes       :'column_tag',
 				editable      :true,
+				editrules     :{
+					required:true
+				},
 				edittype      :'text',
 				firstsortorder:'asc',
 				index         :'tag',
@@ -68,7 +74,7 @@ jQuery(function ($) {
 				width         :40
 			}
 		],
-		colNames          :['Parent Device', 'Status', 'Tag', 'Description'],
+		colNames          :['Parent Device <span class="color-red">*</span>', 'Status', 'Tag <span class="color-red">*</span>', 'Description'],
 		datatype          :'json',
 		deselectAfterSort :false,
 		emptyrecords      :'No <strong>VLANs</strong> were added yet.',
@@ -76,7 +82,7 @@ jQuery(function ($) {
 		grouping          :true,
 		groupingView      :{
 			groupField     :['parent_device'],
-			groupColumnShow:[true]
+			groupColumnShow:[false]
 		},
 		height            :'auto',
 		hoverrows         :true,
@@ -85,6 +91,9 @@ jQuery(function ($) {
 			$('.column_status').each(function (index, element) {
 				if ($(this).text() == 'UP') {
 					$(this).addClass('status-positive');
+				}
+				else if ($(this).text() == 'NOT PRESENT') {
+					$(this).addClass('status-danger');
 				}
 				else {
 					$(this).addClass('status-negative');
@@ -153,23 +162,21 @@ jQuery(function ($) {
 			checkOnSubmit :false,
 			closeAfterEdit:true,
 			closeOnEscape :true,
-			dataheight    :180,
-
-			editCaption :'Edit VLAN',
-			modal       :true,
-			mtype       :'PUT',
-			editData    :{
+			editCaption   :'Edit VLAN',
+			modal         :true,
+			mtype         :'PUT',
+			editData      :{
 				object:'vlan'
 			},
-			recreateForm:true,
-			url         :'/api/interfaces/vlans',
-			width       :320
+			recreateForm  :true,
+			url           :'/api/interfaces/vlans',
+			width         :'auto'
 		}, {
 			// ADD Settings.
-			addCaption   :'Add VLAN',
-			addedrow     :'last',
+			addCaption       :'Add VLAN',
+			addedrow         :'last',
 			// Handler the response from server.
-			afterSubmit  :function (response, postdata) {
+			afterSubmit      :function (response, postdata) {
 				// Parse the XMLHttpRequest response.
 				var data = $.parseJSON(response.responseText);
 
@@ -180,20 +187,22 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
-			bSubmit      :'Add',
-			closeAfterAdd:true,
-			closeOnEscape:true,
-			dataheight   :180,
-			editData     :{
+			beforeShowForm   :function () {
+				$('#tr_parent_device').show();
+			},
+			bSubmit          :'Add',
+			closeAfterAdd    :true,
+			closeOnEscape    :true,
+			editData         :{
 				id    :'', // Replace the id added automaticaly by jqGrid.
 				object:'vlan'
 			},
-			modal        :false,
-			mtype        :'POST',
-			recreateForm :true,
-			reloadAfterSubmit: true,
-			url          :'/api/interfaces/vlans',
-			width        :320
+			modal            :false,
+			mtype            :'POST',
+			recreateForm     :true,
+			reloadAfterSubmit:true,
+			url              :'/api/interfaces/vlans',
+			width            :'auto'
 		}, {
 			// DELETE Settings.
 			addCaption :'Delete VLAN',
@@ -235,7 +244,7 @@ jQuery(function ($) {
 		var address_subgrid = $('#' + subgrid_table_id).jqGrid({
 			altRows          :false,
 			autowidth        :true,
-			caption          :'Address list for device ' + row_id,
+			caption          :'',
 			colModel         :[
 				{
 					align         :'center',
@@ -252,9 +261,9 @@ jQuery(function ($) {
 					index         :'family',
 					name          :'family',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :10
+					width         :6
 				},
 				{
 					align         :'center',
@@ -273,35 +282,41 @@ jQuery(function ($) {
 					index         :'scope',
 					name          :'scope',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :20
+					width         :6
 				},
 				{
 					align         :'center',
 					classes       :'column_address',
 					editable      :true,
+					editrules     :{
+						required:true
+					},
 					edittype      :'text',
 					firstsortorder:'asc',
 					index         :'address',
 					name          :'address',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :20
+					width         :10
 				},
 				{
 					align         :'center',
 					classes       :'column_net_mask',
 					editable      :true,
+					editrules     :{
+						required:true
+					},
 					edittype      :'text',
 					firstsortorder:'asc',
 					index         :'net_mask',
 					name          :'net_mask',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :10
+					width         :6
 				},
 				{
 					align         :'left',
@@ -312,15 +327,15 @@ jQuery(function ($) {
 					index         :'description',
 					name          :'description',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
 					width         :30
 				}
 			],
-			colNames         :['Family', 'Scope', 'Address', 'Netmask', 'Description'],
+			colNames         :['Family', 'Scope', 'Address <span class="color-red">*</span>', 'Netmask <span class="color-red">*</span>', 'Description'],
 			datatype         :'json',
 			deselectAfterSort:false,
-			emptyrecords     :'There is no Address yet.',
+			emptyrecords     :'There is no <strong>Address</strong> yet.',
 			forceFit         :true,
 			gridview         :false,
 			height           :'auto',
@@ -331,8 +346,9 @@ jQuery(function ($) {
 			multiselect      :false,
 			pager            :'#' + pager_id,
 			postData         :{
-				device_id:row_id,
-				object   :'address'
+				device_id    :row_id,
+				object       :'address',
+				device_status:$('.column_status', '#' + row_id).text()
 			},
 			prmNames         :{
 				sort :'orderby',
@@ -341,7 +357,7 @@ jQuery(function ($) {
 			rowList          :[10, 50, 100],
 			rowNum           :10,
 			rownumbers       :true,
-			sortname         :'tag',
+			sortname         :'family',
 			url              :'/api/interfaces/addresses',
 			viewrecords      :true
 		}).jqGrid('navGrid', '#' + pager_id, {

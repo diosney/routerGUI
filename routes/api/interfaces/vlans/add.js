@@ -1,5 +1,5 @@
 /*
- * POST Interfaces/VLANs API.
+ * Interfaces/VLANs API.
  */
 /*
  * Module dependencies.

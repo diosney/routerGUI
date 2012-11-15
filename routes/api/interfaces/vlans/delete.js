@@ -1,5 +1,5 @@
 /*
- * POST Interfaces/Devices API.
+ * Interfaces/Devices API.
  */
 /*
  * Module dependencies.
@@ -31,50 +31,90 @@ module.exports = function (req, res) {
 				tag          :tag
 			}, function (error, doc) {
 				if (!error) {
-					exec(doc.cl_delete(), function (error, stdout, stderr) {
-						if (error === null) {
-							// Save changes into database.
-							VLAN.remove({
-								parent_device:doc.parent_device,
-								tag          :doc.tag
-							}, function (error) {
-								if (!error) {
-									/*
-									 * Delete associated addresses in database.
-									 */
-									Address.remove({
-										parent_device:doc.parent_device + '.' + doc.tag
-									}, function (error) {
-										if (!error) {
-											response_from_server.message = 'Deleted Successfully!';
-											response_from_server.type = 'notification';
-										}
-										else {
-											response_from_server.message = error.message;
-											response_from_server.type = 'error';
-										}
+					/*
+					 * If has status 'NOT PRESENT' only delete from database the related data.
+					 */
+					if (doc.status != 'NOT PRESENT') {
+						exec(doc.cl_delete(), function (error, stdout, stderr) {
+							if (error === null) {
+								// Save changes into database.
+								VLAN.remove({
+									parent_device:doc.parent_device,
+									tag          :doc.tag
+								}, function (error) {
+									if (!error) {
+										/*
+										 * Delete associated addresses in database.
+										 */
+										Address.remove({
+											parent_device:doc.parent_device + '.' + doc.tag
+										}, function (error) {
+											if (!error) {
+												response_from_server.message = 'Deleted Successfully!';
+												response_from_server.type = 'notification';
+											}
+											else {
+												response_from_server.message = error.message;
+												response_from_server.type = 'error';
+											}
+
+											// Return the gathered data.
+											res.json(response_from_server);
+										});
+									}
+									else {
+										response_from_server.message = error.message;
+										response_from_server.type = 'error';
 
 										// Return the gathered data.
 										res.json(response_from_server);
-									});
-								}
-								else {
-									response_from_server.message = error.message;
-									response_from_server.type = 'error';
+									}
+								});
+							}
+							else {
+								response_from_server.message = stderr;
+								response_from_server.type = 'error';
+
+								// Return the gathered data.
+								res.json(response_from_server);
+							}
+						});
+					}
+					else {
+						// Save changes into database.
+						VLAN.remove({
+							parent_device:doc.parent_device,
+							tag          :doc.tag
+						}, function (error) {
+							if (!error) {
+								/*
+								 * Delete associated addresses in database.
+								 */
+								Address.remove({
+									parent_device:doc.parent_device + '.' + doc.tag
+								}, function (error) {
+									if (!error) {
+										response_from_server.message = 'Deleted Successfully!';
+										response_from_server.type = 'notification';
+									}
+									else {
+										response_from_server.message = error.message;
+										response_from_server.type = 'error';
+									}
 
 									// Return the gathered data.
 									res.json(response_from_server);
-								}
-							});
-						}
-						else {
-							response_from_server.message = stderr;
-							response_from_server.type = 'error';
+								});
+							}
+							else {
+								response_from_server.message = error.message;
+								response_from_server.type = 'error';
 
-							// Return the gathered data.
-							res.json(response_from_server);
-						}
-					});
+								// Return the gathered data.
+								res.json(response_from_server);
+							}
+						});
+					}
 				}
 				else {
 					response_from_server.message = error.message;

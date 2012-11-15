@@ -1,5 +1,5 @@
 /*
- * POST Interfaces/VLANs API.
+ * Interfaces/VLANs API.
  */
 exports.list    = require('../vlans/list.js');
 exports.add     = require('../vlans/add.js');

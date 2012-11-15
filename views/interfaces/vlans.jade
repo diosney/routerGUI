@@ -1,14 +1,16 @@
 extends ../layouts/layout
 
-block header
-	include ../layouts/header
-
 block navigation
 	include ../layouts/navigation
 
 block content
 	link(rel='stylesheet', type='text/css', href='/javascripts/external/ui/css/jquery-ui.css')
 	link(rel='stylesheet', type='text/css', href='/javascripts/external/jqGrid/css/ui.jqgrid.css')
+
+	header
+		.container
+			h3 VLANs
+			span(class="lead") Tell something interesting about the VLANs screen.
 
 	.container
 		.row-fluid

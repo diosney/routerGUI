@@ -1,5 +1,5 @@
 /*
- * GET Interfaces/Devices page.
+ * Interfaces/VLANs page.
  */
 exports.index = function (req, res) {
 	/*

@@ -1,5 +1,5 @@
 /*
- * POST Interfaces/VLANs API.
+ * Interfaces/VLANs API.
  */
 /*
  * Module dependencies.
@@ -22,9 +22,6 @@ module.exports = function (req, res) {
 			/*
 			 * Execute the changes in the system.
 			 */
-			/*
-			 * Edit a VLAN from the database.
-			 */
 			var vlan = new VLAN({
 				parent_device:req.body.parent_device,
 				status       :req.body.status,
@@ -41,7 +38,7 @@ module.exports = function (req, res) {
 					 */
 					VLAN.findOne({
 						parent_device:req.body.parent_device,
-						status       :req.body.status,
+						tag          :req.body.tag
 					}, function (error, doc) {
 						if (!error) {
 							doc.status = req.body.status;
@@ -50,12 +47,10 @@ module.exports = function (req, res) {
 							// Save changes into database.
 							doc.save(function (error) {
 								if (!error) {
-									response_from_server.id = req.body.id;
 									response_from_server.message = 'Applied Successfully!';
 									response_from_server.type = 'notification';
 								}
 								else {
-									response_from_server.id = '';
 									response_from_server.message = error.message;
 									response_from_server.type = 'error';
 								}
