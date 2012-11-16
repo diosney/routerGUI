@@ -20,7 +20,8 @@ var async = require('async'),
 	VLAN = require('../../../../models/interfaces/vlan.js'),
 
 	Routing_Rule = require('../../../../models/routing/rule.js'),
-	Routing_Table = require('../../../../models/routing/table.js');
+	Routing_Table = require('../../../../models/routing/table.js'),
+	Routing_Route = require('../../../../models/routing/route.js');
 
 // Load default configuration file.
 var default_file = require('../../../../default.json');
@@ -456,7 +457,7 @@ module.exports = function (req, res) {
 								});
 							}
 							else {
-								callback_parallel(error);
+								callback_parallel(stderr);
 							}
 						});
 
@@ -483,80 +484,51 @@ module.exports = function (req, res) {
 								});
 							}
 							else {
-								callback_parallel(error);
+								callback_parallel(stderr);
 							}
 						});
 					}, function (callback_parallel) {
 						/*
 						 * Routing/Static.
 						 */
-						/*
-						 * Routing Rules.
-						 */
-						async.waterfall([
-							function (callback_waterfall) {
+						async.series([
+							function (callback_series) {
 								/*
-								 * Flush the rules cache to ensure the system is clean.
+								 * Routing Tables.
 								 */
-								exec('ip rule flush', function (error, stdout, stderr) {
-										if (error === null) {
-											callback_waterfall(null);
-										}
-										else {
-											callback_waterfall(error);
-										}
-									}
-								);
-							},
-							function (callback_waterfall) {
 								/*
-								 * Insert default rules to system and database.
+								 * Insert default routes to system and database.
 								 */
-								async.forEach(default_file.routing.rules, function (item, callback_forEach) {
+								var iterator = 0;
+								async.forEach(default_file.routing.tables, function (item, callback_forEach) {
 									/*
-									 * Add a Rule to system.
+									 * Add a Routes to system.
 									 */
 									// Instantiate the model and fill it with the default data.
-									var routing_rule = new Routing_Rule(item);
+									var routing_table = new Routing_Table(item);
 
-									if (routing_rule.table != 'local') {
-										exec(routing_rule.cl_add(), function (error, stdout, stderr) {
-												if (error === null) {
-													// Save the object to database.
-													routing_rule.save(function (error) {
-														if (error) {
-															callback_forEach(error);
-														}
-														else {
-															callback_forEach(null);
-														}
-													});
-
-													callback_waterfall(null);
-												}
-												else {
-													callback_waterfall(error);
-												}
-											}
-										);
-									}
-									else {
-										/*
-										 * Don't execute it but insert into database because it is always present and will trow an error.
-										 */
-										// Save the object to database.
-										routing_rule.save(function (error) {
-											if (error) {
-												callback_forEach(error);
+									exec('echo ' + routing_table.cl_add_table() + ' ' + ((iterator) ? '>>' : '>') + ' /etc/iproute2/rt_tables', function (error, stdout, stderr) {
+											if (error === null) {
+												// Save the object to database.
+												routing_table.save(function (error) {
+													if (error) {
+														callback_forEach(error);
+													}
+													else {
+														callback_forEach(null);
+													}
+												});
 											}
 											else {
-												callback_forEach(null);
+												callback_forEach(stderr);
 											}
-										});
-									}
+										}
+									);
+
+									iterator++;
 								}, function (error) {
 									if (error) {
-										callback_waterfall(error);
+										callback_series(error);
 									}
 									else {
 										/*
@@ -564,80 +536,125 @@ module.exports = function (req, res) {
 										 */
 										exec('ip route flush cache', function (error, stdout, stderr) {
 												if (error === null) {
-													callback_waterfall(null);
+													callback_series(null);
 												}
 												else {
-													callback_waterfall(error);
+													callback_series(stderr);
 												}
 											}
 										);
 									}
 								});
-							}
-						], function (error, result) {
-							if (error) {
-								callback_parallel(error);
-							}
-							else {
-								callback_parallel(null);
-							}
-						});
-					}, function (callback_parallel) {
-						/*
-						 * Routing/Static.
-						 */
-						/*
-						 * Routing Tables.
-						 */
-						/*
-						 * Insert default routes to system and database.
-						 */
-						var iterator = 0;
-						async.forEach(default_file.routing.tables, function (item, callback_forEach) {
-							/*
-							 * Add a Rule to system.
-							 */
-							// Instantiate the model and fill it with the default data.
-							var routing_table = new Routing_Table(item);
+							},
+							function (callback_series) {
+								/*
+								 * Routing Routes.
+								 *
+								 * Just a placeholder because for now there was no default routes to install.
+								 */
+								callback_series(null);
+							},
+							function (callback_series) {
+								/*
+								 * Routing Rules.
+								 */
+								async.waterfall([
+									function (callback_waterfall) {
+										/*
+										 * Flush the rules cache to ensure the system is clean.
+										 */
+										exec('ip rule flush', function (error, stdout, stderr) {
+												if (error === null) {
+													callback_waterfall(null);
+												}
+												else {
+													callback_waterfall(stderr);
+												}
+											}
+										);
+									},
+									function (callback_waterfall) {
+										/*
+										 * Insert default rules to system and database.
+										 */
+										async.forEach(default_file.routing.rules, function (item, callback_forEach) {
+											/*
+											 * Add a Rule to system.
+											 */
+											// Instantiate the model and fill it with the default data.
+											var routing_rule = new Routing_Rule(item);
 
-							exec('echo ' + routing_table.cl_add_table() + ' ' + ((iterator) ? '>>' : '>') + ' /etc/iproute2/rt_tables', function (error, stdout, stderr) {
-									if (error === null) {
-										// Save the object to database.
-										routing_table.save(function (error) {
-											if (error) {
-												callback_forEach(error);
+											if (routing_rule.table != 'local') {
+												exec(routing_rule.cl_add(), function (error, stdout, stderr) {
+														if (error === null) {
+															// Save the object to database.
+															routing_rule.save(function (error) {
+																if (error) {
+																	callback_forEach(error);
+																}
+																else {
+																	callback_forEach(null);
+																}
+															});
+														}
+														else {
+															callback_forEach(stderr);
+														}
+													}
+												);
 											}
 											else {
-												callback_forEach(null);
+												/*
+												 * Don't execute it but insert into database because it is always present and will trow an error.
+												 */
+												// Save the object to database.
+												routing_rule.save(function (error) {
+													if (error) {
+														callback_forEach(error);
+													}
+													else {
+														callback_forEach(null);
+													}
+												});
+											}
+										}, function (error) {
+											if (error) {
+												callback_waterfall(error);
+											}
+											else {
+												/*
+												 * Flush routing cache to make the changes effective.
+												 */
+												exec('ip route flush cache', function (error, stdout, stderr) {
+														if (error === null) {
+															callback_waterfall(null);
+														}
+														else {
+															callback_waterfall(stderr);
+														}
+													}
+												);
 											}
 										});
 									}
+								], function (error, result) {
+									if (error) {
+										callback_series(error);
+									}
 									else {
-										callback_forEach(error);
+										callback_series(null);
 									}
+								});
+							}
+						],
+							function (error, results) {
+								if (error === null) {
+									callback_parallel(null);
 								}
-							);
-
-							iterator++;
-						}, function (error) {
-							if (error) {
-								callback_parallel(error);
-							}
-							else {
-								/*
-								 * Flush routing cache to make the changes effective.
-								 */
-								exec('ip route flush cache', function (error, stdout, stderr) {
-										if (error === null) {
-											callback_parallel(null);
-										}
-										else {
-											callback_parallel(error);
-										}
-									}
-								);
-							}
-						});
+								else {
+									callback_parallel(error);
+								}
+							});
 					}
 				],
 					function (error, results) {
@@ -645,7 +662,7 @@ module.exports = function (req, res) {
 						 * Final parallel callback function.
 						 */
 						if (error == null) {
-							// Set installed flag to let know that the system is installed.
+							// Set installed flag to let know that the system was installed.
 							config.database.installed = true;
 							fs.writeFile('config.json', JSON.stringify(config, null, '\t'), function (error) {
 								if (error) {
