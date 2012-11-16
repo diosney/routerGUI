@@ -1,11 +1,10 @@
 /*
- * GET System/Settings page.
+ * Routing/Static Routing page.
  */
 /*
  * Module dependencies.
  */
-var os = require('os'),
-	async = require('async'),
+var async = require('async'),
 	fs = require('fs');
 
 /*
@@ -14,8 +13,7 @@ var os = require('os'),
 Settings = require('../../../models/system/settings.js');
 
 // Load configuration file.
-var config = require('../../../config.json'),
-	default_file = require('../../../default.json');
+var config = require('../../../config.json');
 
 exports.index = function (req, res) {
 	/*

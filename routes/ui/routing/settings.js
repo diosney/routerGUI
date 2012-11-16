@@ -1,11 +1,10 @@
 /*
- * GET System/Settings page.
+ * Routing/Global Settings page.
  */
 /*
  * Module dependencies.
  */
-var os = require('os'),
-	async = require('async'),
+var async = require('async'),
 	fs = require('fs');
 
 /*
@@ -14,8 +13,7 @@ var os = require('os'),
 Settings = require('../../../models/system/settings.js');
 
 // Load configuration file.
-var config = require('../../../config.json'),
-	default_file = require('../../../default.json');
+var config = require('../../../config.json');
 
 exports.index = function (req, res) {
 	/*
@@ -66,7 +64,7 @@ exports.index = function (req, res) {
 			res.render('routing/settings/index', {
 				title :'routerGUI · Routing · Global Settings',
 				header:'Global Settings',
-				lead  :'Tell something interesting about the Routing Settings screen.',
+				lead  :'Tell something interesting about the Global Settings screen.',
 				menu  :'routing/settings',
 
 				settings:{

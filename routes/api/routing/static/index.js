@@ -1,5 +1,5 @@
 /*
- * POST System/Tuning API.
+ * Routing/Static Routing API.
  */
 exports.list    = require('../static/list.js');
 exports.add     = require('../static/add.js');

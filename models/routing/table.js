@@ -1,14 +1,12 @@
 /*
- * Model for System Tunables.
+ * Model for Routing Tables.
  */
 /*
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	ObjectId = Schema.Types.ObjectId,
-
-	config = require('../../config.json');
+	ObjectId = Schema.Types.ObjectId;
 
 /*
  * Schema definition.
@@ -16,9 +14,12 @@ var mongoose = require('mongoose'),
 var Routing_Table = new Schema({
 	name       :String,
 	id         :{
-		type:Number,
-		min :0,
-		max :255
+		type :Number,
+		min  :0,
+		max  :255,
+		index:{
+			unique:true
+		}
 	},
 	description:String
 });

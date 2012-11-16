@@ -1,5 +1,5 @@
 /*
- * POST System/Tuning API.
+ * Routing/Static Routing API.
  */
 /*
  * Module dependencies.
@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
  * Load required models.
  */
 	Routing_Rule = require('../../../../models/routing/rule.js'),
-	Routing_Table = require('../../../../models/routing/table.js');
+	Routing_Table = require('../../../../models/routing/table.js'),
+	Routing_Route = require('../../../../models/routing/route.js');
 
 module.exports = function (req, res) {
 	// Initialize response.
@@ -132,6 +133,96 @@ module.exports = function (req, res) {
 										exec('ip route flush cache', function (error, stdout, stderr) {
 												if (error === null) {
 													response_from_server.id = routing_table.id;
+													response_from_server.message = 'Added Successfully!';
+													response_from_server.type = 'notification';
+												}
+												else {
+													response_from_server.id = '';
+													response_from_server.message = stderr;
+													response_from_server.type = 'error';
+												}
+
+												// Return the gathered data.
+												res.json(response_from_server);
+											}
+										);
+									}
+									else {
+										response_from_server.id = '';
+										response_from_server.message = error.message;
+										response_from_server.type = 'error';
+
+										// Return the gathered data.
+										res.json(response_from_server);
+									}
+								});
+							}
+							else {
+								response_from_server.message = stderr;
+								response_from_server.type = 'error';
+
+								// Return the gathered data.
+								res.json(response_from_server);
+							}
+						});
+					}
+					else {
+						// There is a already an item in database.
+						response_from_server.id = '';
+						response_from_server.message = 'Item already in database.';
+						response_from_server.type = 'error';
+
+						// Return the gathered data.
+						res.json(response_from_server);
+					}
+				}
+				else {
+					response_from_server.message = error;
+					response_from_server.type = 'error';
+
+					// Return the gathered data.
+					res.json(response_from_server);
+				}
+			});
+
+			break;
+		case 'route':
+			/*
+			 * Check in case the object is already in database.
+			 */
+			Routing_Route.find({
+				to:req.body.to,
+				to_net_mask:req.body.to_net_mask
+			}, {}, {}, function (error, docs) {
+				if (!error) {
+					if (!docs.length) {
+						/*
+						 * Execute the changes in the system.
+						 */
+						var routing_route = new Routing_Route({
+							parent_table:Number,
+							type        :req.body.type,
+							to          :req.body.to,
+							to_net_mask :req.body.to_net_mask,
+							table       :req.body.table,
+							via         :req.body.via,
+							description :req.body.description
+						});
+
+						exec(routing_route.cl_add(), function (error, stdout, stderr) {
+							if (error === null) {
+								/*
+								 * Save changes to database.
+								 */
+								// Save changes into database.
+								routing_route.save(function (error) {
+									if (!error) {
+										/*
+										 * Flush routing cache to make the changes effective.
+										 */
+										exec('ip route flush cache', function (error, stdout, stderr) {
+												if (error === null) {
+													response_from_server.id = routing_route._id;
 													response_from_server.message = 'Added Successfully!';
 													response_from_server.type = 'notification';
 												}

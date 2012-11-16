@@ -1,14 +1,12 @@
 /*
- * Model for System Tunables.
+ * Model for Routing Rules.
  */
 /*
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	ObjectId = Schema.Types.ObjectId,
-
-	config = require('../../config.json');
+	ObjectId = Schema.Types.ObjectId;
 
 /*
  * Schema definition.

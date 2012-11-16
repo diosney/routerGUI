@@ -1,5 +1,5 @@
 /*
- * POST System/Settings API.
+ * Routing/Global Settings API.
  */
 /*
  * Module dependencies.
@@ -22,11 +22,6 @@ module.exports = function (req, res) {
 					/*
 					 * Save setting to database.
 					 */
-					var ip_forwarding_v4 = new Settings({
-						name :'ip_forwarding_v4',
-						value:(req.body.ip_forwarding_v4) ? '1' : '0'
-					});
-
 					Settings.findOne({
 						name:'ip_forwarding_v4'
 					}, function (error, doc) {
@@ -48,7 +43,7 @@ module.exports = function (req, res) {
 					});
 				}
 				else {
-					callback_parallel(error);
+					callback_parallel(stderr);
 				}
 			});
 		},
@@ -61,11 +56,6 @@ module.exports = function (req, res) {
 					/*
 					 * Save setting to database.
 					 */
-					var ip_forwarding_v6 = new Settings({
-						name :'ip_forwarding_v6',
-						value:(req.body.ip_forwarding_v6) ? '1' : '0'
-					});
-
 					Settings.findOne({
 						name:'ip_forwarding_v6'
 					}, function (error, doc) {
@@ -88,12 +78,11 @@ module.exports = function (req, res) {
 					});
 				}
 				else {
-					callback_parallel(error);
+					callback_parallel(stderr);
 				}
 			});
 		}
 	],
-		// optional callback
 		function (error, results) {
 			if (error === null) {
 				response_from_server.message = 'Succefully applied.';

@@ -1,13 +1,15 @@
 extends ../../layouts/layout
 
-block header
-	include ../../layouts/header
-
 block navigation
 	include ../../layouts/navigation
 
 block content
 	link(rel='stylesheet', type='text/css', href='/javascripts/external/iCheckbox/css/iCheckbox.css')
+
+	header
+		.container
+			h3 Global Settings
+			span(class="lead") Tell something interesting about the Global Settings screen.
 
 	.container
 		.row-fluid

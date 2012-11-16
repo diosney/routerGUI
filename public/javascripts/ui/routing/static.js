@@ -1,6 +1,3 @@
-/*
- * Scripts for Services/IPSets elements behaviour.
- */
 // Prevent name collisions wrapping the code in an anonymous function.
 jQuery(function ($) {
 	/*
@@ -26,7 +23,7 @@ jQuery(function ($) {
 				index         :'type',
 				name          :'type',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :8
 			},
@@ -34,27 +31,17 @@ jQuery(function ($) {
 				align         :'center',
 				classes       :'column_priority',
 				editable      :true,
+				editrules     :{
+					required:true
+				},
 				edittype      :'text',
 				firstsortorder:'asc',
 				index         :'priority',
 				name          :'priority',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :8
-			},
-			{
-				align         :'center',
-				classes       :'column_table',
-				editable      :true,
-				edittype      :'text',
-				firstsortorder:'asc',
-				index         :'table',
-				name          :'table',
-				search        :true,
-				sortable      :true,
-				stype         :'text',
-				width         :10
 			},
 			{
 				align   :'center',
@@ -64,7 +51,7 @@ jQuery(function ($) {
 				name    :'from',
 				search  :true,
 				stype   :'text',
-				sortable:true,
+				sortable:false,
 				width   :10
 			},
 			{
@@ -76,7 +63,7 @@ jQuery(function ($) {
 				index         :'from_net_mask',
 				name          :'from_net_mask',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :10
 			},
@@ -88,7 +75,7 @@ jQuery(function ($) {
 				name    :'to',
 				search  :true,
 				stype   :'text',
-				sortable:true,
+				sortable:false,
 				width   :10
 			},
 			{
@@ -100,7 +87,7 @@ jQuery(function ($) {
 				index         :'to_net_mask',
 				name          :'to_net_mask',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :10
 			},
@@ -108,12 +95,34 @@ jQuery(function ($) {
 				align         :'center',
 				classes       :'column_iif',
 				editable      :true,
-				edittype      :'text',
+				editoptions   :{
+					dataUrl:'/api/interfaces/devices?object=device&return_type=select'
+				},
+				edittype      :'select',
 				firstsortorder:'asc',
 				index         :'iif',
 				name          :'iif',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
+				stype         :'text',
+				width         :10
+			},
+			{
+				align         :'center',
+				classes       :'column_table',
+				editable      :true,
+				editrules     :{
+					required:true
+				},
+				edittype      :'select',
+				editoptions   :{
+					dataUrl:'/api/routing/static?object=table&return_type=select'
+				},
+				firstsortorder:'asc',
+				index         :'table',
+				name          :'table',
+				search        :true,
+				sortable      :false,
 				stype         :'text',
 				width         :10
 			},
@@ -126,12 +135,12 @@ jQuery(function ($) {
 				index         :'description',
 				name          :'description',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
 				width         :30
 			}
 		],
-		colNames         :['Type', 'Priority', 'Table', 'From', 'From Netmask', 'To', 'To Netmask', 'In Interface', 'Description'],
+		colNames         :['Type', 'Priority <span class="color-red">*</span>', 'From', 'From Netmask', 'To', 'To Netmask', 'In Interface', 'Table <span class="color-red">*</span>', 'Description'],
 		datatype         :'json',
 		deselectAfterSort:false,
 		emptyrecords     :'No <strong>Devices</strong> found.',
@@ -195,7 +204,6 @@ jQuery(function ($) {
 			checkOnSubmit :false,
 			closeAfterEdit:true,
 			closeOnEscape :true,
-			dataheight    :180,
 			editCaption   :'Edit Rule',
 			editData      :{
 				object:'rule'
@@ -204,7 +212,7 @@ jQuery(function ($) {
 			mtype         :'PUT',
 			recreateForm  :true,
 			url           :'/api/routing/static',
-			width         :400
+			width         :'auto'
 		}, {
 			// ADD Settings.
 			addCaption   :'Add Rule',
@@ -224,7 +232,6 @@ jQuery(function ($) {
 			bSubmit      :'Add',
 			closeAfterAdd:true,
 			closeOnEscape:true,
-			dataheight   :180,
 			editData     :{
 				id    :'', // Replace the id added automaticaly by jqGrid.
 				object:'rule'
@@ -233,7 +240,7 @@ jQuery(function ($) {
 			mtype        :'POST',
 			recreateForm :true,
 			url          :'/api/routing/static',
-			width        :400
+			width        :'auto'
 		}, {
 			/*
 			 * DELETE Settings.
@@ -272,25 +279,32 @@ jQuery(function ($) {
 				classes       :'column_table_id',
 				editable      :true,
 				edittype      :'text',
+				editrules     :{
+					required:true
+				},
 				firstsortorder:'asc',
+				hidden        :true,
 				index         :'table_id',
 				name          :'table_id',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
-				width         :10
+				width         :5
 			},
 			{
-				align   :'center',
-				classes :'column_name',
-				editable:true,
-				edittype:'text',
-				index   :'name',
-				name    :'name',
-				search  :true,
-				stype   :'text',
-				sortable:true,
-				width   :10
+				align    :'center',
+				classes  :'column_name',
+				editable :true,
+				editrules:{
+					required:true
+				},
+				edittype :'text',
+				index    :'name',
+				name     :'name',
+				search   :true,
+				stype    :'text',
+				sortable :false,
+				width    :10
 			},
 			{
 				align         :'left',
@@ -301,12 +315,12 @@ jQuery(function ($) {
 				index         :'description',
 				name          :'description',
 				search        :true,
-				sortable      :true,
+				sortable      :false,
 				stype         :'text',
-				width         :30
+				width         :40
 			}
 		],
-		colNames          :['Id', 'Name', 'Description'],
+		colNames          :['Id <span class="color-red">*</span>', 'Name <span class="color-red">*</span>', 'Description'],
 		datatype          :'json',
 		deselectAfterSort :false,
 		emptyrecords      :'No <strong>Tables</strong> found.',
@@ -378,7 +392,6 @@ jQuery(function ($) {
 			checkOnSubmit :false,
 			closeAfterEdit:true,
 			closeOnEscape :true,
-			dataheight    :180,
 			editCaption   :'Edit Table',
 			editData      :{
 				object:'table'
@@ -387,13 +400,13 @@ jQuery(function ($) {
 			mtype         :'PUT',
 			recreateForm  :true,
 			url           :'/api/routing/static',
-			width         :400
+			width         :'auto'
 		}, {
 			// ADD Settings.
-			addCaption   :'Add Table',
-			addedrow     :'last',
+			addCaption    :'Add Table',
+			addedrow      :'last',
 			// Handler the response from server.
-			afterSubmit  :function (response, postdata) {
+			afterSubmit   :function (response, postdata) {
 				// Parse the XMLHttpRequest response.
 				var data = $.parseJSON(response.responseText);
 
@@ -404,19 +417,21 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
-			bSubmit      :'Add',
-			closeAfterAdd:true,
-			closeOnEscape:true,
-			dataheight   :180,
-			editData     :{
+			beforeShowForm:function () {
+				$('#tr_table_id').show();
+			},
+			bSubmit       :'Add',
+			closeAfterAdd :true,
+			closeOnEscape :true,
+			editData      :{
 				id    :'', // Replace the id added automaticaly by jqGrid.
 				object:'table'
 			},
-			modal        :false,
-			mtype        :'POST',
-			recreateForm :true,
-			url          :'/api/routing/static',
-			width        :400
+			modal         :false,
+			mtype         :'POST',
+			recreateForm  :true,
+			url           :'/api/routing/static',
+			width         :'auto'
 		}, {
 			// DELETE Settings.
 			addCaption :'Delete Table',
@@ -457,7 +472,7 @@ jQuery(function ($) {
 		var address_subgrid = $('#' + subgrid_table_id).jqGrid({
 			altRows          :false,
 			autowidth        :true,
-			caption          :'Routes list for table ' + row_id,
+			caption          :'',
 			colModel         :[
 				{
 					align         :'center',
@@ -470,10 +485,11 @@ jQuery(function ($) {
 						}
 					},
 					firstsortorder:'asc',
+					hidden        :true,
 					index         :'type',
 					name          :'type',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
 					width         :10
 				},
@@ -482,65 +498,48 @@ jQuery(function ($) {
 					classes       :'column_to',
 					editable      :true,
 					edittype      :'text',
+					editrules     :{
+						required:true
+					},
 					firstsortorder:'asc',
 					index         :'to',
 					name          :'to',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :20
+					width         :11
 				},
 				{
 					align         :'center',
 					classes       :'column_to_net_mask',
 					editable      :true,
+					editrules     :{
+						required:true
+					},
 					edittype      :'text',
 					firstsortorder:'asc',
 					index         :'to_net_mask',
 					name          :'to_net_mask',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :10
-				},
-				{
-					align         :'center',
-					classes       :'column_table',
-					editable      :true,
-					edittype      :'text',
-					firstsortorder:'asc',
-					index         :'table',
-					name          :'table',
-					search        :true,
-					sortable      :true,
-					stype         :'text',
-					width         :20
+					width         :7
 				},
 				{
 					align         :'center',
 					classes       :'column_via',
 					editable      :true,
+					editrules     :{
+						required:true
+					},
 					edittype      :'text',
 					firstsortorder:'asc',
 					index         :'via',
 					name          :'via',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
-					width         :20
-				},
-				{
-					align         :'center',
-					classes       :'column_source',
-					editable      :true,
-					edittype      :'text',
-					firstsortorder:'asc',
-					index         :'source',
-					name          :'source',
-					search        :true,
-					sortable      :true,
-					stype         :'text',
-					width         :20
+					width         :11
 				},
 				{
 					align         :'left',
@@ -551,15 +550,15 @@ jQuery(function ($) {
 					index         :'description',
 					name          :'description',
 					search        :true,
-					sortable      :true,
+					sortable      :false,
 					stype         :'text',
 					width         :30
 				}
 			],
-			colNames         :['Type', 'To', 'To Netmask', 'Table', 'Via', 'Source', 'Description'],
+			colNames         :['Type', 'To <span class="color-red">*</span>', 'To Netmask <span class="color-red">*</span>', 'Via <span class="color-red">*</span>', 'Description'],
 			datatype         :'json',
 			deselectAfterSort:false,
-			emptyrecords     :'There is no Route yet.',
+			emptyrecords     :'There is no <strong>Route</strong> yet.',
 			forceFit         :true,
 			gridview         :false,
 			height           :'auto',
@@ -570,8 +569,8 @@ jQuery(function ($) {
 			multiselect      :false,
 			pager            :'#' + pager_id,
 			postData         :{
-				device_id:row_id,
-				object   :'route'
+				table :row_id,
+				object:'route'
 			},
 			prmNames         :{
 				sort :'orderby',
@@ -580,7 +579,7 @@ jQuery(function ($) {
 			rowList          :[10, 50, 100],
 			rowNum           :10,
 			rownumbers       :true,
-			sortname         :'tag',
+			sortname         :'to',
 			url              :'/api/routing/static',
 			viewrecords      :true
 		}).jqGrid('navGrid', '#' + pager_id, {
@@ -615,18 +614,14 @@ jQuery(function ($) {
 						return [false, data.message]; 		// [success,message,new_id]
 					}
 				},
-				beforeShowForm:function () {
-					$('#tr_family, #tr_scope, #tr_address, #tr_net_mask').hide();
-				},
 				bSubmit       :'Done',
 				checkOnSubmit :false,
 				closeAfterEdit:true,
 				closeOnEscape :true,
-				// dataheight: 220,
 				editCaption   :'Edit Route',
 				editData      :{
-					table_id:row_id,
-					object   :'route'                     // The id is added automaticaly by jqGrid.
+					table :row_id,
+					object:'route'                     // The id is added automaticaly by jqGrid.
 				},
 				modal         :true,
 				mtype         :'PUT',
@@ -654,11 +649,10 @@ jQuery(function ($) {
 				bSubmit      :'Add',
 				closeAfterAdd:true,
 				closeOnEscape:true,
-				// dataheight: 220,
 				editData     :{
-					object   :'route',
-					id       :'', // Replace the id added automaticaly by jqGrid.
-					device_id:row_id
+					object:'route',
+					id    :'', // Replace the id added automaticaly by jqGrid.
+					table :row_id
 				},
 				modal        :false,
 				mtype        :'POST',
@@ -686,8 +680,8 @@ jQuery(function ($) {
 				modal      :false,
 				mtype      :'DELETE',
 				delData    :{
-					device_id:row_id,
-					object   :'route'
+					table :row_id,
+					object:'route'
 				},
 				url        :'/api/routing/static'
 			}, {

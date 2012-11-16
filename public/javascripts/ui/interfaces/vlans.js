@@ -10,7 +10,7 @@ jQuery(function ($) {
 		colModel          :[
 			{
 				align      :'center',
-				classes    :'column_parent_device', // TODO: poner listado de devices en un select.
+				classes    :'column_parent_device',
 				editable   :true,
 				editrules  :{
 					required:true
