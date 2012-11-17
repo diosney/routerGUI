@@ -21,7 +21,9 @@ var async = require('async'),
 
 	Routing_Rule = require('../../../../models/routing/rule.js'),
 	Routing_Table = require('../../../../models/routing/table.js'),
-	Routing_Route = require('../../../../models/routing/route.js');
+	Routing_Route = require('../../../../models/routing/route.js'),
+
+	IP_Set = require('../../../../models/services/ipsets/ipset.js');
 
 // Load default configuration file.
 var default_file = require('../../../../default.json');

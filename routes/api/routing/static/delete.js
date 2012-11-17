@@ -104,6 +104,7 @@ module.exports = function (req, res) {
 							Routing_Table.remove({
 								id:req.body.id
 							}, function (error) {
+								// TODO: Remove all Routes related to this table.
 								if (!error) {
 									response_from_server.message = 'Deleted Successfully!';
 									response_from_server.type = 'notification';

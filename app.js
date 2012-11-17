@@ -1,7 +1,6 @@
 // TODO: A 404 Not Found page.
 // TODO: A 505 Not Found page.
 // TODO: See how close database connection upon app exit: mongoose.connection.close();
-// TODO: Don't forget flushing the routing cache with ip route flush cache to make changes effective. Verify wether is needed for ip rule too.
 
 /**
  * Module dependencies.
@@ -66,7 +65,8 @@ var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
 	routes_ui_interfaces_devices = require('./routes/ui/interfaces/devices.js'),
 	routes_ui_interfaces_vlans = require('./routes/ui/interfaces/vlans.js'),
 	routes_ui_routing_settings = require('./routes/ui/routing/settings.js'),
-	routes_ui_routing_static = require('./routes/ui/routing/static.js');
+	routes_ui_routing_static = require('./routes/ui/routing/static.js'),
+	routes_ui_services_ipsets = require('./routes/ui/services/ipsets.js');
 
 /*
  * UI URLs.
@@ -79,6 +79,7 @@ app.get('/interfaces/devices', routes_ui_interfaces_devices.index);
 app.get('/interfaces/vlans', routes_ui_interfaces_vlans.index);
 app.get('/routing/settings', routes_ui_routing_settings.index);
 app.get('/routing/static', routes_ui_routing_static.index);
+app.get('/services/ipsets', routes_ui_services_ipsets.index);
 
 /*
  * API Routes.
@@ -91,7 +92,8 @@ var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
 	routes_api_interfaces_addresses = require('./routes/api/interfaces/address/index.js'),
 	routes_api_interfaces_vlans = require('./routes/api/interfaces/vlans/index.js'),
 	routes_api_routing_settings = require('./routes/api/routing/settings/index.js'),
-	routes_api_routing_static = require('./routes/api/routing/static/index.js');
+	routes_api_routing_static = require('./routes/api/routing/static/index.js'),
+	routes_api_services_ipsets = require('./routes/api/services/ipsets/index.js');
 
 /*
  * API URLs.
@@ -152,6 +154,15 @@ app.get('/api/routing/static', routes_api_routing_static.list);
 app.post('/api/routing/static', routes_api_routing_static.add);
 app.delete('/api/routing/static', routes_api_routing_static.delete);
 app.put('/api/routing/static', routes_api_routing_static.edit);
+
+/*
+ * Services.
+ */
+// Services -> IP Sets.
+app.get('/api/services/ipsets', routes_api_services_ipsets.list);
+app.post('/api/services/ipsets', routes_api_services_ipsets.add);
+app.delete('/api/services/ipsets', routes_api_services_ipsets.delete);
+app.put('/api/services/ipsets', routes_api_services_ipsets.edit);
 
 http.createServer(app).listen(app.get('port'), function () {
 	console.log('Express server listening on port ' + app.get('port'));
