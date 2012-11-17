@@ -35,5 +35,14 @@ IP_Set.methods.cl_rename = function cl_rename(new_name) {
 	return 'ipset rename "' + this.name + '" "' + new_name + '"';
 };
 
+/*
+ * Statics definitions.
+ *
+ * Used to build the generic command line strings.
+ */
+IP_Set.statics.cl_destroy = function cl_destroy(ipset) {
+	return 'ipset destroy "' + ipset.name + '"';
+};
+
 // Export it to make it usable to the Routes.
 module.exports = mongoose.model('IP_Set', IP_Set);

@@ -104,18 +104,35 @@ module.exports = function (req, res) {
 							Routing_Table.remove({
 								id:req.body.id
 							}, function (error) {
-								// TODO: Remove all Routes related to this table.
 								if (!error) {
-									response_from_server.message = 'Deleted Successfully!';
-									response_from_server.type = 'notification';
+									/*
+									 * Remove all Routes related to this table.
+									 *
+									 * Isn't needed to delete from system because it is done automatic if the table is gone.
+									 */
+									Routing_Route.remove({
+										table:req.body.id
+									}, function (error) {
+										if (!error) {
+											response_from_server.message = 'Deleted Successfully!';
+											response_from_server.type = 'notification';
+										}
+										else {
+											response_from_server.message = stderr;
+											response_from_server.type = 'error';
+										}
+
+										// Return the gathered data.
+										res.json(response_from_server);
+									});
 								}
 								else {
 									response_from_server.message = error.message;
 									response_from_server.type = 'error';
-								}
 
-								// Return the gathered data.
-								res.json(response_from_server);
+									// Return the gathered data.
+									res.json(response_from_server);
+								}
 							});
 						}
 						else {
