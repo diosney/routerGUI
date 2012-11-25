@@ -37,10 +37,13 @@
 							li(class=(menu == 'routing/static'?'active':''))
 								a(href='/routing/static').
 									Static Routing
-					li.dropdown(class=(menu == 'services/ipsets'?'active':''))
+					li.dropdown(class=(menu == 'services/ipsets' || menu == 'services/nat'?'active':''))
 						a(data-toggle="dropdown",href='#').dropdown-toggle Services
 							b.caret
 						ul.dropdown-menu
-							li(class=(menu == '/services/ipsets'?'active':''))
+							li(class=(menu == 'services/ipsets'?'active':''))
 								a(href='/services/ipsets').
 									IP Sets
+							li(class=(menu == 'services/nat'?'active':''))
+								a(href='/services/nat').
+									NAT

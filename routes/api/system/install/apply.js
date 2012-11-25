@@ -23,7 +23,9 @@ var async = require('async'),
 	Routing_Table = require('../../../../models/routing/table.js'),
 	Routing_Route = require('../../../../models/routing/route.js'),
 
-	IP_Set = require('../../../../models/services/ipsets/ipset.js');
+	IP_Set = require('../../../../models/services/ipsets/ipset.js'),
+
+	NAT_Chain = require('../../../../models/services/nat/chain.js');
 
 // Load default configuration file.
 var default_file = require('../../../../default.json');
@@ -657,6 +659,86 @@ module.exports = function (req, res) {
 									callback_parallel(error);
 								}
 							});
+					},
+					function (callback_parallel) {
+						/*
+						 * Source NAT.
+						 */
+						/*
+						 * Chains.
+						 */
+						async.series([
+							function (callback_series) {
+								/*
+								 * Flush and delete previous NAT chains.
+								 */
+								exec('iptables --table nat --flush && iptables --table nat --delete-chain', function (error, stdout, stderr) {
+									if (error === null) {
+										callback_series(null);
+									}
+									else {
+										callback_series(stderr);
+									}
+								});
+							},
+							function (callback_series) {
+								/*
+								 * Policies for built-in chains in NAT table.
+								 */
+								exec(NAT_Chain.cl_set_default_policy(), function (error, stdout, stderr) {
+									if (error === null) {
+										callback_series(null);
+									}
+									else {
+										callback_series(stderr);
+									}
+								});
+							},
+							function (callback_series) {
+								/*
+								 * Insert default NAT Chains to system and database.
+								 */
+								async.forEach(default_file.nat.chains, function (item, callback_forEach) {
+									/*
+									 * Add a Chain to system.
+									 */
+									// Instantiate the model and fill it with the default data.
+									var nat_chain = new NAT_Chain(item);
+
+									exec(NAT_Chain.cl_create(item), function (error, stdout, stderr) {
+										if (error === null) {
+											// Save the object to database.
+											nat_chain.save(function (error) {
+												if (error) {
+													callback_forEach(error);
+												}
+												else {
+													callback_forEach(null);
+												}
+											});
+										}
+										else {
+											callback_forEach(stderr);
+										}
+									});
+								}, function (error) {
+									if (error) {
+										callback_series(error);
+									}
+									else {
+										callback_series(null);
+									}
+								});
+							}
+						],
+							function (error, results) {
+								if (error === null) {
+									callback_parallel(null);
+								}
+								else {
+									callback_parallel(error);
+								}
+							});
 					}
 				],
 					function (error, results) {
@@ -666,17 +748,16 @@ module.exports = function (req, res) {
 						if (error == null) {
 							// Set installed flag to let know that the system was installed.
 							config.database.installed = true;
-							fs.writeFile('config.json', JSON.stringify(config, null, '\t'), function (error) {
-								if (error) {
-									console.log(error);
-								}
-							});
+							fs.writeFileSync('config.json', JSON.stringify(config, null, '\t'));
 
 							response_from_server.message = 'That\'s it! Disappointed? Go to the <a href="/">Dashboard</a> to beginning the use of the system.';
 							response_from_server.type = 'notification';
 							response_from_server.data = {
 								installed:true
 							};
+
+							// Return the gathered data.
+							res.json(response_from_server);
 						}
 						else {
 							response_from_server.message = error.toString();
@@ -684,12 +765,11 @@ module.exports = function (req, res) {
 							response_from_server.data = {
 								installed:false
 							};
-						}
 
-						// Return the gathered data.
-						res.json(response_from_server);
-					}
-				);
+							// Return the gathered data.
+							res.json(response_from_server);
+						}
+					});
 			}
 			else {
 				/*

@@ -92,5 +92,33 @@
 				"description":"System reserved."
 			}
 		]
+	},
+	"nat"    :{
+		"chains":[
+			{
+				"type"       :"source",
+				"name"       :"ifall",
+				"interface"  :"",
+				"description":""
+			},
+			{
+				"type"       :"source",
+				"name"       :"local",
+				"interface"  :"",
+				"description":""
+			},
+			{
+				"type"       :"destination",
+				"name"       :"ifall",
+				"interface"  :"",
+				"description":""
+			},
+			{
+				"type"       :"destination",
+				"name"       :"local",
+				"interface"  :"",
+				"description":""
+			}
+		]
 	}
 }

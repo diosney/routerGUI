@@ -66,7 +66,8 @@ var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
 	routes_ui_interfaces_vlans = require('./routes/ui/interfaces/vlans.js'),
 	routes_ui_routing_settings = require('./routes/ui/routing/settings.js'),
 	routes_ui_routing_static = require('./routes/ui/routing/static.js'),
-	routes_ui_services_ipsets = require('./routes/ui/services/ipsets.js');
+	routes_ui_services_ipsets = require('./routes/ui/services/ipsets.js'),
+	routes_ui_services_nat = require('./routes/ui/services/nat.js');
 
 /*
  * UI URLs.
@@ -80,6 +81,7 @@ app.get('/interfaces/vlans', routes_ui_interfaces_vlans.index);
 app.get('/routing/settings', routes_ui_routing_settings.index);
 app.get('/routing/static', routes_ui_routing_static.index);
 app.get('/services/ipsets', routes_ui_services_ipsets.index);
+app.get('/services/nat', routes_ui_services_nat.index);
 
 /*
  * API Routes.
@@ -93,7 +95,8 @@ var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
 	routes_api_interfaces_vlans = require('./routes/api/interfaces/vlans/index.js'),
 	routes_api_routing_settings = require('./routes/api/routing/settings/index.js'),
 	routes_api_routing_static = require('./routes/api/routing/static/index.js'),
-	routes_api_services_ipsets = require('./routes/api/services/ipsets/index.js');
+	routes_api_services_ipsets = require('./routes/api/services/ipsets/index.js'),
+	routes_api_services_nat = require('./routes/api/services/nat/index.js');
 
 /*
  * API URLs.
@@ -163,6 +166,12 @@ app.get('/api/services/ipsets', routes_api_services_ipsets.list);
 app.post('/api/services/ipsets', routes_api_services_ipsets.add);
 app.delete('/api/services/ipsets', routes_api_services_ipsets.delete);
 app.put('/api/services/ipsets', routes_api_services_ipsets.edit);
+
+// Services -> NAT.
+app.get('/api/services/nat', routes_api_services_nat.list);
+app.post('/api/services/nat', routes_api_services_nat.add);
+app.delete('/api/services/nat', routes_api_services_nat.delete);
+app.put('/api/services/nat', routes_api_services_nat.edit);
 
 http.createServer(app).listen(app.get('port'), function () {
 	console.log('Express server listening on port ' + app.get('port'));
