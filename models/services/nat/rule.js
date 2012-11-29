@@ -69,5 +69,9 @@ NAT_Rule.statics.cl_add = function cl_add(nat_rule) {
 	return str_to_exec;
 };
 
+NAT_Rule.statics.cl_del = function cl_del(nat_rule) {
+	return 'iptables --table nat --delete ' + nat_rule.chain_name + ' ' + nat_rule.order;
+}
+
 // Export it to make it usable to the Routes.
 module.exports = mongoose.model('NAT_Rule', NAT_Rule);

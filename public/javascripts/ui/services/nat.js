@@ -498,7 +498,7 @@ jQuery(function ($) {
 				modal      :false,
 				mtype      :'DELETE',
 				delData    :{
-					chain_id:row_id,
+					chain_name:row_id,
 					object  :'rule'
 				},
 				url        :'/api/services/nat'

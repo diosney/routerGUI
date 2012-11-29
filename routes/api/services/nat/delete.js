@@ -95,6 +95,125 @@ module.exports = function (req, res) {
 			});
 
 			break;
+		case 'rule':
+			/*
+			 * Delete an object from the database.
+			 */
+			NAT_Rule.findOne({
+				_id:req.body.id
+			}, function (error, doc) {
+				if (!error) {
+					exec(NAT_Rule.cl_del(doc), function (error, stdout, stderr) {
+						if (error === null) {
+							/*
+							 * Save changes to database.
+							 */
+							NAT_Rule.find({
+								order:{
+									$gte:doc.order
+								}
+							}, {}, {
+								sort:'order'
+							}, function (error, docs) {
+								if (!error) {
+									/*
+									 * Checks if there is a rule above the inserted one to shift it order by 1.
+									 */
+									if (docs.length > 0) {
+										async.forEach(docs, function (item, callback_forEach) {
+											NAT_Rule.findOne({
+												order:item.order
+											}, function (error, doc) {
+
+												if (!error) {
+													doc.order -= 1;
+													doc.save(function (error) {
+														if (!error) {
+															callback_forEach(null);
+														}
+														else {
+															callback_forEach(error);
+														}
+													});
+												}
+												else {
+													callback_forEach(error);
+												}
+											});
+										}, function (error) {
+											if (error) {
+												response_from_server.id = '';
+												response_from_server.message = error.message;
+												response_from_server.type = 'error';
+											}
+											else {
+												NAT_Rule.remove({
+													_id:req.body.id
+												}, function (error) {
+													if (!error) {
+														response_from_server.message = 'Deleted Successfully!';
+														response_from_server.type = 'notification';
+													}
+													else {
+														response_from_server.message = error.message;
+														response_from_server.type = 'error';
+													}
+
+													// Return the gathered data.
+													res.json(response_from_server);
+												});
+											}
+										});
+									}
+									else {
+										/*
+										 * This is the last rule so just save it.
+										 */
+										NAT_Rule.remove({
+											_id:req.body.id
+										}, function (error) {
+											if (!error) {
+												response_from_server.message = 'Deleted Successfully!';
+												response_from_server.type = 'notification';
+											}
+											else {
+												response_from_server.message = error.message;
+												response_from_server.type = 'error';
+											}
+
+											// Return the gathered data.
+											res.json(response_from_server);
+										});
+									}
+								}
+								else {
+									response_from_server.message = error.message;
+									response_from_server.type = 'error';
+
+									// Return the gathered data.
+									res.json(response_from_server);
+								}
+							});
+						}
+						else {
+							response_from_server.message = stderr;
+							response_from_server.type = 'error';
+
+							// Return the gathered data.
+							res.json(response_from_server);
+						}
+					});
+				}
+				else {
+					response_from_server.message = error.message;
+					response_from_server.type = 'error';
+
+					// Return the gathered data.
+					res.json(response_from_server);
+				}
+			});
+
+			break;
 		default:
 			response_from_server.message = 'Invalid API Request.';
 			response_from_server.type = 'error';
