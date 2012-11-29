@@ -64,7 +64,7 @@ module.exports = function (req, res) {
 			 * Returns a list of NAT Rules.
 			 */
 			NAT_Rule.find({
-				chain:req.query.chain_id
+				chain_name:req.query.chain_name
 			}, {}, {
 				skip :req.query.page * req.query.rows - req.query.rows,
 				limit:req.query.rows,
