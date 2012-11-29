@@ -406,6 +406,8 @@ jQuery(function ($) {
 					}
 				},
 				beforeShowForm:function (formid) {
+					$('#tr_order').hide();
+
 					/*
 					 * Grid fields behaviour.
 					 */
