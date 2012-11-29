@@ -47,3 +47,10 @@
 							li(class=(menu == 'services/nat'?'active':''))
 								a(href='/services/nat').
 									NAT
+					li.dropdown(class=(menu == 'security/firewall'?'active':''))
+						a(data-toggle="dropdown",href='#').dropdown-toggle Security
+							b.caret
+						ul.dropdown-menu
+							li(class=(menu == 'security/firewall'?'active':''))
+								a(href='/security/firewall').
+									Firewall

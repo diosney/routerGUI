@@ -1,0 +1,51 @@
+extends ../../layouts/layout
+
+block navigation
+	include ../../layouts/navigation
+
+block content
+	link(rel='stylesheet', type='text/css', href='/javascripts/external/ui/css/jquery-ui.css')
+	link(rel='stylesheet', type='text/css', href='/javascripts/external/jqGrid/css/ui.jqgrid.css')
+
+	header
+		.container
+			h3 Firewall
+			span(class="lead") Tell something interesting about the Firewall screen.
+
+	.container
+		.row-fluid
+			.span12
+				#message-dashboard
+					- if (typeof(msg) != 'undefined' && msg.message) {
+						.alert.alert-error
+							a.close(href="#",data-dismiss="alert") ×
+							strong.
+								Error!&nbsp;
+							span.msg-mark.
+								#{msg.message}
+					- }
+		.row-fluid
+			.span12
+				#firewall-list.grid
+					table#firewall-list-grid
+					#firewall-list-pager
+
+block footer
+	include ../../layouts/footer
+
+block scripts
+	script(type='text/javascript', src='/javascripts/external/ui/js/jquery-ui.js')
+	script(type='text/javascript', src='/javascripts/external/jqGrid/js/i18n/grid.locale-en.js')
+	script(type='text/javascript', src='/javascripts/external/jqGrid/js/jquery.jqGrid.js')
+	script(type='text/javascript', src='/javascripts/ui/security/firewall.js')
+
+block templates
+	#templates-container.hidden
+		.alert.alert-error
+			a.close(href="#",data-dismiss="alert") ×
+			strong.
+				Error!&nbsp;
+			span.msg-mark
+		.alert.alert-success
+			a.close(href="#",data-dismiss="alert") ×
+			span.msg-mark
