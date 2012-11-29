@@ -23,10 +23,10 @@ module.exports = function (req, res) {
 			 * Delete an object from the database.
 			 */
 			NAT_Chain.findOne({
-				_id:req.body.id
+				name:req.body.id
 			}, function (error, doc) {
 				if (!error) {
-					if (doc.name == 'local' || doc.name == 'ifall') {
+					if (req.body.id.split('-')[1] == 'local' || req.body.id.split('-')[1] == 'ifall') {
 						/*
 						 * Don't let the removal of Local and Ifall chains.
 						 */
@@ -43,7 +43,7 @@ module.exports = function (req, res) {
 								 * Save changes to database.
 								 */
 								NAT_Chain.remove({
-									_id:req.body.id
+									name:req.body.id
 								}, function (error) {
 									if (!error) {
 										response_from_server.message = 'Deleted Successfully!';
@@ -69,7 +69,7 @@ module.exports = function (req, res) {
 					}
 				}
 				else {
-					response_from_server.message = error;
+					response_from_server.message = error.message;
 					response_from_server.type = 'error';
 
 					// Return the gathered data.

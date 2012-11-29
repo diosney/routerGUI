@@ -20,10 +20,10 @@ module.exports = function (req, res) {
 	switch (req.body.object) {
 		case 'chain':
 			NAT_Chain.findOne({
-				_id:req.body.id
+				name:req.body.id
 			}, function (error, doc) {
 				if (!error) {
-					if (doc.name == 'local' || doc.name == 'ifall') {
+					if (req.body.id.split('-')[1] == 'local' || req.body.id.split('-')[1] == 'ifall') {
 						/*
 						 * Don't let the change of Local and Ifall chains.
 						 */

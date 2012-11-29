@@ -63,9 +63,12 @@ td label {
 }
 .field-description {
 	color: gray;
-	font-size:  0.9em;
+	font-size: 0.9em;
 	font-style: italic;
 	margin-left: 0.2em;
+}
+.FormGrid .field-description {
+	font-size: 1em;
 }
 /* =Progress Indicators.
  -------------------------------------------------------------- */

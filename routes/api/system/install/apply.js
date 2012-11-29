@@ -552,14 +552,6 @@ module.exports = function (req, res) {
 							},
 							function (callback_series) {
 								/*
-								 * Routing Routes.
-								 *
-								 * Just a placeholder because for now there was no default routes to install.
-								 */
-								callback_series(null);
-							},
-							function (callback_series) {
-								/*
 								 * Routing Rules.
 								 */
 								async.waterfall([

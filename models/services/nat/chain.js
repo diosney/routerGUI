@@ -32,15 +32,15 @@ NAT_Chain.methods.cl_create = function cl_create() {
 	var str_to_exec = '';
 
 	if (this.type == 'source') {
-		str_to_exec = 'iptables --table nat --new-chain snat-' + this.name;
-		str_to_exec += '&& iptables --table nat --append POSTROUTING ' + ((this.interface) ? '--out-interface ' + this.interface + ' ' : '') + '--jump snat-' + this.name;
+		str_to_exec = 'iptables --table nat --new-chain ' + this.name;
+		str_to_exec += '&& iptables --table nat --append POSTROUTING ' + ((this.interface) ? '--out-interface ' + this.interface + ' ' : '') + '--jump ' + this.name;
 	}
 	else if (this.type == 'destination') {
-		str_to_exec = 'iptables --table nat --new-chain dnat-' + this.name;
-		str_to_exec += '&& iptables --table nat --append PREROUTING ' + ((this.interface) ? '--in-interface ' + this.interface + ' ' : '') + '--jump dnat-' + this.name;
+		str_to_exec = 'iptables --table nat --new-chain ' + this.name;
+		str_to_exec += '&& iptables --table nat --append PREROUTING ' + ((this.interface) ? '--in-interface ' + this.interface + ' ' : '') + '--jump ' + this.name;
 
 		if (this.name == 'local' || this.name == 'ifall') {
-			str_to_exec += '&& iptables --table nat --append OUTPUT --jump dnat-' + this.name;
+			str_to_exec += '&& iptables --table nat --append OUTPUT --jump ' + this.name;
 		}
 	}
 
@@ -64,15 +64,15 @@ NAT_Chain.statics.cl_create = function cl_create(nat_chain) {
 	var str_to_exec = '';
 
 	if (nat_chain.type == 'source') {
-		str_to_exec = 'iptables --table nat --new-chain snat-' + nat_chain.name;
-		str_to_exec += '&& iptables --table nat --append POSTROUTING ' + ((nat_chain.interface) ? '--out-interface ' + nat_chain.interface + ' ' : '') + '--jump snat-' + nat_chain.name;
+		str_to_exec = 'iptables --table nat --new-chain ' + nat_chain.name;
+		str_to_exec += '&& iptables --table nat --append POSTROUTING ' + ((nat_chain.interface) ? '--out-interface ' + nat_chain.interface + ' ' : '') + '--jump ' + nat_chain.name;
 	}
 	else if (nat_chain.type == 'destination') {
-		str_to_exec = 'iptables --table nat --new-chain dnat-' + nat_chain.name;
-		str_to_exec += '&& iptables --table nat --append PREROUTING ' + ((nat_chain.interface) ? '--in-interface ' + nat_chain.interface + ' ' : '') + '--jump dnat-' + nat_chain.name;
+		str_to_exec = 'iptables --table nat --new-chain ' + nat_chain.name;
+		str_to_exec += '&& iptables --table nat --append PREROUTING ' + ((nat_chain.interface) ? '--in-interface ' + nat_chain.interface + ' ' : '') + '--jump ' + nat_chain.name;
 
 		if (nat_chain.name == 'local' || nat_chain.name == 'ifall') {
-			str_to_exec += '&& iptables --table nat --append OUTPUT --jump dnat-' + nat_chain.name;
+			str_to_exec += '&& iptables --table nat --append OUTPUT --jump ' + nat_chain.name;
 		}
 	}
 
@@ -83,14 +83,14 @@ NAT_Chain.statics.cl_del = function cl_del(nat_chain) {
 	var str_to_exec = '';
 
 	if (nat_chain.type == 'source') {
-		str_to_exec = 'iptables --table nat --flush  snat-' + nat_chain.name;
-		str_to_exec += '&& iptables --table nat --delete POSTROUTING ' + ((nat_chain.interface) ? '--out-interface ' + nat_chain.interface + ' ' : '') + '--jump snat-' + nat_chain.name;
-		str_to_exec += '&& iptables --table nat --delete-chain snat-' + nat_chain.name;
+		str_to_exec = 'iptables --table nat --flush  ' + nat_chain.name;
+		str_to_exec += '&& iptables --table nat --delete POSTROUTING ' + ((nat_chain.interface) ? '--out-interface ' + nat_chain.interface + ' ' : '') + '--jump ' + nat_chain.name;
+		str_to_exec += '&& iptables --table nat --delete-chain ' + nat_chain.name;
 	}
 	else if (nat_chain.type == 'destination') {
-		str_to_exec = 'iptables --table nat --flush  dnat-' + nat_chain.name;
-		str_to_exec += '&& iptables --table nat --delete PREROUTING ' + ((nat_chain.interface) ? '--in-interface ' + nat_chain.interface + ' ' : '') + '--jump dnat-' + nat_chain.name;
-		str_to_exec += '&& iptables --table nat --delete-chain dnat-' + nat_chain.name;
+		str_to_exec = 'iptables --table nat --flush ' + nat_chain.name;
+		str_to_exec += '&& iptables --table nat --delete PREROUTING ' + ((nat_chain.interface) ? '--in-interface ' + nat_chain.interface + ' ' : '') + '--jump ' + nat_chain.name;
+		str_to_exec += '&& iptables --table nat --delete-chain ' + nat_chain.name;
 	}
 
 	return str_to_exec;

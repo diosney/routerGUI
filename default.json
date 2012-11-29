@@ -97,25 +97,25 @@
 		"chains":[
 			{
 				"type"       :"source",
-				"name"       :"ifall",
+				"name"       :"snat-ifall",
 				"interface"  :"",
 				"description":""
 			},
 			{
 				"type"       :"source",
-				"name"       :"local",
+				"name"       :"snat-local",
 				"interface"  :"",
 				"description":""
 			},
 			{
 				"type"       :"destination",
-				"name"       :"ifall",
+				"name"       :"dnat-ifall",
 				"interface"  :"",
 				"description":""
 			},
 			{
 				"type"       :"destination",
-				"name"       :"local",
+				"name"       :"dnat-local",
 				"interface"  :"",
 				"description":""
 			}

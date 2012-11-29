@@ -12,9 +12,10 @@ exports.index = function (req, res) {
 		// System is not installed.
 		res.redirect('/system/install');
 	}
-
-	res.render('services/nat/index', {
-		title:'routerGUI · Services · NAT',
-		menu :'services/nat'
-	});
+	else {
+		res.render('services/nat/index', {
+			title:'routerGUI · Services · NAT',
+			menu :'services/nat'
+		});
+	}
 };
