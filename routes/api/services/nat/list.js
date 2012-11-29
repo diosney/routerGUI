@@ -124,7 +124,9 @@ module.exports = function (req, res) {
 			break;
 		case 'rule_order':
 			if (req.query.return_type == 'select') {
-				NAT_Rule.find({}, {}, {}, function (error, docs) {
+				NAT_Rule.find({
+					chain_name: req.query.chain_name
+				}, {}, {}, function (error, docs) {
 					if (!error) {
 						var str_to_return = '<select><option value="' + (Number(docs.length) + 1) + '">Append</option>';
 
