@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
 /*
  * Load required models.
  */
-	NAT_Chain = require('../../../../models/services/nat/chain.js');
+	NAT_Chain = require('../../../../models/services/nat/chain.js'),
+	NAT_Rule = require('../../../../models/services/nat/rule.js');
 
 module.exports = function (req, res) {
 	// Initialize response.
@@ -46,16 +47,32 @@ module.exports = function (req, res) {
 									name:req.body.id
 								}, function (error) {
 									if (!error) {
-										response_from_server.message = 'Deleted Successfully!';
-										response_from_server.type = 'notification';
+										/*
+										 * Removes also all related NAT Rules from db.
+										 */
+										NAT_Rule.remove({
+											chain_name:req.body.id
+										}, function (error) {
+											if (!error) {
+												response_from_server.message = 'Deleted Successfully!';
+												response_from_server.type = 'notification';
+											}
+											else {
+												response_from_server.message = error.message;
+												response_from_server.type = 'error';
+											}
+
+											// Return the gathered data.
+											res.json(response_from_server);
+										});
 									}
 									else {
 										response_from_server.message = error.message;
 										response_from_server.type = 'error';
-									}
 
-									// Return the gathered data.
-									res.json(response_from_server);
+										// Return the gathered data.
+										res.json(response_from_server);
+									}
 								});
 							}
 							else {
