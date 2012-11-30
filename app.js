@@ -68,6 +68,7 @@ var routes_ui_dashboard = require('./routes/ui/dashboard/index.js'),
 	routes_ui_routing_static = require('./routes/ui/routing/static.js'),
 	routes_ui_services_ipsets = require('./routes/ui/services/ipsets.js'),
 	routes_ui_services_nat = require('./routes/ui/services/nat.js'),
+	routes_ui_services_shaper = require('./routes/ui/services/shaper.js'),
 	routes_ui_security_firewall = require('./routes/ui/security/firewall.js');
 
 /*
@@ -83,6 +84,7 @@ app.get('/routing/settings', routes_ui_routing_settings.index);
 app.get('/routing/static', routes_ui_routing_static.index);
 app.get('/services/ipsets', routes_ui_services_ipsets.index);
 app.get('/services/nat', routes_ui_services_nat.index);
+app.get('/services/shaper', routes_ui_services_shaper.index);
 app.get('/security/firewall', routes_ui_security_firewall.index);
 
 /*
