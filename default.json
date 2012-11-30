@@ -1,5 +1,5 @@
 {
-	"system" :{
+	"system"  :{
 		"settings":{
 			"widgets_refresh_interval":3
 		},
@@ -30,7 +30,7 @@
 			}
 		]
 	},
-	"routing":{
+	"routing" :{
 		"settings":{
 			"ip_forwarding_v4":0,
 			"ip_forwarding_v6":0
@@ -93,7 +93,7 @@
 			}
 		]
 	},
-	"nat"    :{
+	"nat"     :{
 		"chains":[
 			{
 				"type"       :"source",
@@ -118,6 +118,22 @@
 				"name"       :"dnat-local",
 				"interface"  :"",
 				"description":""
+			}
+		]
+	},
+	"firewall":{
+		"chains":[
+			{
+				"name"         :"ifall",
+				"in-interface" :"",
+				"out-interface":"",
+				"description"  :""
+			},
+			{
+				"name"         :"local",
+				"in-interface" :"",
+				"out-interface":"",
+				"description"  :""
 			}
 		]
 	}

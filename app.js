@@ -98,7 +98,8 @@ var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
 	routes_api_routing_settings = require('./routes/api/routing/settings/index.js'),
 	routes_api_routing_static = require('./routes/api/routing/static/index.js'),
 	routes_api_services_ipsets = require('./routes/api/services/ipsets/index.js'),
-	routes_api_services_nat = require('./routes/api/services/nat/index.js');
+	routes_api_services_nat = require('./routes/api/services/nat/index.js'),
+	routes_api_security_firewall = require('./routes/api/security/firewall/index.js');
 
 /*
  * API URLs.
@@ -174,6 +175,15 @@ app.get('/api/services/nat', routes_api_services_nat.list);
 app.post('/api/services/nat', routes_api_services_nat.add);
 app.delete('/api/services/nat', routes_api_services_nat.delete);
 app.put('/api/services/nat', routes_api_services_nat.edit);
+
+/*
+ * Security.
+ */
+// Security -> Firewall.
+app.get('/api/security/firewall', routes_api_security_firewall.list);
+app.post('/api/security/firewall', routes_api_security_firewall.add);
+app.delete('/api/security/firewall', routes_api_security_firewall.delete);
+app.put('/api/security/firewall', routes_api_security_firewall.edit);
 
 http.createServer(app).listen(app.get('port'), function () {
 	console.log('Express server listening on port ' + app.get('port'));

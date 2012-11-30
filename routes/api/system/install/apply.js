@@ -25,7 +25,9 @@ var async = require('async'),
 
 	IP_Set = require('../../../../models/services/ipsets/ipset.js'),
 
-	NAT_Chain = require('../../../../models/services/nat/chain.js');
+	NAT_Chain = require('../../../../models/services/nat/chain.js'),
+
+	Firewall_Chain = require('../../../../models/security/firewall/chain.js');
 
 // Load default configuration file.
 var default_file = require('../../../../default.json');
@@ -701,6 +703,86 @@ module.exports = function (req, res) {
 										if (error === null) {
 											// Save the object to database.
 											nat_chain.save(function (error) {
+												if (error) {
+													callback_forEach(error);
+												}
+												else {
+													callback_forEach(null);
+												}
+											});
+										}
+										else {
+											callback_forEach(stderr);
+										}
+									});
+								}, function (error) {
+									if (error) {
+										callback_series(error);
+									}
+									else {
+										callback_series(null);
+									}
+								});
+							}
+						],
+							function (error, results) {
+								if (error === null) {
+									callback_parallel(null);
+								}
+								else {
+									callback_parallel(error);
+								}
+							});
+					},
+					function (callback_parallel) {
+						/*
+						 * Firewall.
+						 */
+						/*
+						 * Chains.
+						 */
+						async.series([
+							function (callback_series) {
+								/*
+								 * Flush and delete previous chains.
+								 */
+								exec('iptables --table filter --flush && iptables --table filter --delete-chain', function (error, stdout, stderr) {
+									if (error === null) {
+										callback_series(null);
+									}
+									else {
+										callback_series(stderr);
+									}
+								});
+							},
+							function (callback_series) {
+								/*
+								 * Policies for built-in chains in table.
+								 */
+								exec(Firewall_Chain.cl_set_default_policy(), function (error, stdout, stderr) {
+									if (error === null) {
+										callback_series(null);
+									}
+									else {
+										callback_series(stderr);
+									}
+								});
+							},
+							function (callback_series) {
+								/*
+								 * Insert default Chains to system and database.
+								 */
+								async.forEach(default_file.firewall.chains, function (item, callback_forEach) {
+									/*
+									 * Add a Chain to system.
+									 */
+									// Instantiate the model and fill it with the default data.
+									var firewall_chain = new Firewall_Chain(item);
+
+									exec(Firewall_Chain.cl_create(item), function (error, stdout, stderr) {
+										if (error === null) {
+											// Save the object to database.
+											firewall_chain.save(function (error) {
 												if (error) {
 													callback_forEach(error);
 												}
