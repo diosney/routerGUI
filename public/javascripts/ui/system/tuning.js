@@ -141,7 +141,8 @@ jQuery(function ($) {
 			modal         :true,
 			mtype         :'PUT',
 			recreateForm  :true,
-			url           :'/api/system/tuning'
+			url           :'/api/system/tuning',
+			width: '350'
 		}, {
 			// ADD Settings.
 			addCaption    :'Add Tunable',
@@ -171,7 +172,8 @@ jQuery(function ($) {
 			modal         :false,
 			mtype         :'POST',
 			recreateForm  :true,
-			url           :'/api/system/tuning'
+			url           :'/api/system/tuning',
+			width: '350'
 		}, {
 			// DELETE Settings.
 			addCaption :'Delete Tunable',

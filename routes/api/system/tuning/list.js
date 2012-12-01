@@ -21,7 +21,6 @@ module.exports = function (req, res) {
 			/*
 			 * Returns a list of Tunables from database.
 			 */
-			// TODO: Add sorting functionality.
 			async.waterfall([
 				function (callback_waterfall) {
 					// Obtain the total count of object in database.

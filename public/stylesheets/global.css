@@ -93,6 +93,11 @@ td label {
 #res-usage .load-cell {
 	padding-left: 3em;
 }
+/* =Pages. System. Tuning.
+ -------------------------------------------------------------- */
+#FrmGrid_tunable-list-grid #path {
+	width: 23.5em !important;
+}
 /* =Grids.
  -------------------------------------------------------------- */
 .ui-jqgrid tr.jqgrow td {
@@ -114,14 +119,17 @@ td label {
 .ui-jqgrid-labels .color-red {
 	display: none;
 }
-/* =Grids. Tuning.
- -------------------------------------------------------------- */
+.FormGrid #description {
+	height: 7em;
+	width: 23em !important;
+}
+.FormGrid select,
+.FormGrid input[type="text"]{
+	width: 13em;
+}
 .column_description {
 	padding: 0.5em !important;
 	padding-left: 1em !important;
-}
-#description {
-	width: 18.2em;
 }
 /* =Pages. Interfaces. Devices.
  -------------------------------------------------------------- */
