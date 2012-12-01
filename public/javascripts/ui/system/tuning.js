@@ -16,7 +16,8 @@ jQuery(function ($) {
 				editoptions:{
 					value:{
 						'net'   :'Net',
-						'kernel':'Kernel'
+						'kernel':'Kernel',
+						'fs'    :'Fs'
 					}
 				},
 				hidden     :true,
@@ -142,7 +143,7 @@ jQuery(function ($) {
 			mtype         :'PUT',
 			recreateForm  :true,
 			url           :'/api/system/tuning',
-			width: '350'
+			width         :'350'
 		}, {
 			// ADD Settings.
 			addCaption    :'Add Tunable',
@@ -161,6 +162,55 @@ jQuery(function ($) {
 			},
 			beforeShowForm:function () {
 				$('#tr_group').show();
+
+				/*
+				 * jsTree widget applied to path field.
+				 */
+				$('#path').hide().after('<div id="path-tree-container"></div>');
+
+				$('#group').live('change',function () {
+					$('#path-tree-container').jstree({
+						core     :{},
+						plugins  :['themes', 'json_data', 'ui'],
+						themes   :{
+							theme:'classic',
+							dots :true,
+							icons:true
+						},
+						ui       :{
+							select_limit:1
+						},
+						json_data:{
+							ajax:{
+								data :function (n) {
+									return {
+										list_dir:true,
+										path    :(n.attr ? n.attr('id') : '/'),
+										group   :$('#group option:selected').val()
+									};
+								},
+								url  :'/api/system/tuning',
+								mtype:'GET'
+							}
+						}
+					}).bind('select_node.jstree',function (event, data) {
+							// If is directory invalidate the path field.
+							if (data.rslt.obj.closest('li').attr('rel') == 'folder') {
+								// A directory was clicked.
+								// Clean previous values.
+								$('#path,#value').val('');
+							}
+							else {
+								// A file was clicked.
+								$('#path').val(data.rslt.obj.attr('id').replace(/\//g, '.').slice(1));
+
+								// Show current value of file accordingly.
+								$('#value').val(data.rslt.obj.closest('li').attr('data-content'));
+							}
+						}).delegate('a', 'click', function (event, data) {
+							event.preventDefault();
+						})
+				}).trigger('change');
 			},
 			bSubmit       :'Add',
 			closeAfterAdd :true,
@@ -173,7 +223,7 @@ jQuery(function ($) {
 			mtype         :'POST',
 			recreateForm  :true,
 			url           :'/api/system/tuning',
-			width: '350'
+			width         :'350'
 		}, {
 			// DELETE Settings.
 			addCaption :'Delete Tunable',

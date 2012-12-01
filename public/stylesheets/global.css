@@ -98,6 +98,21 @@ td label {
 #FrmGrid_tunable-list-grid #path {
 	width: 23.5em !important;
 }
+#path-tree-container {
+	height: 10em;
+	margin-top: -1em;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	width: 24.5em;
+}
+#path-tree-container a {
+	width: 100%;
+}
+[rel="folder"] > .jstree-clicked {
+	background-color: white !important;
+	border-color: white !important;
+	color: black !important;
+}
 /* =Grids.
  -------------------------------------------------------------- */
 .ui-jqgrid tr.jqgrow td {
@@ -124,7 +139,7 @@ td label {
 	width: 23em !important;
 }
 .FormGrid select,
-.FormGrid input[type="text"]{
+.FormGrid input[type="text"] {
 	width: 13em;
 }
 .column_description {
@@ -162,4 +177,9 @@ td label {
  -------------------------------------------------------------- */
 h3 a {
 	margin-top: 0.5em;
+}
+/* =jsTree.
+ -------------------------------------------------------------- */
+.jstree-leaf a > ins {
+	background: url('../images/icons/file.png') no-repeat scroll left top transparent !important;
 }

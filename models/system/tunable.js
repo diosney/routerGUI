@@ -16,7 +16,7 @@ var Tunable = new Schema({
 	path       :String,
 	group      :{
 		type:String,
-		enum:['net', 'kernel']
+		enum:['net', 'kernel', 'fs']
 	},
 	value      :String
 });

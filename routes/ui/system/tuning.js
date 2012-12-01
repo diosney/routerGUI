@@ -12,9 +12,10 @@ exports.index = function (req, res) {
 		// System is not installed.
 		res.redirect('/system/install');
 	}
-
-	res.render('system/tuning/index', {
-		title:'routerGUI · System · Tuning',
-		menu :'system/tuning'
-	});
+	else {
+		res.render('system/tuning/index', {
+			title:'routerGUI · System · Tuning',
+			menu :'system/tuning'
+		});
+	}
 };
