@@ -17,7 +17,9 @@ var Address = new Schema({
 		type:String,
 		enum:['global', 'site', 'link', 'host']
 	},
-	address      :String,
+	address      :{
+		type:String
+	},
 	net_mask     :Number,
 	family       :{
 		type   :String,

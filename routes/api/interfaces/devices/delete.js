@@ -30,16 +30,32 @@ module.exports = function (req, res) {
 							identifier:req.body.id
 						}, function (error) {
 							if (!error) {
-								response_from_server.message = 'Unsynced device deleted successfully!';
-								response_from_server.type = 'notification';
+								/*
+								 * Remove Device related addresses.f
+								 */
+								Address.remove({
+									parent_device:req.body.id
+								}, function (error) {
+									if (!error) {
+										response_from_server.message = 'Unsynced device deleted successfully!';
+										response_from_server.type = 'notification';
+									}
+									else {
+										response_from_server.message = err.message;
+										response_from_server.type = 'error';
+									}
+
+									// Return the gathered data.
+									res.json(response_from_server);
+								});
 							}
 							else {
 								response_from_server.message = err.message;
 								response_from_server.type = 'error';
-							}
 
-							// Return the gathered data.
-							res.json(response_from_server);
+								// Return the gathered data.
+								res.json(response_from_server);
+							}
 						});
 					}
 					else {
