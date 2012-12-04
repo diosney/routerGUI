@@ -55,6 +55,15 @@ jQuery(function ($) {
 				align         :'center',
 				classes       :'column_MAC',
 				editable      :true,
+				editrules: {
+					required: false,
+					custom: true,
+					custom_func: function(value,name) {
+						var pattern = /^([0-9a-f]{2}([:-]|$)){6}$/i;
+
+						return [pattern.test(value),'The MAC entered is invalid.'];
+					}
+				},
 				edittype      :'text',
 				firstsortorder:'asc',
 				index         :'MAC',

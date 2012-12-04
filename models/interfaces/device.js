@@ -17,7 +17,10 @@ var Device = new Schema({
 		enum:['UP', 'DOWN', 'NOT PRESENT']
 	},
 	identifier :String,
-	MAC        :String,
+	MAC        :{
+		type :String,
+		match:/^([0-9a-f]{2}([:-]|$)){6}$/i
+	},
 	MTU        :Number,
 	description:String
 });
