@@ -30,18 +30,22 @@ jQuery(function ($) {
 			{
 				align   :'center',
 				classes :'column_identifier',
-				editable:false,
+				editable:true,
 				index   :'identifier',
 				name    :'identifier',
 				search  :true,
 				stype   :'text',
-				sortable      :false,
+				sortable:false,
 				width   :10
 			},
 			{
 				align         :'center',
 				classes       :'column_MTU',
 				editable      :true,
+				editrules     :{
+					required:false,
+					integer :true
+				},
 				edittype      :'text',
 				firstsortorder:'asc',
 				index         :'MTU',
@@ -55,13 +59,13 @@ jQuery(function ($) {
 				align         :'center',
 				classes       :'column_MAC',
 				editable      :true,
-				editrules: {
-					required: false,
-					custom: true,
-					custom_func: function(value,name) {
+				editrules     :{
+					required   :false,
+					custom     :true,
+					custom_func:function (value, name) {
 						var pattern = /^([0-9a-f]{2}([:-]|$)){6}$/i;
 
-						return [pattern.test(value),'The MAC entered is invalid.'];
+						return [pattern.test(value), 'The MAC entered is invalid.'];
 					}
 				},
 				edittype      :'text',
@@ -139,7 +143,8 @@ jQuery(function ($) {
 			edit         :true,
 			edittext     :'<strong>Edit</strong>',
 			add          :false,
-			del          :false,
+			del          :true,
+			deltext      :'<strong>Delete</strong>',
 			search       :false,
 			refresh      :true,
 			refreshtext  :'<strong>Refresh</strong>',
@@ -162,11 +167,15 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
+			beforeShowForm:function () {
+				$('#tr_status').before($('#tr_identifier'));
+
+				$('#identifier').attr('readonly', 'readonly');
+			},
 			bSubmit       :'Done',
 			checkOnSubmit :false,
 			closeAfterEdit:true,
 			closeOnEscape :true,
-			dataheight    :180,
 			editCaption   :'Edit Device',
 			editData      :{
 				object:'device'
@@ -175,13 +184,12 @@ jQuery(function ($) {
 			mtype         :'PUT',
 			recreateForm  :true,
 			url           :'/api/interfaces/devices',
-			width         :400
-		}, {
-			// ADD Settings.
-			addCaption   :'Add Device',
-			addedrow     :'last',
+			width         :350
+		}, {}, {
+			// DELETE Settings.
+			addCaption :'Delete Device From DB',
 			// Handler the response from server.
-			afterSubmit  :function (response, postdata) {
+			afterSubmit:function (response, postdata) {
 				// Parse the XMLHttpRequest response.
 				var data = $.parseJSON(response.responseText);
 
@@ -192,20 +200,14 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
-			bSubmit      :'Add',
-			closeAfterAdd:true,
-			closeOnEscape:true,
-			dataheight   :180,
-			editData     :{
-				id    :'', // Replace the id added automaticaly by jqGrid.
+			bSubmit    :'Delete',
+			delData    :{
 				object:'device'
 			},
-			modal        :false,
-			mtype        :'POST',
-			recreateForm :true,
-			url          :'/api/interfaces/devices',
-			width        :400
-		}, {}, {}, {}, {});
+			modal      :false,
+			mtype      :'DELETE',
+			url        :'/api/interfaces/devices'
+		}, {}, {}, {});
 
 	/*
 	 * Function to render the Address subgrid.
@@ -325,9 +327,9 @@ jQuery(function ($) {
 			multiselect      :false,
 			pager            :'#' + pager_id,
 			postData         :{
-				device_id:row_id,
-				object   :'address',
-				device_status:$('.column_status','#' + row_id).text()
+				device_id    :row_id,
+				object       :'address',
+				device_status:$('.column_status', '#' + row_id).text()
 			},
 			prmNames         :{
 				sort :'orderby',

@@ -138,9 +138,16 @@ td label {
 	height: 7em;
 	width: 23em !important;
 }
-.FormGrid select,
 .FormGrid input[type="text"] {
 	width: 13em;
+}
+.FormGrid select {
+	width: 13.8em;
+}
+.FormGrid input[readonly="readonly"] {
+	border: medium none;
+	box-shadow: none;
+	cursor: default;
 }
 .column_description {
 	padding: 0.5em !important;
