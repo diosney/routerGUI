@@ -49,7 +49,10 @@ jQuery(function ($) {
 				classes       :'column_tag',
 				editable      :true,
 				editrules     :{
-					required:true
+					required:true,
+					integer: true,
+					minValue: 0,
+					maxValue: 4096
 				},
 				edittype      :'text',
 				firstsortorder:'asc',
@@ -157,7 +160,9 @@ jQuery(function ($) {
 			},
 			bSubmit       :'Done',
 			beforeShowForm:function () {
-				$('#tr_parent_device, #tr_tag').hide();
+				$('#tr_parent_device').after($('#tr_tag'));
+
+				$('#parent_device,#tag').attr('readonly', 'readonly');
 			},
 			checkOnSubmit :false,
 			closeAfterEdit:true,
