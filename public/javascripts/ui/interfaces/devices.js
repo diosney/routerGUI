@@ -234,8 +234,8 @@ jQuery(function ($) {
 					edittype      :'select',
 					editoptions   :{
 						value:{
-							'inet' :'Inet',
-							'inet6':'Inet6'
+							'inet' :'IPv4',
+							'inet6':'IPv6'
 						}
 					},
 					firstsortorder:'asc',
@@ -260,6 +260,15 @@ jQuery(function ($) {
 						}
 					},
 					firstsortorder:'asc',
+					formoptions: {
+						elmsuffix: '&nbsp;<a rel="tooltip" data-html="true" data-placement="bottom" title="<div class=align-left>' +
+							'<strong>Global</strong> - The address is globally valid.<br />' +
+							'<strong>Site</strong> - (IPv6 only) the address is site local, i.e. it is valid inside this site.<br />' +
+							'<strong>Link</strong> - The address is link local, i.e. it is valid  only on this device.<br />' +
+							'<strong>Host</strong> - The address is valid only inside this host.' +
+							'"><img class="icon-help no-margin-left" src="/images/icons/help.png" /></div></a>' +
+							'<br /><span class="field-description">"Global" is the option yo normally will need.</span>'
+					},
 					index         :'scope',
 					name          :'scope',
 					search        :true,
@@ -272,7 +281,7 @@ jQuery(function ($) {
 					classes       :'column_address',
 					editable      :true,
 					editrules     :{
-						required:true
+						required   :true
 					},
 					edittype      :'text',
 					firstsortorder:'asc',
@@ -397,6 +406,9 @@ jQuery(function ($) {
 				 */
 				addCaption   :'Add Address',
 				addedrow     :'last',
+				afterShowForm: function(formid) {
+					$('[rel="tooltip"]').tooltip();
+				},
 				// Handler the response from server.
 				afterSubmit  :function (response, postdata) {
 					// Parse the XMLHttpRequest response.
@@ -409,10 +421,45 @@ jQuery(function ($) {
 						return [false, data.message] 		// [success,message,new_id]
 					}
 				},
+				beforeShowForm:function () {
+					$('#tr_net_mask').hide();
+
+					$('#family').live('change',function () {
+						// Remove previous net_mask dropdowns.
+						$('#net_mask_dropdown').remove();
+
+						if ($(this).val() == 'inet6') {
+							$('#scope option[value="site"]').show();
+
+							var net_mask_dropdown_dropdown = '<select id="net_mask_dropdown">'
+							for (var i = 128;i > 0 ; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$('#address').after(net_mask_dropdown_dropdown);
+							$('#net_mask').val('128');
+						}
+						else {
+							$('#scope option[value="site"]').hide();
+
+							var net_mask_dropdown_dropdown = '<select id="net_mask_dropdown">'
+							for (var i = 32;i > 0 ; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$('#address').after(net_mask_dropdown_dropdown);
+							$('#net_mask').val('32');
+						}
+					}).trigger('change');
+
+					$('#net_mask_dropdown').live('change',function () {
+						$('#net_mask').val($(this).val());
+					}).trigger('change');
+				},
 				bSubmit      :'Add',
 				closeAfterAdd:true,
 				closeOnEscape:true,
-				// dataheight: 220,
+				dataheight: 220,
 				editData     :{
 					object   :'address',
 					id       :'', // Replace the id added automaticaly by jqGrid.
@@ -422,7 +469,7 @@ jQuery(function ($) {
 				mtype        :'POST',
 				recreateForm :true,
 				url          :'/api/interfaces/addresses',
-				width        :'auto'
+				width        :360
 			}, {
 				/*
 				 * DELETE Settings.

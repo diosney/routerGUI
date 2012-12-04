@@ -18,7 +18,7 @@ var Address = new Schema({
 		enum:['global', 'site', 'link', 'host']
 	},
 	address      :{
-		type:String
+		type:String // /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}/ Matches IPV4 correctly.
 	},
 	net_mask     :Number,
 	family       :{

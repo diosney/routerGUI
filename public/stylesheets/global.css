@@ -17,8 +17,14 @@ body {
 .align-center {
 	text-align: center !important;
 }
+.align-left {
+	text-align: left !important;
+}
 .hidden {
 	display: none;
+}
+.no-margin-left {
+	margin-left: 0 !important;
 }
 .position-absolute {
 	position: absolute;
@@ -149,6 +155,11 @@ td label {
 	box-shadow: none;
 	cursor: default;
 }
+.FormGrid #net_mask_dropdown {
+	height: 2.5em;
+	margin-left: 0.5em;
+	width: 5em;
+}
 .column_description {
 	padding: 0.5em !important;
 	padding-left: 1em !important;
@@ -169,6 +180,9 @@ td label {
 }
 .column_identifier {
 	font-weight: bold !important;
+}
+.column_scope {
+	text-transform: capitalize;
 }
 /* =Pages. Interfaces. VLANs.
  -------------------------------------------------------------- */
