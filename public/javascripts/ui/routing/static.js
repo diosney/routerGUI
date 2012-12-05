@@ -454,10 +454,10 @@ jQuery(function ($) {
 			width         :'auto'
 		}, {
 			// ADD Settings.
-			addCaption    :'Add Table',
-			addedrow      :'last',
+			addCaption   :'Add Table',
+			addedrow     :'last',
 			// Handler the response from server.
-			afterSubmit   :function (response, postdata) {
+			afterSubmit  :function (response, postdata) {
 				// Parse the XMLHttpRequest response.
 				var data = $.parseJSON(response.responseText);
 
@@ -468,18 +468,18 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
-			bSubmit       :'Add',
-			closeAfterAdd :true,
-			closeOnEscape :true,
-			editData      :{
+			bSubmit      :'Add',
+			closeAfterAdd:true,
+			closeOnEscape:true,
+			editData     :{
 				id    :'', // Replace the id added automaticaly by jqGrid.
 				object:'table'
 			},
-			modal         :false,
-			mtype         :'POST',
-			recreateForm  :true,
-			url           :'/api/routing/static',
-			width         :'auto'
+			modal        :false,
+			mtype        :'POST',
+			recreateForm :true,
+			url          :'/api/routing/static',
+			width        :'auto'
 		}, {
 			// DELETE Settings.
 			addCaption :'Delete Table',
@@ -662,6 +662,55 @@ jQuery(function ($) {
 						return [false, data.message]; 		// [success,message,new_id]
 					}
 				},
+				beforeShowForm:function () {
+					/*
+					 * Addresses fields rearrangement.
+					 */
+					$('#tr_to').before($('#tr_via'));
+
+					$('#tr_to_net_mask').hide();
+					$('#to').before('<select class="family_dropdown"><option value="inet4">IPv4</option><option value="inet6">IPv6</option></select>');
+
+					$('.family_dropdown').live('change',function () {
+						// Remove previous net_mask dropdowns.
+						$(this).closest('tr').find('.net_mask_dropdown').remove();
+
+						if ($(this).val() == 'inet6') {
+							var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+							for (var i = 128; i > 0; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+
+							if ($(this).closest('tr').next('tr').find('.FormElement').val()) {
+								$(this).next('.net_mask_dropdown option[value="' + $(this).closest('tr').next('tr').find('.FormElement').val() + '"]').attr('selected', 'selected');
+							}
+							else {
+								$(this).closest('tr').next('tr').find('.FormElement').val('128');
+							}
+						}
+						else {
+							var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+							for (var i = 32; i > 0; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+
+							if ($(this).closest('tr').next('tr').find('.FormElement').val()) {
+								$(this).parent().find('.net_mask_dropdown').find('[value="' + $(this).closest('tr').next('tr').find('.FormElement').val() + '"]').attr('selected', 'selected');
+							}
+							else {
+								$(this).closest('tr').next('tr').find('.FormElement').val('32');
+							}
+						}
+					}).trigger('change');
+
+					$('.net_mask_dropdown').live('change',function () {
+						$(this).closest('tr').next('tr').find('.FormElement').val($(this).val());
+					}).trigger('change');
+				},
 				bSubmit       :'Done',
 				checkOnSubmit :false,
 				closeAfterEdit:true,
@@ -680,10 +729,10 @@ jQuery(function ($) {
 				/*
 				 * ADD Settings.
 				 */
-				addCaption   :'Add Route',
-				addedrow     :'last',
+				addCaption    :'Add Route',
+				addedrow      :'last',
 				// Handler the response from server.
-				afterSubmit  :function (response, postdata) {
+				afterSubmit   :function (response, postdata) {
 					// Parse the XMLHttpRequest response.
 					var data = $.parseJSON(response.responseText);
 
@@ -694,19 +743,68 @@ jQuery(function ($) {
 						return [false, data.message] 		// [success,message,new_id]
 					}
 				},
-				bSubmit      :'Add',
-				closeAfterAdd:true,
-				closeOnEscape:true,
-				editData     :{
+				beforeShowForm:function () {
+					/*
+					 * Addresses fields rearrangement.
+					 */
+					$('#tr_to').before($('#tr_via'));
+
+					$('#tr_to_net_mask').hide();
+					$('#to').before('<select class="family_dropdown"><option value="inet4">IPv4</option><option value="inet6">IPv6</option></select>');
+
+					$('.family_dropdown').live('change',function () {
+						// Remove previous net_mask dropdowns.
+						$(this).closest('tr').find('.net_mask_dropdown').remove();
+
+						if ($(this).val() == 'inet6') {
+							var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+							for (var i = 128; i > 0; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+
+							if ($(this).closest('tr').next('tr').find('.FormElement').val()) {
+								$(this).next('.net_mask_dropdown option[value="' + $(this).closest('tr').next('tr').find('.FormElement').val() + '"]').attr('selected', 'selected');
+							}
+							else {
+								$(this).closest('tr').next('tr').find('.FormElement').val('128');
+							}
+						}
+						else {
+							var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+							for (var i = 32; i > 0; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+
+							if ($(this).closest('tr').next('tr').find('.FormElement').val()) {
+								$(this).parent().find('.net_mask_dropdown').find('[value="' + $(this).closest('tr').next('tr').find('.FormElement').val() + '"]').attr('selected', 'selected');
+							}
+							else {
+								$(this).closest('tr').next('tr').find('.FormElement').val('32');
+							}
+						}
+					}).trigger('change');
+
+					$('.net_mask_dropdown').live('change',function () {
+						$(this).closest('tr').next('tr').find('.FormElement').val($(this).val());
+					}).trigger('change');
+				},
+				bSubmit       :'Add',
+				closeAfterAdd :true,
+				closeOnEscape :true,
+				editData      :{
 					object:'route',
 					id    :'', // Replace the id added automaticaly by jqGrid.
 					table :row_id
 				},
-				modal        :false,
-				mtype        :'POST',
-				recreateForm :true,
-				url          :'/api/routing/static',
-				width        :'auto'
+				modal         :false,
+				mtype         :'POST',
+				recreateForm  :true,
+				url           :'/api/routing/static',
+				width         :'auto'
 			}, {
 				/*
 				 * DELETE Settings.
