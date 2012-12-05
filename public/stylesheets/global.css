@@ -184,6 +184,9 @@ td label {
 .column_scope {
 	text-transform: capitalize;
 }
+#tr_scope .CaptionTD {
+	vertical-align: top !important;
+}
 /* =Pages. Interfaces. VLANs.
  -------------------------------------------------------------- */
 .column_tag {
@@ -203,4 +206,16 @@ h3 a {
  -------------------------------------------------------------- */
 .jstree-leaf a > ins {
 	background: url('../images/icons/file.png') no-repeat scroll left top transparent !important;
+}
+/* =Pages. Routes. Static.
+ -------------------------------------------------------------- */
+.family_dropdown {
+	height: 2.5em;
+	margin-right: 0.5em !important;
+	width: auto !important;
+}
+.net_mask_dropdown {
+	height: 2.5em;
+	margin-left: 0.5em !important;
+	width: 5.2em !important;
 }

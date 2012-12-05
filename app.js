@@ -94,6 +94,7 @@ var routes_api_dashboard = require('./routes/api/dashboard/index.js'),
 	routes_api_system_settings = require('./routes/api/system/settings/index.js'),
 	routes_api_system_tuning = require('./routes/api/system/tuning/index.js'),
 	routes_api_system_install = require('./routes/api/system/install/index.js'),
+	routes_api_interfaces = require('./routes/api/interfaces/index.js'),
 	routes_api_interfaces_devices = require('./routes/api/interfaces/devices/index.js'),
 	routes_api_interfaces_addresses = require('./routes/api/interfaces/address/index.js'),
 	routes_api_interfaces_vlans = require('./routes/api/interfaces/vlans/index.js'),
@@ -133,6 +134,8 @@ app.post('/api/system/install', routes_api_system_install.apply);
 /*
  * Interfaces.
  */
+app.get('/api/interfaces', routes_api_interfaces.list);
+
 // Interfaces -> Devices.
 app.get('/api/interfaces/devices', routes_api_interfaces_devices.list);
 app.post('/api/interfaces/devices', routes_api_interfaces_devices.add);

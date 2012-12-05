@@ -32,7 +32,10 @@ jQuery(function ($) {
 				classes       :'column_priority',
 				editable      :true,
 				editrules     :{
-					required:true
+					required:true,
+					integer :true,
+					minValue:1,
+					maxValue:32767
 				},
 				edittype      :'text',
 				firstsortorder:'asc',
@@ -96,7 +99,7 @@ jQuery(function ($) {
 				classes       :'column_iif',
 				editable      :true,
 				editoptions   :{
-					dataUrl:'/api/interfaces/devices?object=device&return_type=select'
+					dataUrl :'/api/interfaces?object=interfaces&return_type=select'
 				},
 				edittype      :'select',
 				firstsortorder:'asc',
@@ -140,7 +143,7 @@ jQuery(function ($) {
 				width         :30
 			}
 		],
-		colNames         :['Type', 'Priority <span class="color-red">*</span>', 'From', 'From Netmask', 'To', 'To Netmask', 'In Interface', 'Table <span class="color-red">*</span>', 'Description'],
+		colNames         :['Type', 'Priority <span class="color-red">*</span>', 'From', 'Netmask', 'To', 'Netmask', 'In Interface', 'Table <span class="color-red">*</span>', 'Description'],
 		datatype         :'json',
 		deselectAfterSort:false,
 		emptyrecords     :'No <strong>Devices</strong> found.',
@@ -215,10 +218,10 @@ jQuery(function ($) {
 			width         :'auto'
 		}, {
 			// ADD Settings.
-			addCaption   :'Add Rule',
-			addedrow     :'last',
+			addCaption    :'Add Rule',
+			addedrow      :'last',
 			// Handler the response from server.
-			afterSubmit  :function (response, postdata) {
+			afterSubmit   :function (response, postdata) {
 				// Parse the XMLHttpRequest response.
 				var data = $.parseJSON(response.responseText);
 
@@ -229,18 +232,53 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
-			bSubmit      :'Add',
-			closeAfterAdd:true,
-			closeOnEscape:true,
-			editData     :{
+			beforeShowForm:function () {
+				/*
+				 * Addresses fields rearrangement.
+				 */
+				$('#tr_from_net_mask,#tr_to_net_mask').hide();
+				$('#from,#to').before('<select class="family_dropdown"><option value="inet4">IPv4</option><option value="inet6">IPv6</option></select>');
+
+				$('.family_dropdown').live('change',function () {
+					// Remove previous net_mask dropdowns.
+					$(this).closest('tr').find('.net_mask_dropdown').remove();
+
+					if ($(this).val() == 'inet6') {
+						var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+						for (var i = 128; i > 0; i--) {
+							net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+						}
+						net_mask_dropdown_dropdown += '</select>';
+						$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+						$(this).closest('tr').next('tr').find('.FormElement').val('128');
+					}
+					else {
+						var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+						for (var i = 32; i > 0; i--) {
+							net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+						}
+						net_mask_dropdown_dropdown += '</select>';
+						$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+						$(this).closest('tr').next('tr').find('.FormElement').val('32');
+					}
+				}).trigger('change');
+
+				$('.net_mask_dropdown').live('change',function () {
+					$(this).closest('tr').next('tr').find('.FormElement').val($(this).val());
+				}).trigger('change');
+			},
+			bSubmit       :'Add',
+			closeAfterAdd :true,
+			closeOnEscape :true,
+			editData      :{
 				id    :'', // Replace the id added automaticaly by jqGrid.
 				object:'rule'
 			},
-			modal        :false,
-			mtype        :'POST',
-			recreateForm :true,
-			url          :'/api/routing/static',
-			width        :'auto'
+			modal         :false,
+			mtype         :'POST',
+			recreateForm  :true,
+			url           :'/api/routing/static',
+			width         :'auto'
 		}, {
 			/*
 			 * DELETE Settings.
