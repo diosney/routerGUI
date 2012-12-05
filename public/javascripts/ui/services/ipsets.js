@@ -492,10 +492,10 @@ jQuery(function ($) {
 				/*
 				 * ADD Settings.
 				 */
-				addCaption   :'Add ' + subgrid_options.ipset_type,
-				addedrow     :'last',
+				addCaption    :'Add ' + subgrid_options.ipset_type,
+				addedrow      :'last',
 				// Handler the response from server.
-				afterSubmit  :function (response, postdata) {
+				afterSubmit   :function (response, postdata) {
 					// Parse the XMLHttpRequest response.
 					var data = $.parseJSON(response.responseText);
 
@@ -506,19 +506,56 @@ jQuery(function ($) {
 						return [false, data.message] 		// [success,message,new_id]
 					}
 				},
-				bSubmit      :'Add',
-				closeAfterAdd:true,
-				closeOnEscape:true,
-				editData     :{
+				beforeShowForm:function (formid) {
+					if (ipset_type == 'hash:net') {
+						/*
+						 * Addresses fields rearrangement.
+						 */
+						$('#tr_net_mask').hide();
+						$('#family').live('change',function () {
+							// Remove previous net_mask dropdowns.
+							$('.net_mask_dropdown').remove();
+
+							if ($(this).val() == 'inet6') {
+								var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">';
+								for (var i = 128; i > 0; i--) {
+									net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+								}
+								net_mask_dropdown_dropdown += '</select>';
+								$('#address').after(net_mask_dropdown_dropdown);
+
+								$('#net_mask').val('128');
+							}
+							else {
+								var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">';
+								for (var i = 32; i > 0; i--) {
+									net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+								}
+								net_mask_dropdown_dropdown += '</select>';
+								$('#address').after(net_mask_dropdown_dropdown);
+
+								$('#net_mask').val('32');
+							}
+						}).trigger('change');
+
+						$('.net_mask_dropdown').live('change',function () {
+							$('#net_mask').val($(this).val());
+						}).trigger('change');
+					}
+				},
+				bSubmit       :'Add',
+				closeAfterAdd :true,
+				closeOnEscape :true,
+				editData      :{
 					object:ipset_type,
 					id    :'', // Replace the id added automaticaly by jqGrid.
 					ipset :row_id
 				},
-				modal        :false,
-				mtype        :'POST',
-				recreateForm :true,
-				url          :'/api/services/ipsets',
-				width        :'auto'
+				modal         :false,
+				mtype         :'POST',
+				recreateForm  :true,
+				url           :'/api/services/ipsets',
+				width         :'auto'
 			}, {
 				/*
 				 * DELETE Settings.
