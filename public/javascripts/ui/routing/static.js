@@ -99,7 +99,7 @@ jQuery(function ($) {
 				classes       :'column_iif',
 				editable      :true,
 				editoptions   :{
-					dataUrl :'/api/interfaces?object=interfaces&return_type=select'
+					dataUrl:'/api/interfaces?object=interfaces&return_type=select'
 				},
 				edittype      :'select',
 				firstsortorder:'asc',
@@ -316,7 +316,23 @@ jQuery(function ($) {
 				align         :'center',
 				classes       :'column_table_id',
 				editable      :true,
-				edittype      :'text',
+				edittype      :'select',
+				editoptions   :{
+					dataInit:function (element) {
+						var id_dropdown_options = '';
+						for (var i = 1; i < 255; i++) {
+							id_dropdown_options += '<option value="' + i + '">' + i + '</option>';
+						}
+
+						var id_dropdown_options$ = $(id_dropdown_options);
+						$(element).find('option').each(function (index) {
+							id_dropdown_options$.filter('[value="' + $(this).val() + '"]').attr('disabled', 'disabled');
+						});
+
+						$(element).html(id_dropdown_options$);
+					},
+					dataUrl :'/api/routing/static?object=table&return_type=select'
+				},
 				editrules     :{
 					required:true
 				},
@@ -423,9 +439,6 @@ jQuery(function ($) {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
 			},
-			beforeShowForm:function () {
-				$('#tr_table_id').hide();
-			},
 			bSubmit       :'Done',
 			checkOnSubmit :false,
 			closeAfterEdit:true,
@@ -454,9 +467,6 @@ jQuery(function ($) {
 				} else if (data.type == 'error') {
 					return [false, data.message]; 		// [success,message,new_id]
 				}
-			},
-			beforeShowForm:function () {
-				$('#tr_table_id').show();
 			},
 			bSubmit       :'Add',
 			closeAfterAdd :true,
