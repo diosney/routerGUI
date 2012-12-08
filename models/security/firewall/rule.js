@@ -22,7 +22,7 @@ var Firewall_Rule = new Schema({
 		type:String,
 		enum:['all', 'tcp', 'udp']
 	},
-	destination_ports  :String, // port[,port|,port:port]
+	destination_ports  :String,
 	source             :String,
 	source_netmask     :Number,
 	destination        :String,
@@ -57,6 +57,10 @@ Firewall_Rule.statics.cl_add = function cl_add(firewall_rule) {
 		str_to_exec += '--destination ' + firewall_rule.destination + ((firewall_rule.destination_netmask) ? '/' + firewall_rule.destination_netmask : '') + ' ';
 	}
 
+	if (firewall_rule.state) {
+		str_to_exec += '--match state --state ' + firewall_rule.state + ' ';
+	}
+
 	str_to_exec += '--jump  ' + firewall_rule.target + ' ';
 
 	if (firewall_rule.description) {
@@ -85,6 +89,10 @@ Firewall_Rule.statics.cl_replace = function cl_replace(firewall_rule) {
 
 	if (firewall_rule.destination) {
 		str_to_exec += '--destination ' + firewall_rule.destination + ((firewall_rule.destination_netmask) ? '/' + firewall_rule.destination_netmask : '') + ' ';
+	}
+
+	if (firewall_rule.state) {
+		str_to_exec += '--match state --state ' + firewall_rule.state + ' ';
 	}
 
 	if (firewall_rule.description) {

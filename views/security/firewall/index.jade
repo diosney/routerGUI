@@ -6,6 +6,7 @@ block navigation
 block content
 	link(rel='stylesheet', type='text/css', href='/javascripts/external/ui/css/jquery-ui.css')
 	link(rel='stylesheet', type='text/css', href='/javascripts/external/jqGrid/css/ui.jqgrid.css')
+	link(rel='stylesheet', type='text/css', href='/javascripts/external/chosen/chosen.css')
 
 	header
 		.container
@@ -37,6 +38,7 @@ block scripts
 	script(type='text/javascript', src='/javascripts/external/ui/js/jquery-ui.js')
 	script(type='text/javascript', src='/javascripts/external/jqGrid/js/i18n/grid.locale-en.js')
 	script(type='text/javascript', src='/javascripts/external/jqGrid/js/jquery.jqGrid.js')
+	script(type='text/javascript', src='/javascripts/external/chosen/chosen.js')
 	script(type='text/javascript', src='/javascripts/ui/security/firewall.js')
 
 block templates
@@ -49,3 +51,19 @@ block templates
 		.alert.alert-success
 			a.close(href="#",data-dismiss="alert") ×
 			span.msg-mark
+		.destination_ports_management
+			.port_selection_container
+				select.port_type
+					option(value="single") Single Port
+					option(value="range") Port Range
+				span.single
+					input(type="text")
+					a.btn.destination_port_add(role="button")
+						i.icon-plus
+				span.range.hidden
+					| From&nbsp;
+					input(type="text",class="port_range_from")
+					| To&nbsp;
+					input(type="text",class="port_range_to")
+					a.btn.destination_port_add(role="button")
+						i.icon-plus

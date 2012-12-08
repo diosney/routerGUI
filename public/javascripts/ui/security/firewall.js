@@ -29,7 +29,7 @@ jQuery(function ($) {
 				editable   :true,
 				edittype   :'select',
 				editoptions:{
-					dataUrl:'/api/interfaces/devices?object=device&return_type=select'
+					dataUrl:'/api/interfaces?object=interfaces&return_type=select'
 				},
 				index      :'in_interface',
 				name       :'in_interface',
@@ -44,7 +44,7 @@ jQuery(function ($) {
 				editable   :true,
 				edittype   :'select',
 				editoptions:{
-					dataUrl:'/api/interfaces/devices?object=device&return_type=select'
+					dataUrl:'/api/interfaces?object=interfaces&return_type=select'
 				},
 				index      :'out_interface',
 				name       :'out_interface',
@@ -246,6 +246,7 @@ jQuery(function ($) {
 					editoptions   :{
 						dataUrl:'/api/security/firewall?object=rule_order&return_type=select&chain_name=' + row_id
 					},
+					hidden        :true,
 					firstsortorder:'asc',
 					index         :'order',
 					name          :'order',
@@ -276,15 +277,12 @@ jQuery(function ($) {
 				},
 				{
 					align         :'center',
-					classes       :'column_destination_port',
+					classes       :'column_destination_ports',
 					editable      :true,
 					edittype      :'text',
 					firstsortorder:'asc',
-					formoptions   :{
-						elmsuffix:'<br><span class="field-description">Syntax: port[,port|,port:port] <br>Ex: 80,443,1000:4500,5000,6000:7000 <br>Enter up to 15 identifiers.</span>'
-					},
-					index         :'destination_port',
-					name          :'destination_port',
+					index         :'destination_ports',
+					name          :'destination_ports',
 					search        :true,
 					sortable      :false,
 					stype         :'text',
@@ -309,8 +307,8 @@ jQuery(function ($) {
 					editable      :true,
 					edittype      :'text',
 					firstsortorder:'asc',
-					index         :'net_mask',
-					name          :'net_mask',
+					index         :'source_netmask',
+					name          :'source_netmask',
 					search        :true,
 					sortable      :false,
 					stype         :'text',
@@ -331,15 +329,15 @@ jQuery(function ($) {
 				},
 				{
 					align         :'center',
-					classes       :'column_source_netmask',
+					classes       :'column_destination_netmask',
 					editable      :true,
 					editrules     :{
 						required:true
 					},
 					edittype      :'text',
 					firstsortorder:'asc',
-					index         :'net_mask',
-					name          :'net_mask',
+					index         :'destination_netmask',
+					name          :'destination_netmask',
 					search        :true,
 					sortable      :false,
 					stype         :'text',
@@ -349,11 +347,30 @@ jQuery(function ($) {
 					align         :'center',
 					classes       :'column_state',
 					editable      :true,
-					edittype      :'text',
-					firstsortorder:'asc',
-					formoptions   :{
-						elmsuffix:'<br><span class="field-description">Comma separated values of any of:<br>INVALID<br>ESTABLISHED<br>NEW<br>RELATED<br>UNTRACKED.</span>'
+					edittype: 'select',
+					editoptions: {
+						dataInit: function(element) {
+							if (is_edit) {
+								var row_selected = $('#' + subgrid_table_id).jqGrid('getGridParam','selrow');
+								var capabilities = $('#' + subgrid_table_id).jqGrid('getCell', row_selected, 'capabilities');
+
+								if (capabilities) {
+									for (capability_item in capabilities.split(',')) {
+										$('option:contains(' + capabilities.split(',')[capability_item] + ')', element).attr('selected', 'selected');
+									}
+								}
+							}
+						},
+						value:{
+							'INVALID':'INVALID',
+							'NEW':'NEW',
+							'ESTABLISHED':'ESTABLISHED',
+							'RELATED':'RELATED',
+							'UNTRACKED':'UNTRACKED'
+						},
+						multiple: true
 					},
+					firstsortorder:'asc',
 					index         :'state',
 					name          :'state',
 					search        :true,
@@ -447,20 +464,100 @@ jQuery(function ($) {
 						return [false, data.message]; 		// [success,message,new_id]
 					}
 				},
+				beforeInitData: function() {
+					is_edit = true;
+				},
 				beforeShowForm:function (formid) {
 					$('#tr_order').hide();
+
+					$('#state').chosen();
 
 					/*
 					 * Grid fields behaviour.
 					 */
 					$('.FormGrid #protocol').live('change',function () {
 						if ($(this).val() == 'tcp' || $(this).val() == 'udp') {
-							$('#tr_destination_port').show().removeAttr('disabled');
+							$('#tr_destination_ports').show().removeAttr('disabled');
 						}
 						else {
-							$('#tr_destination_port').hide().attr('disabled', 'disabled');
+							$('#tr_destination_ports').hide().attr('disabled', 'disabled');
 						}
 					}).trigger('change');
+
+					/*
+					 * Addresses fields rearrangement.
+					 */
+					$('#tr_source_netmask,#tr_destination_netmask').hide();
+					$('#source,#destination').before('<select class="family_dropdown"><option value="inet4">IPv4</option><option value="inet6">IPv6</option></select>');
+
+					$('.family_dropdown').live('change',function () {
+						// Remove previous net_mask dropdowns.
+						$(this).closest('tr').find('.net_mask_dropdown').remove();
+
+						if ($(this).val() == 'inet6') {
+							var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+							for (var i = 128; i > 0; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+							$(this).closest('tr').next('tr').find('.FormElement').val('128');
+						}
+						else {
+							var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+							for (var i = 32; i > 0; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+							$(this).closest('tr').next('tr').find('.FormElement').val('32');
+						}
+					}).trigger('change');
+
+					$('#tr_source,#tr_destination').find('.family_dropdown').attr('disabled', 'disabled');
+
+					$('.net_mask_dropdown').live('change',function () {
+						$(this).closest('tr').next('tr').find('.FormElement').val($(this).val());
+					}).trigger('change');
+
+					/*
+					 * Destination Ports fields rearrangement.
+					 */
+					$('#destination_ports').hide();
+
+					// Global variable.
+					max_port_identifiers = 13;
+
+					var ports_arr = $('#destination_ports').val().split(',');
+
+					for (i in ports_arr) {
+						if (ports_arr[i].search(':') == -1) {
+							// Single Port.
+							$('.port_selection_container', '#templates-container').clone().appendTo($('#tr_destination_ports .DataTD'));
+							$('#tr_destination_ports .DataTD .port_selection_container:last').find('input[type="text"]').val(ports_arr[i]);
+
+							$('#tr_destination_ports .DataTD .port_selection_container:last').find('select').attr('disabled', 'disabled');
+
+							max_port_identifiers++;
+						}
+						else {
+							// Port range.
+							$('.port_selection_container', '#templates-container').clone().appendTo($('#tr_destination_ports .DataTD'));
+							$('#tr_destination_ports .DataTD .port_selection_container:last').children('.range,.single').toggleClass('hidden');
+
+							$('#tr_destination_ports .DataTD .port_selection_container:last').find('.port_range_from').val(ports_arr[i].split(':')[0]);
+							$('#tr_destination_ports .DataTD .port_selection_container:last').find('.port_range_to').val(ports_arr[i].split(':')[1]);
+
+							$('#tr_destination_ports .DataTD .port_selection_container:last').find('.port_type option[value=range]').attr('selected', 'selected');
+
+							$('#tr_destination_ports .DataTD .port_selection_container:last').find('select').attr('disabled', 'disabled');
+
+							max_port_identifiers += 2;
+						}
+					}
+
+					$('#tr_destination_ports .DataTD .port_selection_container .btn').toggleClass('destination_port_add destination_port_del');
+					$('#tr_destination_ports .DataTD .port_selection_container .btn').find('i').toggleClass('icon-plus icon-minus');
 				},
 				bSubmit       :'Done',
 				checkOnSubmit :false,
@@ -495,18 +592,68 @@ jQuery(function ($) {
 						return [false, data.message] 		// [success,message,new_id]
 					}
 				},
+				beforeInitData: function() {
+					is_edit = false;
+				},
 				beforeShowForm:function (formid) {
+					$('#tr_order').show();
+
+					$('#state').chosen();
+
 					/*
 					 * Grid fields behaviour.
 					 */
 					$('.FormGrid #protocol').live('change',function () {
 						if ($(this).val() == 'tcp' || $(this).val() == 'udp') {
-							$('#tr_destination_port').show().removeAttr('disabled');
+							$('#tr_destination_ports').show().removeAttr('disabled');
 						}
 						else {
-							$('#tr_destination_port').hide().attr('disabled', 'disabled');
+							$('#tr_destination_ports').hide().attr('disabled', 'disabled');
 						}
 					}).trigger('change');
+
+					/*
+					 * Addresses fields rearrangement.
+					 */
+					$('#tr_source_netmask,#tr_destination_netmask').hide();
+					$('#source,#destination').before('<select class="family_dropdown"><option value="inet4">IPv4</option><option value="inet6">IPv6</option></select>');
+
+					$('.family_dropdown').live('change',function () {
+						// Remove previous net_mask dropdowns.
+						$(this).closest('tr').find('.net_mask_dropdown').remove();
+
+						if ($(this).val() == 'inet6') {
+							var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+							for (var i = 128; i > 0; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+							$(this).closest('tr').next('tr').find('.FormElement').val('128');
+						}
+						else {
+							var net_mask_dropdown_dropdown = '<select class="net_mask_dropdown">'
+							for (var i = 32; i > 0; i--) {
+								net_mask_dropdown_dropdown += '<option value="' + i + '">' + i + '</option>';
+							}
+							net_mask_dropdown_dropdown += '</select>';
+							$(this).next('.FormElement').after(net_mask_dropdown_dropdown);
+							$(this).closest('tr').next('tr').find('.FormElement').val('32');
+						}
+					}).trigger('change');
+
+					$('.net_mask_dropdown').live('change',function () {
+						$(this).closest('tr').next('tr').find('.FormElement').val($(this).val());
+					}).trigger('change');
+
+					/*
+					 * Destination Ports fields rearrangement.
+					 */
+					$('#destination_ports').hide();
+
+					// Global variable.
+					max_port_identifiers = 13;
+					$('.port_selection_container', '#templates-container').clone().insertAfter('#destination_ports');
 				},
 				bSubmit       :'Add',
 				closeAfterAdd :true,
@@ -549,4 +696,101 @@ jQuery(function ($) {
 			}, {
 			}, {}, {});
 	}
+
+	/*
+	 * Firewall Rules subgrid components behaviour.
+	 */
+	/*
+	 * Destination Ports.
+	 */
+	$('.port_selection_container .port_type', '#tr_destination_ports').live('change', function () {
+		$('.single,.range', $(this).closest('.port_selection_container')).toggleClass('hidden');
+	});
+
+	/*
+	 * Add New Port.
+	 */
+	$('.port_selection_container .destination_port_add', '#tr_destination_ports').live('click', function () {
+		if ($(this).closest('span').hasClass('single')) {
+			/*
+			 * Is a Single port operation.
+			 */
+			if (!$(this).closest('span').find('input').val()) {
+				alert('You have to fill the field to add a Port.');
+			}
+			else {
+				$('#destination_ports').val($('#destination_ports').val() + (($('#destination_ports').val()) ? ',' : '') + $(this).closest('span').find('input').val());
+
+				$(this).toggleClass('destination_port_add destination_port_del');
+				$(this).find('i').toggleClass('icon-plus icon-minus');
+
+				if (max_port_identifiers > 0) {
+					$('.port_selection_container', '#templates-container').clone().insertAfter($(this).closest('.port_selection_container'));
+
+					$(this).closest('.port_selection_container').find('select').attr('disabled', 'disabled');
+
+					max_port_identifiers--;
+				}
+			}
+		}
+		else {
+			/*
+			 * Is a Port range operation.
+			 */
+			// One of the ports is empty.
+			if (!$(this).closest('span').find('.port_range_from').val() || !$(this).closest('span').find('.port_range_from').val()) {
+				alert('You have to fill both fields to add a Port Range.');
+			}
+			else {
+				$('#destination_ports').val($('#destination_ports').val() + (($('#destination_ports').val()) ? ',' : '') + $(this).closest('span').find('.port_range_from').val() + ':' + $(this).closest('span').find('.port_range_to').val());
+
+				$(this).toggleClass('destination_port_add destination_port_del');
+				$(this).find('i').toggleClass('icon-plus icon-minus');
+
+				if (max_port_identifiers > 0) {
+					$('.port_selection_container', '#templates-container').clone().insertAfter($(this).closest('.port_selection_container'));
+					$(this).closest('.port_selection_container').next('.port_selection_container').children('.range,.single').toggleClass('hidden');
+					$(this).closest('.port_selection_container').next('.port_selection_container').find('.port_type option[value=range]').attr('selected', 'selected');
+
+					$(this).closest('.port_selection_container').find('select').attr('disabled', 'disabled');
+
+					max_port_identifiers -= 2;
+				}
+			}
+		}
+	});
+
+	/*
+	 * Remove Port.
+	 */
+	$('.port_selection_container .destination_port_del', '#tr_destination_ports').live('click', function () {
+		var ports_arr = $('#destination_ports').val().split(','),
+			new_ports_arr = [],
+			port_to_remove = '';
+
+		if ($(this).closest('span').hasClass('single')) {
+			/*
+			 * Is a Single port operation.
+			 */
+			port_to_remove = $(this).closest('span').find('input').val();
+			max_port_identifiers++;
+		}
+		else {
+			/*
+			 * Is a Port range operation.
+			 */
+			port_to_remove = $(this).closest('span').find('.port_range_from').val() + ':' + $(this).closest('span').find('.port_range_to').val();
+			max_port_identifiers += 2;
+		}
+
+		for (i in ports_arr) {
+			if (ports_arr[i] != port_to_remove) {
+				new_ports_arr.push(ports_arr[i]);
+			}
+		}
+
+		$('#destination_ports').val(new_ports_arr.join(','));
+
+		$(this).closest('.port_selection_container').remove();
+	});
 });

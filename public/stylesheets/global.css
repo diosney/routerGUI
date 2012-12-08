@@ -270,3 +270,7 @@ h3 a {
 	margin-right: 0.5em;
 	width: 6em !important;
 }
+.ui-jqdialog .chzn-container-multi .search-choice {
+	float: none;
+	margin-right: 4px !important;
+}

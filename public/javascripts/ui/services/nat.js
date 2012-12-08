@@ -438,7 +438,7 @@ jQuery(function ($) {
 					search        :true,
 					sortable      :false,
 					stype         :'text',
-					width         :8
+					width         :6
 				},
 				{
 					align         :'center',
@@ -451,7 +451,7 @@ jQuery(function ($) {
 					search        :true,
 					sortable      :false,
 					stype         :'text',
-					width         :15
+					width         :12
 				},
 				{
 					align         :'center',
@@ -464,7 +464,7 @@ jQuery(function ($) {
 					search        :true,
 					sortable      :false,
 					stype         :'text',
-					width         :6
+					width         :8
 				},
 				{
 					align         :'center',
@@ -477,7 +477,7 @@ jQuery(function ($) {
 					search        :true,
 					sortable      :false,
 					stype         :'text',
-					width         :6
+					width         :5
 				},
 				{
 					align         :'center',
@@ -506,7 +506,7 @@ jQuery(function ($) {
 					search        :true,
 					sortable      :false,
 					stype         :'text',
-					width         :6
+					width         :5
 				},
 				{
 					align         :'center',
@@ -519,7 +519,7 @@ jQuery(function ($) {
 					search        :true,
 					sortable      :false,
 					stype         :'text',
-					width         :15
+					width         :10
 				},
 				{
 					align         :'left',
@@ -597,9 +597,6 @@ jQuery(function ($) {
 				beforeShowForm:function (formid) {
 					$('#tr_order').hide();
 
-					/*
-					 * Grid fields behaviour.
-					 */
 					/*
 					 * Grid fields behaviour.
 					 */
