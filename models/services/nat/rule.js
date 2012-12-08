@@ -16,7 +16,7 @@ var NAT_Rule = new Schema({
 	order              :Number,
 	protocol           :{
 		type:String,
-		enum:['all', 'tcp', 'udp']
+		enum:['all', 'tcp', 'udp'] // The protocols: SCTP or DCCP also can specify ports.
 	},
 	destination_ports  :String, // port[,port|,port:port]
 	source             :String,
@@ -44,7 +44,7 @@ NAT_Rule.statics.cl_add = function cl_add(nat_rule) {
 	}
 
 	if (nat_rule.destination_ports) {
-		str_to_exec += '--match multiport --destination-ports ' + nat_rule.destination_ports + ' ';
+		str_to_exec += '--match multiport --destination-ports "' + nat_rule.destination_ports + '" ';
 	}
 
 	if (nat_rule.source) {
@@ -81,7 +81,7 @@ NAT_Rule.statics.cl_replace = function cl_replace(nat_rule) {
 	}
 
 	if (nat_rule.destination_ports) {
-		str_to_exec += '--match multiport --destination-ports ' + nat_rule.destination_ports + ' ';
+		str_to_exec += '--match multiport --destination-ports "' + nat_rule.destination_ports + '" ';
 	}
 
 	if (nat_rule.source) {

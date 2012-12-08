@@ -219,3 +219,54 @@ h3 a {
 	margin-left: 0.5em !important;
 	width: 5.2em !important;
 }
+/* =Pages. Services. NAT.
+ -------------------------------------------------------------- */
+/* =Pages. Services. NAT. Destination Port section.
+ -------------------------------------------------------------- */
+.port_type {
+	margin-right: 0.5em !important;
+	width: auto !important;
+}
+.port_selection_container:first-of-type {
+	margin-left: 0;
+}
+.port_selection_container {
+	display: inline-block;
+	margin-bottom: 0.5em;
+	margin-left: 0.2em;
+}
+.port_selection_container input[type="text"] {
+	margin-right: 0.5em;
+	width: 3.2em;
+}
+.port_selection_container .btn {
+	padding: 0.1em 0.4em;
+}
+#tr_destination_ports .CaptionTD {
+	vertical-align: top !important;
+}
+/* =Pages. Services. NAT. To NAT section.
+ -------------------------------------------------------------- */
+.ip_type, .port_type {
+	margin-right: 0.5em !important;
+	width: auto !important;
+}
+.to_nat_selection_container {
+	margin-left: 0;
+}
+.to_nat_selection_container {
+	display: inline-block;
+	margin-bottom: 0.5em;
+	margin-left: 0.2em;
+}
+#tr_to_nat .CaptionTD {
+	vertical-align: top !important;
+}
+.to_nat_selection_container select {
+	margin-bottom: 0.4em !important;
+	width: 8em !important;
+}
+.to_nat_selection_container input {
+	margin-right: 0.5em;
+	width: 6em !important;
+}

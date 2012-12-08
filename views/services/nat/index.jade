@@ -61,3 +61,41 @@ block templates
 		.alert.alert-success
 			a.close(href="#",data-dismiss="alert") ×
 			span.msg-mark
+		.destination_ports_management
+			.port_selection_container
+				select.port_type
+					option(value="single") Single Port
+					option(value="range") Port Range
+				span.single
+					input(type="text")
+					a.btn.destination_port_add(role="button")
+						i.icon-plus
+				span.range.hidden
+					| From&nbsp;
+					input(type="text",class="port_range_from")
+					| To&nbsp;
+					input(type="text",class="port_range_to")
+					a.btn.destination_port_add(role="button")
+						i.icon-plus
+		.to_nat_management
+			.to_nat_selection_container
+				select.ip_type
+					option(value="ip_single") Single IP
+					option(value="ip_range") IP Range
+				span.ip_single
+					input(type="text",placeholder="IP Address")
+				span.ip_range.hidden
+					input(type="text",class="ip_range_from",placeholder="From")
+					| &nbsp;&nbsp;-&nbsp;&nbsp;
+					input(type="text",class="ip_range_to",placeholder="To")
+				br/
+				select.port_type
+					option(value="port_all") All Ports
+					option(value="port_single") Single Port
+					option(value="port_range") Port Range
+				span.port_single.hidden
+					input(type="text",placeholder="Port")
+				span.port_range.hidden
+					input(type="text",class="port_range_from",placeholder="From")
+					| &nbsp;&nbsp;-&nbsp;&nbsp;
+					input(type="text",class="port_range_to",placeholder="To")

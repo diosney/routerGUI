@@ -86,7 +86,7 @@ module.exports = function (req, res) {
 								response_from_server.rows.push({
 									id  :docs[item].name,
 									cell:[
-										docs[item].type,
+										(docs[item].type=='hash:ip')?'Hosts':(docs[item].type=='hash:net')?'Networks':'Mixed',
 										docs[item].name,
 										docs[item].description
 									]
